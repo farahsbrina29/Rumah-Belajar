@@ -22,30 +22,23 @@ Route::get('/beranda', function () {
     ]);
 })->name('beranda');
 
-Route::get('/tentang-kami', function () {
-    return Inertia::render('TentangKami', [
+Route::get('/konten', function () {
+    return Inertia::render('Konten', [
         'canLogin' => Route::has('login'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-})->name('tentang-kami');
+})->name('konten');
 
 
-Route::get('/informasi-pendidikan', function () {
-    return Inertia::render('InformasiPendidikan', [
+Route::get('/rangkuman', function () {
+    return Inertia::render('Rangkuman', [
         'canLogin' => Route::has('login'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-})->name('informasi-pendidikan');
+})->name('rangkuman');
 
-Route::get('/informasi-kebudayaan', function () {
-    return Inertia::render('InformasiKebudayaan', [
-        'canLogin' => Route::has('login'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-})->name('informasi-kebudayaan');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -56,5 +49,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
 
 require dirname(__FILE__).'/auth.php';
