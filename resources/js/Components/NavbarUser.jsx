@@ -2,35 +2,30 @@ import { Link } from '@inertiajs/react';
 
 export default function Navbar({ auth }) {
     return (
-        <nav className="fixed top-0 left-0 w-full bg-blue-600 p-4 shadow-md z-50 flex space-x-4">
+        <nav className="fixed top-0 left-0 w-full bg-white p-4 shadow-md z-50 flex space-x-4">
             <Link
                 href={route('beranda')}
-                className="text-white font-semibold text-lg hover:text-gray-200"
+                className="text-154561 font-semibold text-lg hover:text-gray-200"
             >
                 Beranda
             </Link>
             <Link
-                href={route('tentang-kami')}
-                className="text-white font-semibold text-lg hover:text-gray-200"
+                href={route('konten')} // Menyesuaikan dengan perubahan di web.php
+                className="text-154561 font-semibold text-lg hover:text-gray-200"
             >
-                Tentang Kami
+                Konten
             </Link>
             <Link
-                href={route('informasi-pendidikan')}
-                className="text-white font-semibold text-lg hover:text-gray-200"
+                href={route('rangkuman')} // Menyesuaikan dengan perubahan di web.php
+                className="text-154561 font-semibold text-lg hover:text-gray-200"
             >
-                Informasi Pendidikan
+                Rangkuman
             </Link>
-            <Link
-                href={route('informasi-kebudayaan')}
-                className="text-white font-semibold text-lg hover:text-gray-200"
-            >
-                Informasi Kebudayaan
-            </Link>
+           
             {auth.user ? (
                 <Link
                     href={route('dashboard')}
-                    className="text-white font-semibold text-lg hover:text-gray-200"
+                    className="text-154561 font-semibold text-lg hover:text-gray-200"
                 >
                     Dashboard
                 </Link>
@@ -38,13 +33,13 @@ export default function Navbar({ auth }) {
                 <>
                     <Link
                         href={route('login')}
-                        className="text-white font-semibold text-lg hover:text-gray-200"
+                        className="text-154561 font-semibold text-lg hover:text-gray-200"
                     >
                         Log in
                     </Link>
                     <Link
                         href={route('register')}
-                        className="rounded-md px-3 py-2 text-white bg-[#FF2D20] hover:bg-[#d9211b] font-semibold transition focus:outline-none focus:ring-2 focus:ring-white"
+                        className="rounded-md px-3 py-2 text-white bg-[#154561] hover:bg-[#d9211b] font-semibold transition focus:outline-none focus:ring-2 focus:ring-white"
                     >
                         Register
                     </Link>
