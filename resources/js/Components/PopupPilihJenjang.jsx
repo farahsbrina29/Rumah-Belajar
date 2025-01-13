@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default function PopupPilihJenjang({ isOpen, onClose }) {
-    if (!isOpen) return null; // Jangan tampilkan jika `isOpen` bernilai `false`
+    if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -24,9 +24,11 @@ export default function PopupPilihJenjang({ isOpen, onClose }) {
                     ].map((jenjang, index) => (
                         <div
                             key={index}
-                            className="flex flex-col items-center bg-blue-100 p-4 rounded shadow-md hover:shadow-lg transition"
+                            className={`flex flex-col items-center bg-blue-100 p-4 rounded shadow-md hover:shadow-lg transition ${
+                                jenjang === 'Umum' || jenjang === 'Orang Tua' ? 'col-span-1' : ''
+                            }`}
                         >
-                            <p className="text-sm font-semibold text-gray-800">{jenjang}</p>
+                            <p className="text-sm font-semibold text-gray-800 text-center">{jenjang}</p>
                         </div>
                     ))}
                 </div>
@@ -34,7 +36,7 @@ export default function PopupPilihJenjang({ isOpen, onClose }) {
                 <div className="flex justify-center">
                     <button
                         onClick={onClose}
-                        className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+                        className="bg-[#A8C9F1] text-white px-6 py-2 rounded-lg hover:bg-[#90B8E9]"
                     >
                         Tutup
                     </button>
