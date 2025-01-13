@@ -1,26 +1,17 @@
 import React from "react";
-import { Link } from "@inertiajs/react";
+import Navbar from "@/components/NavbarUser";  // Pastikan NavbarUser yang benar diimpor
 
-export default function Konten() {
+export default function Konten({ auth }) {
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">Halaman Konten</h1>
-            <p className="mb-4">
-                Ini adalah halaman Konten. Navigasikan ke halaman lain menggunakan link di bawah ini.
-            </p>
-            <div className="space-x-4">
-                <Link
-                    href={route("beranda")}
-                    className="text-blue-500 hover:underline"
-                >
-                    Kembali ke Beranda
-                </Link>
-                <Link
-                    href={route("rangkuman")}
-                    className="text-blue-500 hover:underline"
-                >
-                    Ke Halaman Rangkuman
-                </Link>
+        <div>
+            <Navbar auth={auth} />  {/* Menggunakan NavbarUser */}
+            <div className="p-4">
+                <h1 className="text-2xl font-bold mb-4">Halaman Konten</h1>
+                {auth.user ? (
+                    <p>Selamat datang, {auth.user.name}!</p>
+                ) : (
+                    <p>Anda belum login. Silakan login untuk mengakses konten lebih lanjut.</p>
+                )}
             </div>
         </div>
     );

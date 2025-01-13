@@ -14,9 +14,10 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/beranda', function () {
-    return Inertia::render('Beranda', [
+Route::get('/', function () {
+    return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
