@@ -31,11 +31,21 @@ export default function Welcome({ auth }) {
             <div className="bg-gray-50 text-black min-h-screen">
                 <Navbar auth={auth} />
 
+
+
                 {/* Hero Section */}
                 <header className="bg-gradient-to-b from-blue-100 to-blue-200 pt-16 pb-12">
                     {/* Full Width Background */}
                     <div className="bg-[#B9C9DA] w-full">
-                        <div className="px-4 py-8 flex items-center">
+                        {/* Ucapan Selamat Datang */}
+                        {auth?.user && (
+                            <div className="px-4 py-4 flex items-center">
+                                <h1 className="text-2xl md:text-3xl font-bold text-[#154561] text-left">
+                                Selamat Datang, {auth.user.name}!
+                            </h1>
+                            </div>
+                        )}
+                        <div className="px-4 py-4 flex items-center">
                             <h1 className="text-2xl md:text-3xl font-bold text-[#154561] text-left">
                                 Mau Belajar Apa Hari Ini?
                             </h1>
