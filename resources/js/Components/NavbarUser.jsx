@@ -1,41 +1,56 @@
 import { Link } from '@inertiajs/react';
-import Dropdown from '@/Components/Dropdown';  // Pastikan komponen Dropdown diimpor
+import Dropdown from '@/Components/Dropdown';
 
 export default function Navbar({ auth }) {
     return (
-        <nav className="fixed top-0 left-0 w-full bg-white p-4 shadow-md z-50 flex space-x-4">
-            <Link
-                href={route('beranda')}
-                className="text-154561 font-semibold text-lg hover:text-gray-200"
-            >
-                Beranda
-            </Link>
-            <Link
-                href={route('konten')}
-                className="text-154561 font-semibold text-lg hover:text-gray-200"
-            >
-                Konten
-            </Link>
-            <Link
-                href={route('rangkuman')}
-                className="text-154561 font-semibold text-lg hover:text-gray-200"
-            >
-                Rangkuman
-            </Link>
+        <nav className="fixed top-0 left-0 w-full bg-white p-4 shadow-md z-50 flex items-center justify-between">
+            {/* Logo dan Nama */}
+            <div className="flex items-center space-x-2">
+                <img
+                    src="/path-to-your-logo.png" // Ganti dengan path logo Anda
+                    alt="Logo"
+                    className="h-8 w-8"
+                />
+                <span className="text-sm font-bold" style={{ color: '#154561' }}>Rumah Belajar NTB</span>
+            </div>
 
-            {auth.user ? (
-                <div className="flex items-center space-x-4">
-                   
+            {/* Link Tengah */}
+            <div className="flex space-x-4">
+                <Link
+                    href={route('beranda')}
+                    className="text-154561 font-semibold text-sm hover:text-gray-200"
+                    style={{ color: '#154561' }}
+                >
+                    Beranda
+                </Link>
+                <Link
+                    href={route('konten')}
+                    className="text-154561 font-semibold text-sm hover:text-gray-200"
+                    style={{ color: '#154561' }}
+                >
+                    Konten
+                </Link>
+                <Link
+                    href={route('rangkuman')}
+                    className="text-154561 font-semibold text-sm hover:text-gray-200"
+                    style={{ color: '#154561' }}
+                >
+                    Rangkuman
+                </Link>
+            </div>
 
+            {/* Profil atau Login/Register */}
+            <div className="flex items-center space-x-4">
+                {auth.user ? (
                     <Dropdown>
                         <Dropdown.Trigger>
                             <span className="inline-flex rounded-md">
                                 <button
                                     type="button"
-                                    className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                    className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-semibold leading-4 text-154561 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                    style={{ color: '#154561' }}
                                 >
                                     {auth.user.name}
-
                                     <svg
                                         className="-me-0.5 ms-2 h-4 w-4"
                                         xmlns="http://www.w3.org/2000/svg"
@@ -65,23 +80,24 @@ export default function Navbar({ auth }) {
                             </Dropdown.Link>
                         </Dropdown.Content>
                     </Dropdown>
-                </div>
-            ) : (
-                <>
-                    <Link
-                        href={route('login')}
-                        className="text-154561 font-semibold text-lg hover:text-gray-200"
-                    >
-                        Log in
-                    </Link>
-                    <Link
-                        href={route('register')}
-                        className="rounded-md px-3 py-2 text-white bg-[#154561] hover:bg-[#d9211b] font-semibold transition focus:outline-none focus:ring-2 focus:ring-white"
-                    >
-                        Register
-                    </Link>
-                </>
-            )}
+                ) : (
+                    <>
+                        <Link
+                            href={route('login')}
+                            className="text-154561 font-semibold text-sm hover:text-gray-200"
+                            style={{ color: '#154561' }}
+                        >
+                            Log in
+                        </Link>
+                        <Link
+                            href={route('register')}
+                            className="rounded-md px-3 py-2 text-white bg-[#154561] hover:bg-[#d9211b] font-semibold transition focus:outline-none focus:ring-2 focus:ring-white"
+                        >
+                            Register
+                        </Link>
+                    </>
+                )}
+            </div>
         </nav>
     );
 }
