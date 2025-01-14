@@ -3,6 +3,7 @@ import Navbar from '@/Components/NavbarUser';
 import Footer from '@/Components/Footer';
 import PopupSemuaKelas from '@/Components/PopupSemuaKelas';
 import PopupPilihJenjang from '@/Components/PopupPilihJenjang';
+import ChartJumlahKonten from '@/Components/ChartJumlahKonten'; // Impor komponen grafik
 import { useState } from 'react';
 
 export default function Welcome({ auth }) {
@@ -31,21 +32,19 @@ export default function Welcome({ auth }) {
             <div className="bg-gray-50 text-black min-h-screen">
                 <Navbar auth={auth} />
 
-
-
                 {/* Hero Section */}
-                <header className="bg-gradient-to-b from-blue-100 to-blue-200 pt-16 pb-12">
+                <header className="bg-gradient-to-b from-blue-100 to-blue-200 pt-16 pb-6">
                     {/* Full Width Background */}
-                    <div className="bg-[#B9C9DA] w-full">
+                    <div className="bg-[#B9C9DA] w-full flex flex-col justify-center py-4">
                         {/* Ucapan Selamat Datang */}
                         {auth?.user && (
-                            <div className="px-4 py-4 flex items-center">
-                                <h1 className="text-2xl md:text-3xl font-bold text-[#154561] text-left">
-                                Selamat Datang, {auth.user.name}!
-                            </h1>
+                            <div className="px-4 py-2 w-full">
+                                <h1 className="text-sm md:text-lg font-semibold text-[#154561] text-left">
+                                    Halo, {auth.user.name}!
+                                </h1>
                             </div>
                         )}
-                        <div className="px-4 py-4 flex items-center">
+                        <div className="px-4 py-2">
                             <h1 className="text-2xl md:text-3xl font-bold text-[#154561] text-left">
                                 Mau Belajar Apa Hari Ini?
                             </h1>
@@ -153,6 +152,13 @@ export default function Welcome({ auth }) {
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </section>
+
+                {/* Grafik Jumlah Konten */}
+                <section className="py-8">
+                    <div className="container mx-auto px-4">
+                        <ChartJumlahKonten /> {/* Tambahkan grafik di sini */}
                     </div>
                 </section>
 
