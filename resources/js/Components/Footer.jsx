@@ -1,15 +1,21 @@
-import { FaInstagram, FaYoutube, FaFacebook, FaTwitter } from "react-icons/fa"; // Import ikon dari react-icons
+import { FaInstagram, FaYoutube, FaFacebook } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#2C3141] text-white py-8">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-8 lg:px-16">
+    <footer className="bg-[#2C3141] text-white py-8 sm:py-6">
+      <div className="container mx-auto grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 px-4 sm:px-8 lg:px-16">
         {/* Section 1: Address */}
         <div className="flex flex-col items-center md:items-start">
+          {/* Logo */}
+          <img
+            src="/path-to-your-logo.png" // Ganti dengan path/logo Anda
+            alt="Logo Rumah Belajar NTB"
+            className="w-12 h-12 mb-4"
+          />
           <h2 className="text-lg sm:text-xl font-semibold mb-4 text-center md:text-left">
             Rumah Belajar NTB
           </h2>
-          <p className="text-sm sm:text-base leading-relaxed text-center md:text-left">
+          <p className="text-sm sm:text-base leading-relaxed text-center md:text-left break-words">
             Jl. RE Martadinata No.KM. 15.5, Cipayung <br />
             Kec. Ciputat Kota Tangerang Selatan, Banten 15411
           </p>
@@ -21,8 +27,12 @@ const Footer = () => {
             Menu
           </h3>
           <ul className="space-y-2 text-sm sm:text-base text-center md:text-left">
-            <li>Beranda</li>
-            <li>Daftar Konten</li>
+            <li className="hover:text-gray-300 transition duration-200 cursor-pointer">
+              Beranda
+            </li>
+            <li className="hover:text-gray-300 transition duration-200 cursor-pointer">
+              Daftar Konten
+            </li>
           </ul>
         </div>
 
@@ -33,16 +43,43 @@ const Footer = () => {
           </h3>
           <ul className="space-y-2 text-sm sm:text-base">
             <li className="flex items-center">
-              <FaInstagram className="mr-3 text-lg sm:text-xl" /> @btidpdikbudntb
+              <a
+                href="https://www.instagram.com/btidpdikbudntb/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center"
+              >
+                <FaInstagram className="mr-3 text-lg sm:text-xl" />
+                <span className="hover:text-gray-300 hover:underline transition duration-200">
+                  @btidpdikbudntb
+                </span>
+              </a>
             </li>
             <li className="flex items-center">
-              <FaYoutube className="mr-3 text-lg sm:text-xl" /> BTIDP NTB Channel
+              <a
+                href="https://www.youtube.com/@btidpntbchannel4371"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center"
+              >
+                <FaYoutube className="mr-3 text-lg sm:text-xl" />
+                <span className="hover:text-gray-300 hover:underline transition duration-200">
+                  BTIDP NTB Channel
+                </span>
+              </a>
             </li>
             <li className="flex items-center">
-              <FaFacebook className="mr-3 text-lg sm:text-xl" /> Btidp Dikbud Ntb
-            </li>
-            <li className="flex items-center">
-              <FaTwitter className="mr-3 text-lg sm:text-xl" /> @pusdatin_dikbud
+              <a
+                href="https://web.facebook.com/balai.bptpntb.9/?_rdc=1&_rdr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center"
+              >
+                <FaFacebook className="mr-3 text-lg sm:text-xl" />
+                <span className="hover:text-gray-300 hover:underline transition duration-200">
+                  Btidp Dikbud Ntb
+                </span>
+              </a>
             </li>
           </ul>
         </div>
