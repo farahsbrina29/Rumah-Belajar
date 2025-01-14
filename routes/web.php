@@ -1,9 +1,10 @@
-<?php
+<?php 
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\Auth\RegisteredUserController;
 
 Route::get('/', function () {
     return Inertia::render('user/Welcome', [
@@ -22,7 +23,6 @@ Route::get('/konten', function () {
     ]);
 })->name('konten');
 
-
 Route::get('/rangkuman', function () {
     return Inertia::render('Rangkuman', [
         'canLogin' => Route::has('login'),
@@ -30,7 +30,6 @@ Route::get('/rangkuman', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 })->name('rangkuman');
-
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -42,5 +41,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Rute untuk pendaftaran
+Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
+Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
 
 require dirname(__FILE__).'/auth.php';

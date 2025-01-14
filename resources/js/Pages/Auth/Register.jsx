@@ -12,6 +12,7 @@ export default function Register() {
         email: '',
         password: '',
         password_confirmation: '',
+        role: '', // Tambahkan role di state
     });
 
     useEffect(() => {
@@ -89,7 +90,7 @@ export default function Register() {
                 <div className="mt-4">
                     <InputLabel htmlFor="password_confirmation" value="Confirm Password" />
 
-                   <TextInput
+                    <TextInput
                         id="password_confirmation"
                         type="password"
                         name="password_confirmation"
@@ -101,6 +102,27 @@ export default function Register() {
                     />
 
                     <InputError message={errors.password_confirmation} className="mt-2" />
+                </div>
+
+                {/* Dropdown untuk memilih role */}
+                <div className="mt-4">
+                    <InputLabel htmlFor="role" value="Role" />
+                    <select
+                        id="role"
+                        name="role"
+                        value={data.role}
+                        onChange={handleOnChange}
+                        required
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                    >
+                        <option value="">Pilih Role</option>
+                        <option value="Siswa">Siswa</option>
+                        <option value="Orangtua">Orangtua</option>
+                        <option value="Guru">Guru</option>
+                        <option value="Umum">Umum</option>
+                    </select>
+
+                    <InputError message={errors.role} className="mt-2" />
                 </div>
 
                 <div className="flex items-center justify-end mt-4">
