@@ -1,6 +1,6 @@
 import { usePage } from '@inertiajs/react';
 import NavbarUser from '@/Components/NavbarUser'; // Pastikan NavbarUser diimpor
-import Footer from '@/Components/Footer'; // Pastikan Footer diimpor
+
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
@@ -11,9 +11,6 @@ export default function AuthenticatedLayout({ header, children }) {
             <NavbarUser auth={{ user }} />
 
             <main className="flex-grow">{children}</main>
-
-            {/* Menambahkan Footer yang terletak di paling bawah */}
-            <Footer />
         </div>
     );
 }
