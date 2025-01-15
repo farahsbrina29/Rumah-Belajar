@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\AdminController; // Tambahkan controller untuk admin
 
 Route::get('/', function () {
     return Inertia::render('user/Welcome', [
@@ -44,5 +45,15 @@ Route::middleware('auth')->group(function () {
 // Rute untuk pendaftaran
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
+
+// Rute untuk login admin
+Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
+Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.submit');
+
+// Rute untuk dashboard admin
+Route::middleware('auth:admin')->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
+});
 
 require dirname(__FILE__).'/auth.php';
