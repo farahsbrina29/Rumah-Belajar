@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="flex flex-col items-center md:items-start">
           {/* Logo */}
           <img
-            src="/path-to-your-logo.png" // Ganti dengan path/logo Anda
+            src="/assets/logorbn.png" // Ganti dengan path/logo Anda
             alt="Logo Rumah Belajar NTB"
             className="w-12 h-12 mb-4"
           />
