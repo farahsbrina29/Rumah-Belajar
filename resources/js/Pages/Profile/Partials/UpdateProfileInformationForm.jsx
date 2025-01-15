@@ -62,6 +62,18 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                     <InputError className="mt-2" message={errors.email} />
                 </div>
 
+                {/* Menampilkan role sebagai input read-only */}
+                <div>
+                    <InputLabel htmlFor="role" value="Role" />
+
+                    <TextInput
+                        id="role"
+                        className="mt-1 block w-full bg-gray-100"
+                        value={user.role ? user.role : 'Role not available'}
+                        readOnly
+                    />
+                </div>
+
                 {mustVerifyEmail && user.email_verified_at === null && (
                     <div>
                         <p className="text-sm mt-2 text-gray-800">
