@@ -3,7 +3,7 @@ import Navbar from '@/Components/NavbarUser';
 import Footer from '@/Components/Footer';
 import PopupSemuaKelas from '@/Components/PopupSemuaKelas';
 import PopupPilihJenjang from '@/Components/PopupPilihJenjang';
-import ChartJumlahKonten from '@/Components/ChartJumlahKonten'; // Impor komponen grafik
+import ChartJumlahKonten from '@/Components/ChartJumlahKonten';
 import { useState } from 'react';
 
 export default function Welcome({ auth }) {
@@ -33,20 +33,20 @@ export default function Welcome({ auth }) {
                 <Navbar auth={auth} />
 
                 {/* Hero Section */}
-                <header className="bg-gradient-to-b from-blue-100 to-blue-200 pt-16 pb-6">
+                <header className="bg-[#CEE5FF] pt-16 pb-6">
                     {/* Full Width Background */}
-                    <div className="bg-[#B9C9DA] w-full flex flex-col justify-center py-4">
+                    <div className="bg-gradient-to-b from-blue-200 to-blue-300 w-full flex flex-col justify-center py-4">
                         {/* Ucapan Selamat Datang */}
                         {auth?.user && (
                             <div className="px-4 py-2 w-full">
                                 <h1 className="text-sm md:text-lg font-semibold text-[#154561] text-left">
-                                    Halo, {auth.user.name}!
+                                    <span role="img" aria-label="tangan melambai">👋</span> Halo, {auth.user.name}!
                                 </h1>
                             </div>
                         )}
                         <div className="px-4 py-2">
                             <h1 className="text-2xl md:text-3xl font-bold text-[#154561] text-left">
-                                Mau Belajar Apa Hari Ini?
+                                Mau Belajar Apa Hari Ini? <span role="img" aria-label="roket">🚀</span>
                             </h1>
                         </div>
                     </div>
@@ -127,7 +127,7 @@ export default function Welcome({ auth }) {
                 </section>
 
                 {/* Additional Sections */}
-                <section className="py-8">
+                <section className="bg-[#CEE5FF] py-8">
                     <div className="container mx-auto px-4">
                         <div className="grid md:grid-cols-2 gap-6">
                             {/* Kelas Maya */}
@@ -156,7 +156,7 @@ export default function Welcome({ auth }) {
                 </section>
 
                 {/* Grafik Jumlah Konten */}
-                <section className="py-8">
+                <section className="bg-[#CEE5FF] py-8">
                     <div className="container mx-auto px-4">
                         <ChartJumlahKonten /> {/* Tambahkan grafik di sini */}
                     </div>

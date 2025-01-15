@@ -32,112 +32,119 @@ export default function Register() {
     };
 
     return (
-        <GuestLayout>
-            <Head title="Register" />
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200">
+            <div className="w-full max-w-sm bg-[#96B1D3] rounded-lg shadow-lg p-4">
+                <Head title="Register" />
 
-            <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="name" value="Name" />
-
-                    <TextInput
-                        id="name"
-                        name="name"
-                        value={data.name}
-                        className="mt-1 block w-full"
-                        autoComplete="name"
-                        isFocused={true}
-                        onChange={handleOnChange}
-                        required
-                    />
-
-                    <InputError message={errors.name} className="mt-2" />
+                <div className="flex justify-center my-4">
+                    {/* Tambahkan logo di sini, misalnya: */}
+                    <img src="/assets/logorbn.png" alt="Logo" className="h-16 w-auto" />
                 </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="email" value="Email" />
+                <form onSubmit={submit}>
+                    <div>
+                        <InputLabel htmlFor="name" value="Name" />
 
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        onChange={handleOnChange}
-                        required
-                    />
+                        <TextInput
+                            id="name"
+                            name="name"
+                            value={data.name}
+                            className="mt-1 block w-full"
+                            autoComplete="name"
+                            isFocused={true}
+                            onChange={handleOnChange}
+                            required
+                        />
 
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
+                        <InputError message={errors.name} className="mt-2" />
+                    </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
+                    <div className="mt-3">
+                        <InputLabel htmlFor="email" value="Email" />
 
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={handleOnChange}
-                        required
-                    />
+                        <TextInput
+                            id="email"
+                            type="email"
+                            name="email"
+                            value={data.email}
+                            className="mt-1 block w-full"
+                            autoComplete="username"
+                            onChange={handleOnChange}
+                            required
+                        />
 
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
+                        <InputError message={errors.email} className="mt-2" />
+                    </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="password_confirmation" value="Confirm Password" />
+                    <div className="mt-3">
+                        <InputLabel htmlFor="password" value="Password" />
 
-                    <TextInput
-                        id="password_confirmation"
-                        type="password"
-                        name="password_confirmation"
-                        value={data.password_confirmation}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={handleOnChange}
-                        required
-                    />
+                        <TextInput
+                            id="password"
+                            type="password"
+                            name="password"
+                            value={data.password}
+                            className="mt-1 block w-full"
+                            autoComplete="new-password"
+                            onChange={handleOnChange}
+                            required
+                        />
 
-                    <InputError message={errors.password_confirmation} className="mt-2" />
-                </div>
+                        <InputError message={errors.password} className="mt-2" />
+                    </div>
 
-                {/* Dropdown untuk memilih role */}
-                <div className="mt-4">
-                    <InputLabel htmlFor="role" value="Role" />
-                    <select
-                        id="role"
-                        name="role"
-                        value={data.role}
-                        onChange={handleOnChange}
-                        required
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                    >
-                        <option value="">Pilih Role</option>
-                        <option value="Siswa">Siswa</option>
-                        <option value="Orangtua">Orangtua</option>
-                        <option value="Guru">Guru</option>
-                        <option value="Umum">Umum</option>
-                    </select>
+                    <div className="mt-3">
+                        <InputLabel htmlFor="password_confirmation" value="Confirm Password" />
 
-                    <InputError message={errors.role} className="mt-2" />
-                </div>
+                        <TextInput
+                            id="password_confirmation"
+                            type="password"
+                            name="password_confirmation"
+                            value={data.password_confirmation}
+                            className="mt-1 block w-full"
+                            autoComplete="new-password"
+                            onChange={handleOnChange}
+                            required
+                        />
 
-                <div className="flex items-center justify-end mt-4">
-                    <Link
-                        href={route('login')}
-                        className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                        Already registered?
-                    </Link>
+                        <InputError message={errors.password_confirmation} className="mt-2" />
+                    </div>
 
-                    <PrimaryButton className="ml-4" disabled={processing}>
-                        Register
-                    </PrimaryButton>
-                </div>
-            </form>
-        </GuestLayout>
+                    {/* Dropdown untuk memilih role */}
+                    <div className="mt-3">
+                        <InputLabel htmlFor="role" value="Role" />
+                        <select
+                            id="role"
+                            name="role"
+                            value={data.role}
+                            onChange={handleOnChange}
+                            required
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                        >
+                            <option value="">Pilih Role</option>
+                            <option value="Siswa">Siswa</option>
+                            <option value="Orangtua">Orangtua</option>
+                            <option value="Guru">Guru</option>
+                            <option value="Umum">Umum</option>
+                        </select>
+
+                        <InputError message={errors.role} className="mt-2" />
+                    </div>
+
+                    <div className="flex items-center justify-end mt-4">
+                        <Link
+                            href={route('login')}
+                            className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Already registered?
+                        </Link>
+
+                        <PrimaryButton className="ml-4 bg-[#154561] text-white" disabled={processing}>
+                            Register
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </div>
+        </div>
     );
 }
