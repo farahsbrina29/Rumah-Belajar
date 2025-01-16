@@ -57,6 +57,9 @@ Route::middleware('auth:admin')->group(function () {
     })->name('admin.pagecontent');
 });
 
+// Laravel route untuk delete user permanen
+Route::delete('/users/{id}/permanently', [UserController::class, 'forceDelete']);
+
 
 // Rute untuk login admin
 Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');

@@ -2,6 +2,15 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+
+// Route untuk menghapus user secara permanen
+Route::delete('/users/{id}/permanently', [UserController::class, 'destroyPermanently']);
+
+
+Route::get('/users', [UserController::class, 'index']);
+
+
 
 /*
 |--------------------------------------------------------------------------
