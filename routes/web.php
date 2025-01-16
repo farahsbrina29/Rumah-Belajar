@@ -46,13 +46,25 @@ Route::middleware('auth')->group(function () {
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('/register', [RegisteredUserController::class, 'store'])->name('register.store');
 
+// Rute untuk halaman pengguna dan konten
+Route::middleware('auth:admin')->group(function () {
+    Route::get('/admin/PageUser', function () {
+        return Inertia::render('Admin/PageUser'); // Pastikan path ke view inertia benar
+    })->name('admin.pageuser');
+
+    Route::get('/admin/PageContent', function () {
+        return Inertia::render('Admin/PageContent'); // Pastikan path ke view inertia benar
+    })->name('admin.pagecontent');
+});
+
+
 // Rute untuk login admin
 Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.submit');
 
 // Rute untuk dashboard admin
 Route::middleware('auth:admin')->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
 });
 
