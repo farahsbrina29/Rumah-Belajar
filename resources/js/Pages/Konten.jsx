@@ -22,15 +22,17 @@ export default function Konten({ auth }) {
     return (
         <div className="flex flex-col min-h-screen bg-blue-100">
             <Navbar auth={auth} />
-            <div className="flex-1 p-4">
-                <h1 className="text-2xl font-bold mb-4">Halaman Konten Video</h1>
+            <div className="flex-1 p-4 pt-32"> {/* Increased padding top to pt-32 */}
+                <h1 className="text-2xl font-bold text-center mb-4 text-[#154561]">
+                    Telusuri Berbagai Konten Menarik 🚀 
+                </h1>
 
                 {/* Pencarian dan Pilihan Jenjang */}
                 <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6 mt-12">
                     <input
                         type="text"
                         placeholder="Cari video..."
-                        className="border p-2 rounded-md flex-1"
+                        className="border-[1px] border-gray-300 p-2 rounded-md flex-1"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
