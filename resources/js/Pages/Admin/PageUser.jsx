@@ -1,7 +1,7 @@
 import React from "react";
 import AdminSidebar from "@/Components/AdminSidebar";
 
-const Dashboard = () => {
+const PageUser = () => {
     return (
         <div className="flex">
             <AdminSidebar />
@@ -13,4 +13,4 @@ const Dashboard = () => {
     );
 };
 
-export default Dashboard;
+export default PageUser;
