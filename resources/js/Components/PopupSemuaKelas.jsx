@@ -6,18 +6,17 @@ export default function PopupSemuaKelas({ isOpen, onClose }) {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white rounded-lg shadow-lg w-11/12 md:w-2/3 lg:w-1/2 p-6">
-                <h2 className="text-lg font-bold mb-4 text-center">Semua Kelas</h2>
+                <h2 className="text-lg font-bold text-[#154561] mb-4 text-center">Semua Kelas</h2>
                 {/* Grid untuk semua kategori */}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                     {[
                         { name: 'Biologi', icon: '🧬' },
                         { name: 'PKN', icon: '🛡️' },
-                        { name: 'Fisika', icon: '⚛️' },
+                        { name: 'Fisika', icon: '⚡' },
                         { name: 'Matematika', icon: '📊' },
-                        { name: 'Bhs. Indonesia', icon: '📖' },
+                        { name: 'Bhs. Indonesia', icon: '📚' },
+                        { name: 'Bhs. Inggris', icon: '🌍' },
                         { name: 'Kimia', icon: '🧪' },
-                        { name: 'Bhs. Inggris', icon: '🌐' },
-                        { name: 'Semua', icon: '📚' },
                     ].map((subject, index) => (
                         <div
                             key={index}

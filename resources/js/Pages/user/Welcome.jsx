@@ -33,7 +33,7 @@ export default function Welcome({ auth }) {
                 <Navbar auth={auth} />
 
                 {/* Hero Section */}
-                <header className="bg-[#CEE5FF] pt-16 pb-6">
+                <header className="bg-blue-100 pt-16 pb-6">
                     {/* Full Width Background */}
                     <div className="bg-gradient-to-b from-blue-200 to-blue-300 w-full flex flex-col justify-center py-4">
                         {/* Ucapan Selamat Datang */}
@@ -75,7 +75,7 @@ export default function Welcome({ auth }) {
 
                     {/* Ruang Belajar */}
                     <div className="mt-8 bg-white rounded-lg p-6 shadow-md max-w-4xl mx-auto">
-                        <h2 className="text-xl font-bold text-gray-800 mb-6">
+                        <h2 className="text-xl font-bold text-[#154561] mb-6">
                             Ruang Belajar
                         </h2>
                         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
@@ -127,7 +127,7 @@ export default function Welcome({ auth }) {
                 </section>
 
                 {/* Additional Sections */}
-                <section className="bg-[#CEE5FF] py-8">
+                <section className="bg-blue-100 py-8">
                     <div className="container mx-auto px-4">
                         <div className="grid md:grid-cols-2 gap-6">
                             {/* Kelas Maya */}
@@ -156,7 +156,7 @@ export default function Welcome({ auth }) {
                 </section>
 
                 {/* Grafik Jumlah Konten */}
-                <section className="bg-[#CEE5FF] py-8">
+                <section className="bg-blue-100 py-8">
                     <div className="container mx-auto px-4">
                         <ChartJumlahKonten /> {/* Tambahkan grafik di sini */}
                     </div>
