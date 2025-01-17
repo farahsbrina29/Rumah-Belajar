@@ -1,7 +1,23 @@
 import React from 'react';
+import { router } from '@inertiajs/react';
 
 export default function PopupSemuaKelas({ isOpen, onClose }) {
-    if (!isOpen) return null; // Jangan tampilkan jika `isOpen` bernilai `false`
+    if (!isOpen) return null;
+
+    const handleSubjectClick = (subjectName) => {
+        onClose(); // Tutup popup
+        router.visit(`/ruang-belajar/${subjectName}`); // Navigasi ke halaman mata pelajaran
+    };
+
+    const subjects = [
+        { name: 'Biologi', icon: '🧬' },
+        { name: 'PKN', icon: '🛡️' },
+        { name: 'Fisika', icon: '⚡' },
+        { name: 'Matematika', icon: '📊' },
+        { name: 'Bhs. Indonesia', icon: '📚' },
+        { name: 'Bhs. Inggris', icon: '🌍' },
+        { name: 'Kimia', icon: '🧪' },
+    ];
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -9,18 +25,11 @@ export default function PopupSemuaKelas({ isOpen, onClose }) {
                 <h2 className="text-lg font-bold text-[#154561] mb-4 text-center">Semua Kelas</h2>
                 {/* Grid untuk semua kategori */}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-                    {[
-                        { name: 'Biologi', icon: '🧬' },
-                        { name: 'PKN', icon: '🛡️' },
-                        { name: 'Fisika', icon: '⚡' },
-                        { name: 'Matematika', icon: '📊' },
-                        { name: 'Bhs. Indonesia', icon: '📚' },
-                        { name: 'Bhs. Inggris', icon: '🌍' },
-                        { name: 'Kimia', icon: '🧪' },
-                    ].map((subject, index) => (
+                    {subjects.map((subject, index) => (
                         <div
                             key={index}
-                            className="flex flex-col items-center bg-blue-100 p-4 rounded shadow-md hover:shadow-lg transition"
+                            className="flex flex-col items-center bg-blue-100 p-4 rounded shadow-md hover:shadow-lg hover:bg-blue-200 transition cursor-pointer"
+                            onClick={() => handleSubjectClick(subject.name)}
                         >
                             <div className="text-4xl mb-2">{subject.icon}</div>
                             <p className="text-sm font-semibold text-gray-800">{subject.name}</p>
@@ -31,7 +40,7 @@ export default function PopupSemuaKelas({ isOpen, onClose }) {
                 <div className="flex justify-center">
                     <button
                         onClick={onClose}
-                        className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+                        className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition"
                     >
                         Tutup
                     </button>

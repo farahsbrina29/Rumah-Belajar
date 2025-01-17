@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import Navbar from '@/Components/NavbarUser';
 import Footer from '@/Components/Footer';
 import PopupSemuaKelas from '@/Components/PopupSemuaKelas';
@@ -25,6 +25,10 @@ export default function Welcome({ auth }) {
         { name: 'Bhs. Inggris', icon: '🌍' },
         { name: 'Kimia', icon: '🧪' },
     ];
+
+    const handleSubjectClick = (subjectName) => {
+        router.visit(`/ruang-belajar/${subjectName}`);
+    };
 
     return (
         <>
@@ -82,7 +86,8 @@ export default function Welcome({ auth }) {
                             {subjects.map((subject, index) => (
                                 <div
                                     key={index}
-                                    className="flex flex-col items-center cursor-pointer"
+                                    className="flex flex-col items-center cursor-pointer hover:bg-blue-50 p-2 rounded-lg transition-colors"
+                                    onClick={() => handleSubjectClick(subject.name)}
                                 >
                                     <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-2">
                                         <span className="text-2xl">{subject.icon}</span>
@@ -92,7 +97,7 @@ export default function Welcome({ auth }) {
                             ))}
                             <div
                                 onClick={openPopupKelas}
-                                className="flex flex-col items-center cursor-pointer"
+                                className="flex flex-col items-center cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                             >
                                 <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
                                     <span className="text-2xl">⋯</span>
@@ -158,7 +163,7 @@ export default function Welcome({ auth }) {
                 {/* Grafik Jumlah Konten */}
                 <section className="bg-blue-100 py-8">
                     <div className="container mx-auto px-4">
-                        <ChartJumlahKonten /> {/* Tambahkan grafik di sini */}
+                        <ChartJumlahKonten />
                     </div>
                 </section>
 

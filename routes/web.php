@@ -6,6 +6,16 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\AdminController; // Tambahkan controller untuk admin
+use App\Http\Controllers\RuangBelajarController;
+
+Route::get('/ruang-belajar/{subject}', function ($subject) {
+    return Inertia::render('RuangBelajar', [
+        'subject' => $subject,
+        'auth' => [
+            'user' => Auth::user(),
+        ],
+    ]);
+})->middleware(['auth', 'verified'])->name('ruang.belajar');
 
 Route::get('/', function () {
     return Inertia::render('user/Welcome', [
