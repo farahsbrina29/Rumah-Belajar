@@ -22,8 +22,10 @@ export default function Rangkuman({ auth }) {
     return (
         <div className="flex flex-col min-h-screen bg-blue-100">
             <Navbar auth={auth} />
-            <div className="flex-1 p-4">
-                <h1 className="text-2xl font-bold mb-4">Halaman Rangkuman</h1>
+            <div className="flex-1 p-4 pt-32"> {/* Increased padding top to pt-32 */}
+                <h1 className="text-2xl font-bold text-center mb-4 text-[#154561]">
+                    Telusuri materi belajarmu di sini ✨
+                </h1>
 
                 {/* Pencarian dan Pilihan Jenjang */}
                 <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6 mt-12">
@@ -49,7 +51,7 @@ export default function Rangkuman({ auth }) {
                             key={index}
                             className="border rounded-lg overflow-hidden shadow-md"
                         >
-                            <div className="w-full h-5 bg-blue-200" /> {}
+                            <div className="w-full h-5 bg-blue-200" /> {/* Placeholder */}
                             <div className="p-4 bg-white">
                                 <h2 className="font-bold text-lg mb-2">Judul Rangkuman {index + 1}</h2>
                                 <p className="text-sm text-gray-500">Deskripsi singkat rangkuman {index + 1}.</p>
