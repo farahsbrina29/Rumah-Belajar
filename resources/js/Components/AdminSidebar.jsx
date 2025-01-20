@@ -10,6 +10,9 @@ const AdminSidebar = () => {
                 <h1 className="text-center font-bold mt-4">RUMAH BELAJAR NTB</h1>
             </div>
             <nav className="mt-6">
+                <Link href="/admin/ProfileAdmin" className="block px-4 py-2 hover:bg-gray-800">
+                        Profil
+                </Link>
                 <Link href="/admin/dashboard" className="block px-4 py-2 hover:bg-gray-800">
                     Dashboard
                 </Link>
