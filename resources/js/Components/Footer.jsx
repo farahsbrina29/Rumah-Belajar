@@ -16,8 +16,8 @@ const Footer = () => {
             Rumah Belajar NTB
           </h2>
           <p className="text-sm sm:text-base leading-relaxed text-center md:text-left break-words">
-            Jl. RE Martadinata No.KM. 15.5, Cipayung <br />
-            Kec. Ciputat Kota Tangerang Selatan, Banten 15411
+            Jl. Pendidikan No.19A, Gomong <br />
+            Kec. Selaparang, Kota Mataram, Nusa Tenggara Barat. 83125
           </p>
         </div>
 
