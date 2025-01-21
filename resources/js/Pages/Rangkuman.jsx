@@ -24,7 +24,7 @@ export default function Rangkuman({ auth }) {
             <Navbar auth={auth} />
             <div className="flex-1 p-4 pt-32"> {/* Increased padding top to pt-32 */}
                 <h1 className="text-2xl font-bold text-center mb-4 text-[#154561]">
-                    Telusuri materi belajarmu di sini ✨
+                    Telusuri rangkuman materi belajarmu di sini ✨
                 </h1>
 
                 {/* Pencarian dan Pilihan Jenjang */}
