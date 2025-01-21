@@ -25,16 +25,26 @@ const PageUser = () => {
     // Fungsi untuk menghapus akun secara permanen
     const deleteUserPermanently = (id) => {
         if (window.confirm("Are you sure you want to permanently delete this user?")) {
-            axios
-                .delete(`/api/users/${id}/permanently`) // Mengubah endpoint untuk delete permanen
-                .then(() => {
-                    alert("User permanently deleted.");
-                    fetchUsers(); // Refresh data setelah hapus
-                })
-                .catch((error) => {
-                    console.error("Error deleting user:", error);
-                    alert("Failed to delete user.");
-                });
+            // Mengambil token dari localStorage
+            const token = localStorage.getItem('token');
+
+            // Pastikan token ada dan kirimkan di header Authorization
+            if (token) {
+                axios
+                    .delete(`/api/users/${id}/permanently`, {
+                        headers: { 'Authorization': `Bearer ${token}` }, // Menambahkan token otentikasi
+                    })
+                    .then(() => {
+                        alert("User permanently deleted.");
+                        fetchUsers(); // Refresh data setelah penghapusan
+                    })
+                    .catch((error) => {
+                        console.error("Error deleting user:", error.response?.data || error.message);
+                        alert("Failed to delete user: " + (error.response?.data.message || error.message)); // Tampilkan pesan error yang lebih spesifik
+                    });
+            } else {
+                alert("You are not authenticated. Please log in.");
+            }
         }
     };
 

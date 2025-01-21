@@ -3,26 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    // Method untuk mengambil data users
     public function index()
     {
-        // Ambil kolom name, email, dan role dari tabel users
-        $users = User::select('name', 'email', 'role')->get();
-        return response()->json($users);
+        // Ambil kolom id, name, email, dan role dari tabel users
+        $users = User::select('id', 'name', 'email', 'role')->get();
+        return response()->json($users, 200);
     }
 
-    // Metode untuk menghapus user secara permanen berdasarkan ID
+    // Method untuk menghapus user secara permanen
+   // Di controller backend, pastikan rute DELETE ini dapat menangani dengan benar
     public function destroyPermanently($id)
     {
-        // Cari user berdasarkan ID, termasuk yang sudah dihapus (soft deleted)
-        $user = User::withTrashed()->findOrFail($id);
-
-        // Hapus user secara permanen dari database
-        $user->forceDelete();
-
-        // Kembalikan response bahwa user berhasil dihapus secara permanen
-        return response()->json(['message' => 'User permanently deleted.'], 200);
+        try {
+            $user = User::withTrashed()->findOrFail($id);
+            $user->forceDelete();
+            return response()->json(['message' => 'User permanently deleted.'], 200);
+        } catch (\Exception $e) {
+            // Menangani error secara lebih spesifik
+            return response()->json(['message' => 'Failed to delete user.', 'error' => $e->getMessage()], 500);
+        }
     }
 }
