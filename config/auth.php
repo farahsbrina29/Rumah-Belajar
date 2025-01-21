@@ -9,14 +9,14 @@ return [
 
     // config/auth.php
 
-    'guards' => [
+        'guards' => [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        'admin' => [
+        'admin' => [  // Tambahkan ini
             'driver' => 'session',
-            'provider' => 'admins', // Pastikan provider ini mengarah ke model Admin
+            'provider' => 'admins',
         ],
     ],
 
@@ -25,9 +25,9 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-        'admins' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Admin::class, // Pastikan Anda memiliki model Admin
+        'admins' => [  // Tambahkan ini
+            'driver' => 'eloquent', 
+            'model' => App\Models\Admin::class,
         ],
     ],
 
