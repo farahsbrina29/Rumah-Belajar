@@ -43,21 +43,17 @@ class ProfileController extends Controller
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy($id)
     {
-        $request->validate([
-            'password' => ['required', 'current-password'],
-        ]);
-
-        $user = $request->user();
-
-        Auth::logout();
-
+        $user = User::find($id);
+    
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+    
         $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+    
+        return response()->json(['message' => 'User deleted successfully'], 200);
     }
+    
 }

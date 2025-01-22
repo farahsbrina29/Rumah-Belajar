@@ -37,57 +37,14 @@ const PageUser = () => {
         }
     };
 
-    const deleteUserPermanently = async (id) => {
-        if (!window.confirm("Are you sure you want to permanently delete this user?")) {
-            return;
-        }
 
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error("No authentication token found");
-            }
-
-            await axios.delete(`/api/users/${id}/permanently`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            alert("User permanently deleted.");
-            fetchUsers();
-        } catch (error) {
-            console.error("Error deleting user:", error);
-            
-            if (error.response?.status === 401) {
-                alert("Authentication failed. Please login again.");
-            } else if (error.response?.status === 403) {
-                alert("You don't have permission to perform this action.");
-            } else {
-                alert(error.response?.data?.message || "Failed to delete user. Please try again.");
-            }
-        }
-    };
-
+    
     // Kolom tabel untuk React Table
     const columns = React.useMemo(
         () => [
             { Header: "Name", accessor: "name" },
             { Header: "Email", accessor: "email" },
             { Header: "Role", accessor: "role" },
-            {
-                Header: "Aksi",
-                accessor: "id",
-                Cell: ({ value }) => (
-                    <button
-                        onClick={() => deleteUserPermanently(value)}
-                        className="text-white bg-red-500 px-3 py-1 rounded hover:bg-red-600"
-                    >
-                        Hapus Permanen
-                    </button>
-                ),
-            },
         ],
         []
     );

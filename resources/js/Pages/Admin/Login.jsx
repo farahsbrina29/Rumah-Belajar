@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
+import axios from 'axios'; // Tambahkan axios jika belum diimpor
 
 const Login = () => {
     const { data, setData, post, processing, errors } = useForm({
@@ -7,9 +8,27 @@ const Login = () => {
         password: '',
     });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        post('/admin/login');
+
+        try {
+            // Kirim permintaan login ke backend
+            const response = await axios.post('/admin/login', {
+                email: data.email,
+                password: data.password,
+            });
+
+            // Simpan token ke localStorage
+            const token = response.data.token; // Sesuaikan dengan properti token pada respons
+            localStorage.setItem('token', token);
+
+            alert('Login berhasil!');
+            // Redirect ke dashboard admin
+            window.location.href = '/admin/dashboard';
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('Login gagal. Silakan periksa kredensial Anda.');
+        }
     };
 
     return (
@@ -42,7 +61,7 @@ const Login = () => {
                         disabled={processing}
                         className="w-full bg-blue-500 text-white py-2 rounded"
                     >
-                        Login
+                        {processing ? 'Logging in...' : 'Login'}
                     </button>
                 </form>
             </div>
