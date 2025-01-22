@@ -117,7 +117,7 @@ export default function Navbar({ auth }) {
                             </Link>
                             <Link
                                 href={route('register')}
-                                className="rounded-md px-3 py-2 text-white bg-[#154561] hover:bg-[#d9211b] font-semibold transition focus:outline-none focus:ring-2 focus:ring-white"
+                                className="rounded-md px-2 py-1 text-white bg-[#154561] font-semibold transition focus:outline-none focus:ring-2 focus:ring-white"
                             >
                                 Register
                             </Link>

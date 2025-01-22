@@ -51,7 +51,7 @@ export default function Rangkuman({ auth }) {
                             key={index}
                             className="border rounded-lg overflow-hidden shadow-md"
                         >
-                            <div className="w-full h-5 bg-blue-200" /> {/* Placeholder */}
+                            <div className="w-full h-5 bg-[#B9C9DA]" /> {/* Placeholder */}
                             <div className="p-4 bg-white">
                                 <h2 className="font-bold text-lg mb-2">Judul Rangkuman {index + 1}</h2>
                                 <p className="text-sm text-gray-500">Deskripsi singkat rangkuman {index + 1}.</p>

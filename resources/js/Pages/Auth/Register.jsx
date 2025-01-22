@@ -33,7 +33,7 @@ export default function Register() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200">
-            <div className="w-full max-w-sm bg-[#96B1D3] rounded-lg shadow-lg p-4">
+            <div className="w-full max-w-sm bg-white rounded-lg shadow-lg p-4">
                 <Head title="Register" />
 
                 <div className="flex justify-center my-4">

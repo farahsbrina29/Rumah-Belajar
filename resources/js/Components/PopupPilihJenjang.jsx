@@ -16,9 +16,9 @@ export default function PopupPilihJenjang({ isOpen, onClose }) {
                         'Kelas 10 SMK',
                         'Kelas 11 SMK',
                         'Kelas 12 SMK',
-                        'Kelas 10 SLB',
-                        'Kelas 11 SLB',
-                        'Kelas 12 SLB',
+                        'SDLB',
+                        'SMPLB',
+                        'SMALB',
                     ].map((jenjang, index) => (
                         <div
                             key={index}

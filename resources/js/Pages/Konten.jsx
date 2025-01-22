@@ -51,7 +51,7 @@ export default function Konten({ auth }) {
                             key={index}
                             className="border rounded-lg overflow-hidden shadow-md"
                         >
-                            <div className="w-full h-48 bg-blue-200 flex items-center justify-center">
+                            <div className="w-full h-48 bg-[#B9C9DA] flex items-center justify-center">
                                 <span className="text-[#154561]">Video {index + 1}</span>
                             </div>
                             <div className="p-4 bg-white">
