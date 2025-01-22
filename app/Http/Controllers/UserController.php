@@ -17,15 +17,20 @@ class UserController extends Controller
 
     // Method untuk menghapus user secara permanen
    // Di controller backend, pastikan rute DELETE ini dapat menangani dengan benar
-    public function destroyPermanently($id)
+    public function destroy($id)
     {
         try {
-            $user = User::withTrashed()->findOrFail($id);
-            $user->forceDelete();
-            return response()->json(['message' => 'User permanently deleted.'], 200);
+            // Cek apakah yang menghapus adalah admin
+            if (auth()->user()->role !== 'admin') {
+                return response()->json(['message' => 'Unauthorized'], 403);
+            }
+
+            $user = User::findOrFail($id); // Cari user berdasarkan ID
+            $user->delete(); // Hapus user
+            return response()->json(['message' => 'User deleted successfully'], 200);
         } catch (\Exception $e) {
-            // Menangani error secara lebih spesifik
-            return response()->json(['message' => 'Failed to delete user.', 'error' => $e->getMessage()], 500);
+            return response()->json(['message' => 'User not found or server error'], 500);
         }
     }
+
 }

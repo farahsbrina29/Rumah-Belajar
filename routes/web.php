@@ -92,6 +92,7 @@ Route::middleware(['auth:admin'])->group(function () {
     
     Route::get('/admin/profile', [AdminController::class, 'showProfile'])->name('admin.profile');
     Route::put('/admin/password', [AdminController::class, 'updatePassword'])->name('admin.password.update');
+
 });
 
 // Rute login admin - tetap di luar middleware
