@@ -32,36 +32,45 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="w-full max-w-md bg-white shadow-md rounded px-8 py-6">
-                <h1 className="text-2xl font-bold mb-4">Admin Login</h1>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200">
+            <div className="w-full max-w-sm bg-white rounded-lg shadow-lg p-4">
+                <h2 className="text-center text-lg font-bold text-gray-700 mb-4">Admin Login</h2>
+
+                <div className="flex justify-center my-4">
+                    <img src="/assets/logorbn.png" alt="Logo" className="h-16 w-auto" />
+                </div>
+
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
-                        <label className="block text-gray-700">Email</label>
+                        <label htmlFor="email" className="block text-gray-700 font-medium">Email</label>
                         <input
+                            id="email"
                             type="email"
                             value={data.email}
                             onChange={(e) => setData('email', e.target.value)}
-                            className="w-full border px-3 py-2 rounded"
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
                         />
-                        {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
+                        {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                     </div>
+
                     <div className="mb-4">
-                        <label className="block text-gray-700">Password</label>
+                        <label htmlFor="password" className="block text-gray-700 font-medium">Password</label>
                         <input
+                            id="password"
                             type="password"
                             value={data.password}
                             onChange={(e) => setData('password', e.target.value)}
-                            className="w-full border px-3 py-2 rounded"
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
                         />
-                        {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
+                        {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
                     </div>
+
                     <button
                         type="submit"
                         disabled={processing}
-                        className="w-full bg-blue-500 text-white py-2 rounded"
+                        className="w-full bg-[#154561] text-white py-2 rounded-md shadow-md focus:outline-none focus:ring focus:ring-blue-200"
                     >
-                        {processing ? 'Logging in...' : 'Login'}
+                        {processing ? 'Logging in...' : 'Log in'}
                     </button>
                 </form>
             </div>
