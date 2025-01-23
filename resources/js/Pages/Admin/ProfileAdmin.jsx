@@ -1,19 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import PrimaryButton from '@/Components/PrimaryButton';
 import AdminSidebar from '@/Components/AdminSidebar';
 
-export default function ProfileAdmin({ auth }) {  // Tambahkan props auth
-    const [admin, setAdmin] = useState(auth.user); // Gunakan data auth langsung
+export default function ProfileAdmin({ auth }) {
+    const [admin, setAdmin] = useState(auth.user);
     const { data, setData, errors, put, processing, reset } = useForm({
         current_password: '',
         password: '',
         password_confirmation: '',
     });
-
-    // Hapus useEffect fetch karena kita sudah dapat data dari props
 
     const updatePassword = (e) => {
         e.preventDefault();
@@ -23,72 +21,77 @@ export default function ProfileAdmin({ auth }) {  // Tambahkan props auth
     };
 
     return (
-        <div className="flex">
-            <AdminSidebar />
-            <div className="container mx-auto mt-6">
-                <h1 className="text-2xl font-bold">Profile Page</h1>
+        <div className="min-h-screen flex bg-gradient-to-r from-blue-100 to-blue-200">
+            {/* Sidebar */}
+            <AdminSidebar className="w-1/4 lg:w-1/5 bg-gray-800 text-white p-4" />
 
-                <div className="mt-4">
-                    <h2 className="text-lg font-semibold">Akun Admin</h2>
-                    <div>
-                        <InputLabel htmlFor="email" value="Email" />
-                        <TextInput
-                            id="email"
-                            className="mt-1 block w-full bg-gray-100"
-                            value={admin?.email || 'Email not available'}
-                            readOnly
-                        />
-                    </div>
-                </div>
-                
-                {/* Update Password Form */}
-                <div className="mt-4">
-                    <h2 className="text-lg font-semibold">Ubah Kata Sandi</h2>
-                </div>
-                <form onSubmit={updatePassword} className="mt-6 space-y-6">
-                    <div>
-                        <InputLabel htmlFor="current_password" value="Current Password" />
-                        <TextInput
-                            id="current_password"
-                            value={data.current_password}
-                            onChange={(e) => setData('current_password', e.target.value)}
-                            type="password"
-                            className="mt-1 block w-full"
-                        />
-                    </div>
+            {/* Main Content */}
+            <div className="flex-grow p-6">
+                <div className="bg-white rounded-lg shadow-lg p-8">
+                    <h1 className="text-2xl font-bold">Profile Page</h1>
 
-                    <div>
-                        <InputLabel htmlFor="password" value="New Password" />
-                        <TextInput
-                            id="password"
-                            value={data.password}
-                            onChange={(e) => setData('password', e.target.value)}
-                            type="password"
-                            className="mt-1 block w-full"
-                        />
-                    </div>
-
-                    <div>
-                        <InputLabel htmlFor="password_confirmation" value="Confirm Password" />
-                        <TextInput
-                            id="password_confirmation"
-                            value={data.password_confirmation}
-                            onChange={(e) => setData('password_confirmation', e.target.value)}
-                            type="password"
-                            className="mt-1 block w-full"
-                        />
-                    </div>
-
-                    <PrimaryButton disabled={processing}>Update Password</PrimaryButton>
-
-                    {errors && (
-                        <div className="mt-4 text-red-500">
-                            {Object.values(errors).map((err, index) => (
-                                <p key={index}>{err}</p>
-                            ))}
+                    <div className="mt-4">
+                        <h2 className="text-lg font-semibold">Akun Admin</h2>
+                        <div>
+                            <InputLabel htmlFor="email" value="Email" />
+                            <TextInput
+                                id="email"
+                                className="mt-1 block w-full bg-gray-100"
+                                value={admin?.email || 'Email not available'}
+                                readOnly
+                            />
                         </div>
-                    )}
-                </form>
+                    </div>
+
+                    {/* Update Password Form */}
+                    <div className="mt-4">
+                        <h2 className="text-lg font-semibold">Ubah Kata Sandi</h2>
+                    </div>
+                    <form onSubmit={updatePassword} className="mt-6 space-y-6">
+                        <div>
+                            <InputLabel htmlFor="current_password" value="Current Password" />
+                            <TextInput
+                                id="current_password"
+                                value={data.current_password}
+                                onChange={(e) => setData('current_password', e.target.value)}
+                                type="password"
+                                className="mt-1 block w-full"
+                            />
+                        </div>
+
+                        <div>
+                            <InputLabel htmlFor="password" value="New Password" />
+                            <TextInput
+                                id="password"
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                                type="password"
+                                className="mt-1 block w-full"
+                            />
+                        </div>
+
+                        <div>
+                            <InputLabel htmlFor="password_confirmation" value="Confirm Password" />
+                            <TextInput
+                                id="password_confirmation"
+                                value={data.password_confirmation}
+                                onChange={(e) => setData('password_confirmation', e.target.value)}
+                                type="password"
+                                className="mt-1 block w-full"
+                            />
+                        </div>
+
+                        <PrimaryButton disabled={processing}>Update Password</PrimaryButton>
+
+                        {errors && (
+                            <div className="mt-4 text-red-500">
+                                {Object.values(errors).map((err, index) => (
+                                    <p key={index}>{err}</p>
+                                ))}
+                            </div>
+                        )}
+                    </form>
+                </div>
             </div>
         </div>
     );
