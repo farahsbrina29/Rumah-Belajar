@@ -12,11 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Jenjang extends Model
 {
-    public function kategoriSekolah()
-    {
-        return $this->belongsTo(KategoriSekolah::class);
-    }
-
+    
     public function mataPelajaran()
     {
         return $this->hasMany(MataPelajaran::class, 'id_jenjang');
