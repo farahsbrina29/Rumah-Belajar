@@ -7,19 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class MataPelajaran extends Model
 {
-    public function kategoriSekolah()
+    
+    public function jenjang()
     {
-        return $this->belongsTo(KategoriSekolah::class);
+        return $this->belongsTo(Kelas::class, 'id_jenjang');
     }
 
     public function submateri()
     {
         return $this->hasMany(Submateri::class);
     }
-
-    public function kelas()
-    {
-        return $this->belongsToMany(Kelas::class, 'submateri');
-    }
 }
+
 
