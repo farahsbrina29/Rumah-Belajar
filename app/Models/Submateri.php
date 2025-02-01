@@ -7,5 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Submateri extends Model
 {
-    use HasFactory;
+    public function mataPelajaran()
+    {
+        return $this->belongsTo(MataPelajaran::class);
+    }
+
+    // Relasi satu ke banyak dengan model Konten
+    public function konten()
+    {
+        return $this->hasMany(Konten::class, 'id_submateri');
+    }
 }
+
