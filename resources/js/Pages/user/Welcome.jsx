@@ -21,17 +21,14 @@ export default function Welcome({ auth }) {
     const openPopupJenjang = () => setIsPopupJenjangOpen(true);
     const closePopupJenjang = () => setIsPopupJenjangOpen(false);
 
-    // Fungsi untuk memilih jenjang
     const handleSelectJenjang = (id, nama) => {
         setSelectedJenjang(nama);
         setIdJenjang(id);
-        // Simpan pilihan ke localStorage
         localStorage.setItem('selectedJenjang', nama);
         localStorage.setItem('idJenjang', id);
         closePopupJenjang();
     };
 
-    // Ambil data jenjang dari localStorage ketika komponen pertama kali dimuat
     useEffect(() => {
         const storedJenjang = localStorage.getItem('selectedJenjang');
         const storedIdJenjang = localStorage.getItem('idJenjang');
@@ -42,10 +39,9 @@ export default function Welcome({ auth }) {
         }
     }, []);
 
-    // Data mata pelajaran dengan ikon
     const subjectIcons = [
         { name: 'Biologi', icon: '🧬' },
-        { name: 'PKN', icon: '🛡' },
+        { name: 'PKN', icon: '🛡️' },
         { name: 'Fisika', icon: '⚡' },
         { name: 'Matematika', icon: '📊' },
         { name: 'Bahasa Indonesia', icon: '📚' },
@@ -55,15 +51,14 @@ export default function Welcome({ auth }) {
         { name: 'Sosiologi', icon: '💬' },
         { name: 'Geografi', icon: '🌍' },
         { name: 'Sejarah', icon: '📜' },
-        { name: 'Penjaskes', icon: '🏃‍♂' },
+        { name: 'Penjaskes', icon: '🏃‍♂️' },
     ];
 
-    // Fetch daftar mata pelajaran
     useEffect(() => {
         if (idJenjang) {
             setLoading(true);
             setError(null);
-            axios.get(/api/mata-pelajaran/${idJenjang})
+            axios.get(`/api/mata-pelajaran/${idJenjang}`)
                 .then(response => {
                     if (response.data && Array.isArray(response.data)) {
                         setSubjects(response.data);
@@ -83,15 +78,13 @@ export default function Welcome({ auth }) {
         }
     }, [idJenjang]);
 
-    // Debug state changes
     useEffect(() => {
         console.log("Popup state:", isPopupKelasOpen);
         console.log("Subjects:", subjects);
     }, [isPopupKelasOpen, subjects]);
     
-    // Fungsi untuk klik pelajaran
     const handleSubjectClick = (subjectName) => {
-        router.visit(/ruang-belajar/${subjectName});
+        router.visit(`/ruang-belajar/${subjectName}`);
     };
 
     return (
@@ -237,7 +230,9 @@ export default function Welcome({ auth }) {
                 {/* Grafik Jumlah Konten */}
                 <section className="bg-blue-100 py-8">
                     <div className="container mx-auto px-4">
-                        <ChartJumlahKonten />
+                        <div className="max-w-5xl mx-auto">
+                            <ChartJumlahKonten />
+                        </div>
                     </div>
                 </section>
 
