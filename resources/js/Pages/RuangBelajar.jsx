@@ -35,7 +35,7 @@ export default function RuangBelajar({ auth, subject, subMaterials }) {
                                 subMaterials.map((material) => (
                                     <Link
                                         key={material.id}
-                                        href={`/belajar/${subject.toLowerCase()}/${material.id}`}
+                                        href={`/belajar/${subject.toLowerCase()}/${material.slug}`}
                                         className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors"
                                         preserveScroll
                                     >
