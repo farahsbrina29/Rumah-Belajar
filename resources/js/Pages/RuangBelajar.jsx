@@ -93,7 +93,7 @@ function getSubjectEmoji(subject) {
         'PKN': '🛡️',
         'Fisika': '⚡',
         'Matematika': '📊',
-        'Bhs. Indonesia': '📚',
+        'Bahasa Indonesia': '📚',
         'Bhs. Inggris': '🌍',
         'Kimia': '🧪'
     };
