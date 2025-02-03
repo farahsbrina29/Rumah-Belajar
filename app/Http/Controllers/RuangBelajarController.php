@@ -23,9 +23,10 @@ class RuangBelajarController extends Controller
         ]);
     }
 
-    public function showSubMaterial($subject, $materialSlug)
+    public function showSubMaterial($subject, $materialId) // Menggunakan ID sebagai parameter
     {
-        $subMaterial = SubMateri::where('slug', $materialSlug)->firstOrFail();
+        // Cari submateri berdasarkan ID, bukan slug
+        $subMaterial = SubMateri::findOrFail($materialId); // Menggunakan findOrFail untuk ID
 
         return Inertia::render('SubMaterial', [
             'subject' => $subject,
@@ -34,4 +35,3 @@ class RuangBelajarController extends Controller
         ]);
     }
 }
-
