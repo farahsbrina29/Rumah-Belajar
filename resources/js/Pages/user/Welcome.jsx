@@ -21,7 +21,6 @@ export default function Welcome({ auth }) {
     const openPopupJenjang = () => setIsPopupJenjangOpen(true);
     const closePopupJenjang = () => setIsPopupJenjangOpen(false);
 
-    // Fungsi untuk memilih jenjang
     const handleSelectJenjang = (id, nama) => {
         setSelectedJenjang(nama);
         setIdJenjang(id);
@@ -112,7 +111,7 @@ export default function Welcome({ auth }) {
                     </div>
 
                     {/* Search Section */}
-                    <div className="bg-white rounded-lg p-4 shadow-md max-w-5xl mx-auto mt-4">
+                    <div className="bg-white rounded-lg p-4 shadow-md max-w-4xl mx-auto mt-4">
                         <div className="flex flex-col sm:flex-row gap-4">
                             <div className="flex-1">
                                 <input
@@ -139,15 +138,17 @@ export default function Welcome({ auth }) {
                     </div>
                 </header>
 
-                {/* Subject Grid Section */}
+                {/* Ruang Belajar */}
                 <div className="container mx-auto px-4 py-8">
-                    <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-4">
-                        {subjects.map((subject, index) => {
-                            const iconMatch = subjectIcons.find(
-                                icon => icon.name.toLowerCase() === subject.nama_pelajaran.toLowerCase()
+                    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                        {loading ? (
+                            <div className="col-span-full text-center">Memuat mata pelajaran...</div>
+                        ) : subjects && subjects.slice(0, 7).map((subject, index) => {
+                            const matchedSubject = subjectIcons.find(s => 
+                                s.name.toLowerCase() === subject.nama_pelajaran.toLowerCase()
                             );
-                            const icon = iconMatch ? iconMatch.icon : '📚';
-                            
+                            const icon = matchedSubject ? matchedSubject.icon : '📘';
+
                             return (
                                 <div
                                     key={index}
@@ -177,26 +178,24 @@ export default function Welcome({ auth }) {
                 </div>
 
                 {/* Rekomendasi Section */}
-                <section className="bg-blue-100 py-8">
+                <section className="bg-[#154561] py-8">
                     <div className="container mx-auto px-4">
-                        <div className="bg-[#154561] rounded-lg p-6 shadow-md max-w-5xl mx-auto">
-                            <h2 className="text-xl font-bold text-white mb-6">
-                                Rekomendasi Belajar Untuk Kamu!
-                            </h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {Array.from({ length: 4 }).map((_, index) => (
-                                    <div
-                                        key={index}
-                                        className="bg-white rounded-lg p-4 flex items-center gap-4"
-                                    >
-                                        <div className="text-3xl">📝</div>
-                                        <div>
-                                            <h3 className="font-semibold mb-1">Rekomendasi {index + 1}</h3>
-                                            <p className="text-sm text-gray-600">Deskripsi singkat</p>
-                                        </div>
+                        <h2 className="text-xl font-bold text-white mb-6">
+                            Rekomendasi Belajar Untuk Kamu!
+                        </h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                            {Array.from({ length: 4 }).map((_, index) => (
+                                <div
+                                    key={index}
+                                    className="bg-white rounded-lg p-4 flex items-center gap-4"
+                                >
+                                    <div className="text-3xl">📝</div>
+                                    <div>
+                                        <h3 className="font-semibold mb-1">Rekomendasi {index + 1}</h3>
+                                        <p className="text-sm text-gray-600">Deskripsi singkat</p>
                                     </div>
-                                ))}
-                            </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </section>
@@ -204,7 +203,7 @@ export default function Welcome({ auth }) {
                 {/* Additional Sections */}
                 <section className="bg-blue-100 py-8">
                     <div className="container mx-auto px-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid md:grid-cols-2 gap-6">
                             <div className="bg-white rounded-lg p-6 shadow-md">
                                 <h2 className="text-xl font-bold mb-4">Konten</h2>
                                 <p className="text-gray-600 mb-4">
@@ -231,7 +230,9 @@ export default function Welcome({ auth }) {
                 {/* Grafik Jumlah Konten */}
                 <section className="bg-blue-100 py-8">
                     <div className="container mx-auto px-4">
-                        <ChartJumlahKonten />
+                        <div className="max-w-5xl mx-auto">
+                            <ChartJumlahKonten />
+                        </div>
                     </div>
                 </section>
 
