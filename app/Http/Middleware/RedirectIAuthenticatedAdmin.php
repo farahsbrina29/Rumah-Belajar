@@ -16,10 +16,15 @@ class CheckIfAuthenticated
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
                 if ($guard === 'admin') {
-                    return redirect()->route('admin.dashboard');
+                    return $request->expectsJson()
+                        ? response()->json(['message' => 'Already authenticated'], 200)
+                        : redirect()->route('admin.dashboard');
                 }
-                return redirect(RouteServiceProvider::HOME);
+                return $request->expectsJson()
+                    ? response()->json(['message' => 'Already authenticated'], 200)
+                    : redirect(RouteServiceProvider::HOME);
             }
+              
         }
 
         return $next($request);

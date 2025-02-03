@@ -75,12 +75,12 @@ Route::post('/register', [RegisteredUserController::class, 'store'])->name('regi
 Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.submit');
 
-// Rute yang dilindungi dengan middleware 'auth:admin' untuk admin yang sudah login
-// Rute login admin - di luar middleware
-Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
-Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.submit');
-
 // Semua route admin lainnya di dalam middleware
+Route::middleware(['auth.check:admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+});
+
+
 Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
@@ -92,11 +92,6 @@ Route::middleware(['auth:admin'])->group(function () {
     
     Route::get('/admin/profile', [AdminController::class, 'showProfile'])->name('admin.profile');
     Route::put('/admin/password', [AdminController::class, 'updatePassword'])->name('admin.password.update');
-
 });
-
-// Rute login admin - tetap di luar middleware
-Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
-Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.submit');
 
 require __DIR__.'/auth.php';
