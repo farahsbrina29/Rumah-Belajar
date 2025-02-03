@@ -1,28 +1,9 @@
-// resources/js/Pages/RuangBelajar.jsx
 import { Head } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import Navbar from '@/Components/NavbarUser';
 import Footer from '@/Components/Footer';
 
-export default function RuangBelajar({ auth, subject }) {
-    const subMaterials = [
-        {
-            id: 1, 
-            title: 'materi 1',
-            slug: 'materi-1'
-        },
-        {
-            id: 2,
-            title: 'materi 2',
-            slug: 'materi-2' 
-        },
-        {
-            id: 3,
-            title: 'materi 3',
-            slug: 'materi-3'
-        }
-    ];
-
+export default function RuangBelajar({ auth, subject, subMaterials }) {
     return (
         <>
             <Head title={`Ruang Belajar - ${subject}`} />
@@ -50,33 +31,37 @@ export default function RuangBelajar({ auth, subject }) {
                     <div className="bg-white rounded-lg shadow-md p-6">
                         <h2 className="text-xl font-bold mb-6">Materi Pembelajaran</h2>
                         <div className="space-y-4">
-                            {subMaterials.map((material) => (
-                                <Link
-                                    key={material.id}
-                                    href={`/belajar/${subject.toLowerCase()}/${material.slug}`}
-                                    className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-                                    preserveScroll
-                                >
-                                    <div className="flex-1">
-                                        <h3 className="text-lg font-medium text-gray-900">{material.title}</h3>
-                                    </div>
-                                    <div className="flex items-center space-x-4">
-                                        <svg
-                                            className="w-6 h-6 text-gray-400"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M9 5l7 7-7 7"
-                                            />
-                                        </svg>
-                                    </div>
-                                </Link>
-                            ))}
+                            {subMaterials.length > 0 ? (
+                                subMaterials.map((material) => (
+                                    <Link
+                                        key={material.id}
+                                        href={`/belajar/${subject.toLowerCase()}/${material.id}`}
+                                        className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                                        preserveScroll
+                                    >
+                                        <div className="flex-1">
+                                            <h3 className="text-lg font-medium text-gray-900">{material.nama_submateri}</h3>
+                                        </div>
+                                        <div className="flex items-center space-x-4">
+                                            <svg
+                                                className="w-6 h-6 text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M9 5l7 7-7 7"
+                                                />
+                                            </svg>
+                                        </div>
+                                    </Link>
+                                ))
+                            ) : (
+                                <p className="text-gray-600">Belum ada submateri untuk mata pelajaran ini.</p>
+                            )}
                         </div>
                     </div>
                 </section>

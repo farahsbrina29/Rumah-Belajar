@@ -11,20 +11,10 @@ use Illuminate\Support\Facades\Auth;
 
 // Route ruang belajar dan submateri
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/ruang-belajar/{subject}', function ($subject) {
-        return Inertia::render('RuangBelajar', [
-            'subject' => $subject,
-            'auth' => ['user' => Auth::user()],
-        ]);
-    })->name('ruang.belajar');
-
-    Route::get('/belajar/{subject}/{materialSlug}', function ($subject, $materialSlug) {
-        return Inertia::render('SubMaterial', [
-            'subject' => $subject,
-            'materialSlug' => $materialSlug,
-            'auth' => ['user' => Auth::user()],
-        ]);
-    })->name('sub.material');
+    Route::controller(RuangBelajarController::class)->group(function () {
+        Route::get('/ruang-belajar/{subject}', 'index')->name('ruang.belajar');
+        Route::get('/belajar/{subject}/{materialSlug}', 'showSubMaterial')->name('sub.material');
+    });
 });
 
 // Rute untuk halaman beranda
@@ -79,7 +69,6 @@ Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.logi
 Route::middleware(['auth.check:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 });
-
 
 Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
