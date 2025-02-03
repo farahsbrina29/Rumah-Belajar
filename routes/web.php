@@ -12,10 +12,15 @@ use Illuminate\Support\Facades\Auth;
 // Route ruang belajar dan submateri
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(RuangBelajarController::class)->group(function () {
-        Route::get('/ruang-belajar/{subject}', 'index')->name('ruang.belajar');
-        Route::get('/belajar/{subject}/{materialSlug}', 'showSubMaterial')->name('sub.material');
+
+        Route::get('/ruang-belajar/{subject}', [RuangBelajarController::class, 'index'])->name('ruang-belajar.index');
+        
+        // Route untuk detail materi berdasarkan slug
+        Route::get('/belajar/{subject}/{slug}', [App\Http\Controllers\SubmaterialController::class, 'show'])->name('belajar.show');
+        
     });
 });
+
 
 // Rute untuk halaman beranda
 Route::get('/', function () {

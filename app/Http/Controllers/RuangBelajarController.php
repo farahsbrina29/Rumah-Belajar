@@ -12,25 +12,30 @@ class RuangBelajarController extends Controller
     public function index($subject)
     {
         // Ambil submateri berdasarkan subject
-        $subMaterials = SubMateri::whereHas('mataPelajaran', function ($query) use ($subject) {
+        $subMateri = SubMateri::whereHas('mataPelajaran', function ($query) use ($subject) {
             $query->where('nama_pelajaran', $subject);
         })->get();
 
         return Inertia::render('RuangBelajar', [
             'subject' => $subject,
-            'subMaterials' => $subMaterials,
+            'subMaterials' => $subMateri, // Pastikan konsisten dengan frontend
             'auth' => ['user' => Auth::user()],
         ]);
     }
 
-    public function showSubMaterial($subject, $materialSlug)
+    public function showSubMaterial($subject, $materialId) // Ganti parameter slug dengan materialId
     {
-        $subMaterial = SubMateri::where('slug', $materialSlug)->firstOrFail();
+        // Normalisasi subject agar selalu lowercase seperti di frontend
+        $subject = strtolower($subject);
 
-        return Inertia::render('SubMaterial', [
-            'subject' => $subject,
-            'subMaterial' => $subMaterial,
-            'auth' => ['user' => Auth::user()],
+        // Cari submateri berdasarkan materialId
+        $subMateri = SubMateri::findOrFail($materialId); // Menggunakan findOrFail untuk mencari berdasarkan ID
+
+        return Inertia::render('SubMateri', [
+            'auth' => auth()->user(),
+            'subject' => ucfirst($subject), // Untuk tampilan, tetap huruf besar di awal
+            'materialId' => $materialId, // Ganti materialSlug dengan materialId
+            'subMateri' => $subMateri // Sesuai dengan model yang benar
         ]);
     }
 }
