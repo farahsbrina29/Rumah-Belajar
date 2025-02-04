@@ -42,4 +42,14 @@ class Submateri extends Model
     {
         return $this->hasMany(Konten::class, 'id_submateri'); // Pastikan foreign key sesuai
     }
+    // Relasi satu ke banyak dengan model Konten
+    public function rangkuman()
+    {
+        return $this->hasMany(Rangkuman::class, 'id_submateri'); // Pastikan foreign key sesuai
+    }
+    // Relasi satu ke banyak dengan model Konten
+    public function latihan()
+    {
+        return $this->hasMany(Latihan::class, 'id_submateri'); // Pastikan foreign key sesuai
+    }
 }
