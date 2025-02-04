@@ -7,17 +7,14 @@ use Inertia\Inertia;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RuangBelajarController;
+use App\Http\Controllers\SubmaterialController;
 use Illuminate\Support\Facades\Auth;
 
 // Route ruang belajar dan submateri
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(RuangBelajarController::class)->group(function () {
-
-        Route::get('/ruang-belajar/{subject}', [RuangBelajarController::class, 'index'])->name('ruang-belajar.index');
-        
-        // Route untuk detail materi berdasarkan slug
-        Route::get('/belajar/{subject}/{slug}', [App\Http\Controllers\SubmaterialController::class, 'show'])->name('belajar.show');
-        
+        Route::get('/ruang-belajar/{subject}', 'index')->name('ruang-belajar.index');
+        Route::get('/ruang-belajar/{subjectSlug}/{materialSlug}', [SubmaterialController::class, 'show']);
     });
 });
 

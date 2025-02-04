@@ -34,30 +34,31 @@ export default function RuangBelajar({ auth, subject, subMaterials }) {
                             {subMaterials.length > 0 ? (
                                 subMaterials.map((material) => (
                                     <Link
-                                        key={material.id}
-                                        href={`/belajar/${subject.toLowerCase()}/${material.slug}`}
-                                        className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-                                        preserveScroll
-                                    >
-                                        <div className="flex-1">
-                                            <h3 className="text-lg font-medium text-gray-900">{material.nama_submateri}</h3>
-                                        </div>
-                                        <div className="flex items-center space-x-4">
-                                            <svg
-                                                className="w-6 h-6 text-gray-400"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M9 5l7 7-7 7"
-                                                />
-                                            </svg>
-                                        </div>
-                                    </Link>
+                                    key={material.id}
+                                    href={`/ruang-belajar/${subject.toLowerCase()}/${material.slug}`} // Update URL sesuai dengan rute Laravel
+                                    className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                                    preserveScroll
+                                >
+                                    <div className="flex-1">
+                                        <h3 className="text-lg font-medium text-gray-900">{material.nama_submateri}</h3>
+                                    </div>
+                                    <div className="flex items-center space-x-4">
+                                        <svg
+                                            className="w-6 h-6 text-gray-400"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M9 5l7 7-7 7"
+                                            />
+                                        </svg>
+                                    </div>
+                                </Link>
+
                                 ))
                             ) : (
                                 <p className="text-gray-600">Belum ada submateri untuk mata pelajaran ini.</p>
