@@ -9,16 +9,19 @@ class Konten extends Model
 {
     use HasFactory;
 
-    // Menentukan nama tabel yang benar jika berbeda dengan konvensi Eloquent
-    protected $table = 'konten';  // Pastikan ini sesuai dengan nama tabel di database
+    protected $table = 'konten'; 
 
     protected $fillable = [
-        'id_submateri', 'judul_konten', 'deskripsi', 'thumbnail', 'link_konten',
+        'id_submateri', 'judul_konten', 'deskripsi', 'thumbnail', 'link_konten', 'id_jenjang'
     ];
 
     public function submateri()
     {
         return $this->belongsTo(Submateri::class, 'id_submateri');
     }
-}
 
+    public function jenjang()
+    {
+        return $this->belongsTo(Jenjang::class, 'id_jenjang');
+    }
+}

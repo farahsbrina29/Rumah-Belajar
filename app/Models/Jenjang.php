@@ -9,11 +9,16 @@ class Jenjang extends Model
 {
     use HasFactory;
 
-    protected $table = 'jenjang'; // Sesuaikan dengan nama tabel di database
-    protected $fillable = ['nama_jenjang']; // Sesuaikan dengan kolom yang ada
+    protected $table = 'jenjang';
+    protected $fillable = ['nama_jenjang'];
 
     public function mataPelajaran()
     {
         return $this->hasMany(MataPelajaran::class, 'id_jenjang');
+    }
+
+    public function konten()
+    {
+        return $this->hasMany(Konten::class, 'id_jenjang');
     }
 }
