@@ -3,10 +3,10 @@ import { useForm } from '@inertiajs/react';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import PrimaryButton from '@/Components/PrimaryButton';
-import AdminSidebar from '@/Components/AdminSidebar';
+import AdminNavbar from '@/Components/AdminNavbar';
 
 export default function ProfileAdmin({ auth }) {
-    const [admin, setAdmin] = useState(auth.user);
+    const [admin] = useState(auth.user);
     const { data, setData, errors, put, processing, reset } = useForm({
         current_password: '',
         password: '',
@@ -21,11 +21,7 @@ export default function ProfileAdmin({ auth }) {
     };
 
     return (
-        <div className="min-h-screen flex bg-gradient-to-r from-blue-100 to-blue-200">
-            {/* Sidebar */}
-            <AdminSidebar className="w-1/4 lg:w-1/5 bg-gray-800 text-white p-4" />
-
-            {/* Main Content */}
+        <AdminNavbar>
             <div className="flex-grow p-6">
                 <div className="bg-white rounded-lg shadow-lg p-8">
                     <h1 className="text-2xl font-bold">Profile Page</h1>
@@ -93,6 +89,6 @@ export default function ProfileAdmin({ auth }) {
                     </form>
                 </div>
             </div>
-        </div>
+        </AdminNavbar>
     );
 }

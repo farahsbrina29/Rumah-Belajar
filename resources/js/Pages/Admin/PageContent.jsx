@@ -1,15 +1,14 @@
 import React from "react";
-import AdminSidebar from "@/Components/AdminSidebar";
+import AdminNavbar from "@/Components/AdminNavbar";
 
 const Content = () => {
     return (
-        <div className="flex">
-            <AdminSidebar />
+        <AdminNavbar>
             <div className="flex-1 p-6">
                 <h1 className="text-2xl font-bold">Dashboard Admin</h1>
                 {/* Konten halaman dashboard */}
             </div>
-        </div>
+        </AdminNavbar>
     );
 };
 
