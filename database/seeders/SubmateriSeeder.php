@@ -12,21 +12,21 @@ class SubmateriSeeder extends Seeder
     public function run()
     {
         // ID mata pelajaran yang akan diberi submateri
-        $idMataPelajaran = [1, 2, 3, 4, 5, 6];
+        $mataPelajaranIds = [1, 2, 3, 4, 5, 6];
 
         // Submateri yang akan dimasukkan
-        $submateri = ['Materi 1', 'Materi 2', 'Materi 3'];
-        
+        $submateri = ['Materi 1', 'Materi 2', 'Materi 3', 'Materi 4'];
+
         // Insert data submateri untuk setiap mata pelajaran
-        foreach ($idMataPelajaran as $mataPelajaranId) {
+        foreach ($mataPelajaranIds as $mataPelajaranId) {
             foreach ($submateri as $materi) {
                 try {
                     DB::table('submateri')->insert([
                         'id_mata_pelajaran' => $mataPelajaranId,
-                        'nama_submateri'      => $materi,
-                        'slug'                => Str::slug($materi, '-'),
-                        'created_at'          => now(),
-                        'updated_at'          => now(),
+                        'nama_submateri' => $materi,
+                        'slug' => Str::slug($materi, '-'),
+                        'created_at' => now(),
+                        'updated_at' => now(),
                     ]);
                     Log::info("Submateri '$materi' berhasil ditambahkan untuk mata pelajaran $mataPelajaranId");
                 } catch (\Exception $e) {

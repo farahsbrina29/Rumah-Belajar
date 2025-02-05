@@ -7,19 +7,31 @@ use Inertia\Inertia;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RuangBelajarController;
-use App\Http\Controllers\SubmaterialController;
+use App\Http\Controllers\SubMaterialController;
 use Illuminate\Support\Facades\Auth;
 
-// Route ruang belajar dan submateri
+// Middleware untuk user yang sudah login
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::controller(RuangBelajarController::class)->group(function () {
-        Route::get('/ruang-belajar/{subject}', 'index')->name('ruang-belajar.index');
-        Route::get('/ruang-belajar/{subjectSlug}/{materialSlug}', [SubmaterialController::class, 'show']);
-    });
+    // Route untuk daftar submateri
+    Route::get('/ruang-belajar/{subject}', [RuangBelajarController::class, 'index'])
+        ->name('ruang-belajar.index');
+
+    // Route untuk detail submateri
+    Route::get('/ruang-belajar/{subject}/{materialSlug}', [SubMaterialController::class, 'show'])
+        ->name('submaterial.show');
+
+    // Rute untuk halaman konten (hanya user yang login)
+    Route::get('/konten', function () {
+        return Inertia::render('Konten');
+    })->name('konten');
+
+    // Rute untuk halaman rangkuman (hanya user yang login)
+    Route::get('/rangkuman', function () {
+        return Inertia::render('Rangkuman');
+    })->name('rangkuman');
 });
 
-
-// Rute untuk halaman beranda
+// Rute untuk halaman beranda (tanpa login)
 Route::get('/', function () {
     return Inertia::render('user/Welcome', [
         'canLogin' => Route::has('login'),
@@ -28,24 +40,6 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 })->name('beranda');
-
-// Rute untuk halaman konten
-Route::get('/konten', function () {
-    return Inertia::render('Konten', [
-        'canLogin' => Route::has('login'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-})->name('konten');
-
-// Rute untuk halaman rangkuman 
-Route::get('/rangkuman', function () {
-    return Inertia::render('Rangkuman', [
-        'canLogin' => Route::has('login'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-})->name('rangkuman');
 
 // Rute untuk dashboard pengguna
 Route::get('/dashboard', function () {
@@ -68,19 +62,15 @@ Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.l
 Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.submit');
 
 // Semua route admin lainnya di dalam middleware
-Route::middleware(['auth.check:admin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-});
-
 Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
-    
+
     // Halaman admin lainnya
     Route::get('/admin/ProfileAdmin', [AdminController::class, 'profileAdmin'])->name('admin.profileadmin');
     Route::get('/admin/PageUser', [AdminController::class, 'pageUser'])->name('admin.pageuser'); 
     Route::get('/admin/PageContent', [AdminController::class, 'pageContent'])->name('admin.pagecontent');
-    
+
     Route::get('/admin/profile', [AdminController::class, 'showProfile'])->name('admin.profile');
     Route::put('/admin/password', [AdminController::class, 'updatePassword'])->name('admin.password.update');
 });

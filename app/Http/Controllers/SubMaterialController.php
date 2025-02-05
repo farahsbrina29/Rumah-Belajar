@@ -6,47 +6,47 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Submateri;
-use App\Models\Konten;
-use App\Models\Latihan;
-use App\Models\Rangkuman;
 
-class SubmaterialController extends Controller
+class SubMaterialController extends Controller
 {
     public function show($subject, $materialSlug)
     {
-        // Cari submateri berdasarkan slug, dan muat relasi konten, latihan, dan rangkuman
-        $submateri = Submateri::with(['konten', 'latihan', 'rangkuman'])
-            ->where('slug', $materialSlug)
-            ->first();
+        // Tambahkan logging untuk debug
+        \Log::info('Mencoba mengakses submateri', [
+            'subject' => $subject,
+            'slug' => $materialSlug
+        ]);
 
-        if (!$submateri) {
-            abort(404); // Tampilkan error jika tidak ditemukan
-        }
+        $submateri = Submateri::where('slug', $materialSlug)
+            ->with(['konten', 'latihan', 'rangkuman'])
+            ->firstOrFail();
 
-        // Menyiapkan data untuk dikirim ke Inertia
         $materialData = [
+            'id' => $submateri->id,
             'title' => $submateri->nama_submateri,
-            'video_id' => $submateri->konten->first()->link_konten ?? 'default123', // Mengambil link_konten untuk video
-            'description' => $submateri->konten->first()->deskripsi ?? 'Detail materi akan ditampilkan di sini...', // Mengambil deskripsi konten
-            'exercises' => $submateri->latihan->map(function ($exercise) {
+            'video_id' => optional($submateri->konten)->link_konten,
+            'description' => optional($submateri->konten)->deskripsi ?? 'Materi belum tersedia',
+            'exercises' => $submateri->latihan ? $submateri->latihan->map(function ($exercise) {
                 return [
                     'id' => $exercise->id,
-                    'question' => $exercise->pertanyaan,  // Mengambil pertanyaan latihan
-                    'options' => [$exercise->opsi_a, $exercise->opsi_b, $exercise->opsi_c, $exercise->opsi_d], // Opsi soal latihan
-                    'answer' => $exercise->jawaban_benar,  // Jawaban benar latihan
+                    'question' => $exercise->pertanyaan,
+                    'options' => [
+                        $exercise->opsi_a,
+                        $exercise->opsi_b,
+                        $exercise->opsi_c,
+                        $exercise->opsi_d
+                    ],
+                    'answer' => $exercise->jawaban_benar,
                 ];
-            }),
-            'summary' => $submateri->rangkuman->first()->file_rangkuman ?? 'Rangkuman materi akan ditampilkan di sini...', // Mengambil file rangkuman
+            }) : [],
+            'summary' => optional($submateri->rangkuman)->file_rangkuman ?? 'Rangkuman belum tersedia'
         ];
 
-        // Kirim data ke Inertia
         return Inertia::render('SubMaterial', [
             'auth' => ['user' => Auth::user()],
-            'subject'      => $subject,
+            'subject' => $subject,
             'materialSlug' => $materialSlug,
-            'material'     => $materialData,
+            'material' => $materialData
         ]);
     }
 }
-
-
