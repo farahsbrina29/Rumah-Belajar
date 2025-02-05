@@ -24,4 +24,9 @@ class Konten extends Model
     {
         return $this->belongsTo(Jenjang::class, 'id_jenjang');
     }
+    public function mataPelajaran()
+    {
+        return $this->belongsTo(MataPelajaran::class, 'id_mata_pelajaran');
+    }
+
 }

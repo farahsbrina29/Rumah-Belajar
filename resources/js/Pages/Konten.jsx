@@ -9,13 +9,14 @@ export default function Konten({ auth }) {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [kontenList, setKontenList] = useState([]);
     const [filteredKonten, setFilteredKonten] = useState([]);
-    const [jenjangList, setJenjangList] = useState([]); // Tambahkan state untuk jenjang
+    const [jenjangList, setJenjangList] = useState([]);
     const [selectedJenjang, setSelectedJenjang] = useState(null);
 
     useEffect(() => {
-        // Fetch data konten
+        // Fetch data konten (termasuk nama_pelajaran)
         axios.get("http://localhost:8000/api/konten")
             .then((response) => {
+                console.log("Data Konten:", response.data); // Debugging
                 setKontenList(response.data);
                 setFilteredKonten(response.data);
             })
@@ -36,7 +37,7 @@ export default function Konten({ auth }) {
     const handleSelectJenjang = (id, nama) => {
         setSelectedJenjang({ id, nama });
         if (id) {
-            setFilteredKonten(kontenList.filter(konten => konten.id_jenjang === id));
+            setFilteredKonten(kontenList.filter(konten => String(konten.id_jenjang) === String(id)));
         } else {
             setFilteredKonten(kontenList);
         }
@@ -44,7 +45,7 @@ export default function Konten({ auth }) {
 
     // Fungsi untuk mendapatkan nama_jenjang dari id_jenjang
     const getNamaJenjang = (id_jenjang) => {
-        const jenjang = jenjangList.find(j => j.id === id_jenjang);
+        const jenjang = jenjangList.find(j => String(j.id) === String(id_jenjang));
         return jenjang ? jenjang.nama_jenjang : "Tidak Diketahui";
     };
 
@@ -90,7 +91,10 @@ export default function Konten({ auth }) {
                                             <h2 className="font-bold text-lg text-center mb-2 text-[#154561]">
                                                 {konten.judul_konten}
                                             </h2>
-                                            <p className="text-sm text-gray-500 text-center">{getNamaJenjang(konten.id_jenjang)}</p>
+                                            <p className="text-sm text-gray-500 text-center">
+                                                {getNamaJenjang(konten.id_jenjang)} - {konten.mata_pelajaran?.nama_pelajaran || "Tidak Diketahui"}
+                                            </p>
+
                                         </div>
                                     </div>
                                 ))

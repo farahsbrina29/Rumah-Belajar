@@ -223,7 +223,10 @@ export default function Welcome({ auth }) {
                                 <p className="text-gray-600 mb-4">
                                     Fitur konten
                                 </p>
-                                <button className="px-4 py-2 bg-blue-500 text-white rounded-md">
+                                <button 
+                                    className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                                    onClick={() => window.location.href = "/konten"}
+                                >
                                     Masuk Konten
                                 </button>
                             </div>
@@ -233,7 +236,10 @@ export default function Welcome({ auth }) {
                                 <p className="text-gray-600 mb-4">
                                     Fitur rangkuman
                                 </p>
-                                <button className="px-4 py-2 bg-blue-500 text-white rounded-md">
+                                <button 
+                                    className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                                    onClick={() => window.location.href = "/rangkuman"}
+                                >
                                     Masuk Rangkuman
                                 </button>
                             </div>

@@ -13,11 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('contents', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('konten', function (Blueprint $table) {
+            $table->unsignedBigInteger('id_mata_pelajaran')->nullable()->after('id_jenjang');
+            $table->foreign('id_mata_pelajaran')->references('id')->on('mata_pelajaran')->onDelete('cascade');
         });
     }
+    
 
     /**
      * Reverse the migrations.
@@ -26,6 +27,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('contents');
+        Schema::table('konten', function (Blueprint $table) {
+            //
+        });
     }
 };
