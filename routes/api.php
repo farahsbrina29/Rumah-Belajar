@@ -9,6 +9,10 @@ use App\Http\Controllers\KontenController;
 use App\Http\Controllers\RuangBelajarController;
 use App\Http\Controllers\SubMaterialController;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\RekomendasiController;
+
+Route::get('/rekomendasi', [RekomendasiController::class, 'getRekomendasi']);
+Route::get('/jumlah-konten', [KontenController::class, 'getJumlahKonten']);
 
 // Rute untuk submateri berdasarkan subject dan subject2
 Route::get('/submateri/{subject}/{subject2}', [SubMaterialController::class, 'show'])->name('submateri.show');
