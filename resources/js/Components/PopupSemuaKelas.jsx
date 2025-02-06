@@ -13,11 +13,11 @@ export default function PopupSemuaKelas({ isOpen, onClose }) {
         'Fisika': '⚡',
         'Matematika': '📊',
         'Bahasa Indonesia': '📚',
-        'Bhs. Inggris': '🌍',
+        'Bahasa Inggris': '🌍',
         'Kimia': '🧪',
         'Ekonomi': '💵',
         'Sosiologi': '💬',
-        'Geografi': '🌍',
+        'Geografi': '🧭',
         'Sejarah': '📜',
         'Penjaskes': '🏃‍♂️',
         'Teknologi dan Rekayasa': '🛠️',
@@ -28,7 +28,14 @@ export default function PopupSemuaKelas({ isOpen, onClose }) {
         'Bisnis Manajemen': '📈',
         'Pariwisata': '🌴',
         'Seni dan Industri Kreatif': '🎨',
-        'Energi dan Pertambangan': '⛏️'
+        'Energi dan Pertambangan': '⛏️',
+        'Tunanetra': '🔊',
+        'Tunarungu': '🔠', 
+        'Tunagrahita': '💡', 
+        'Tunadaksa': '🖥️' ,
+        'Tunalaras': '🌟',
+        'Tunawicara': '✍️' ,
+        'Tunaganda': '📖',
     };
 
     // Ambil data jenjang dari localStorage ketika komponen pertama kali dimuat

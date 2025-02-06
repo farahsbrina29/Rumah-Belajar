@@ -49,7 +49,7 @@ export default function Welcome({ auth }) {
         { name: 'Kimia', icon: '🧪' },
         { name: 'Ekonomi', icon: '💵' },
         { name: 'Sosiologi', icon: '💬' },
-        { name: 'Geografi', icon: '🌍' },
+        { name: 'Geografi', icon: '🧭' },
         { name: 'Sejarah', icon: '📜' },
         { name: 'Penjaskes', icon: '🏃‍♂️' },
         { name: 'Teknologi dan Rekayasa', icon: '🛠️' },
@@ -60,8 +60,16 @@ export default function Welcome({ auth }) {
         { name: 'Bisnis Manajemen', icon: '📈' },
         { name: 'Pariwisata', icon: '🌴' },
         { name: 'Seni dan Industri Kreatif', icon: '🎨' },
-        { name: 'Energi dan Pertambangan', icon: '⛏️' }
+        { name: 'Energi dan Pertambangan', icon: '⛏️' },
+        { name: 'Tunanetra', icon: '🔊' },
+        { name: 'Tunarungu', icon: '🔠' }, 
+        { name: 'Tunagrahita', icon: '💡' }, 
+        { name: 'Tunadaksa', icon: '🖥️' },
+        { name: 'Tunalaras', icon: '🌟' },
+        { name: 'Tunawicara', icon: '✍️' },
+        { name: 'Tunaganda', icon: '📖' },
     ];
+
 
     useEffect(() => {
         if (idJenjang) {

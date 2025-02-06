@@ -13,21 +13,21 @@ const Dashboard = () => {
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <div className="bg-white p-4 rounded shadow flex justify-between items-center">
+          <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200 flex justify-between items-center">
             <div>
               <h2 className="text-lg font-semibold">Total Pengguna</h2>
               <p className="text-xl">1000</p>
             </div>
             <FaUsers className="w-8 h-8 text-blue-500" />
           </div>
-          <div className="bg-white p-4 rounded shadow flex justify-between items-center">
+          <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200 flex justify-between items-center">
             <div>
               <h2 className="text-lg font-semibold">Total Konten</h2>
               <p className="text-xl">250</p>
             </div>
             <FaFileAlt className="w-8 h-8 text-green-500" />
           </div>
-          <div className="bg-white p-4 rounded shadow flex justify-between items-center">
+          <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200 flex justify-between items-center">
             <div>
               <h2 className="text-lg font-semibold">Total Rangkuman</h2>
               <p className="text-xl">75</p>
