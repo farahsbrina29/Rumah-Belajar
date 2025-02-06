@@ -31,7 +31,10 @@ const Footer = () => {
               Beranda
             </li>
             <li className="hover:text-gray-300 transition duration-200 cursor-pointer">
-              Daftar Konten
+              Konten
+            </li>
+            <li className="hover:text-gray-300 transition duration-200 cursor-pointer">
+              Rangkuman
             </li>
           </ul>
         </div>
@@ -50,7 +53,7 @@ const Footer = () => {
                 className="flex items-center"
               >
                 <FaInstagram className="mr-3 text-lg sm:text-xl" />
-                <span className="hover:text-gray-300 hover:underline transition duration-200">
+                <span className="hover:text-gray-300">
                   @btidpdikbudntb
                 </span>
               </a>
@@ -63,7 +66,7 @@ const Footer = () => {
                 className="flex items-center"
               >
                 <FaYoutube className="mr-3 text-lg sm:text-xl" />
-                <span className="hover:text-gray-300 hover:underline transition duration-200">
+                <span className="hover:text-gray-300">
                   BTIDP NTB Channel
                 </span>
               </a>
@@ -76,7 +79,7 @@ const Footer = () => {
                 className="flex items-center"
               >
                 <FaFacebook className="mr-3 text-lg sm:text-xl" />
-                <span className="hover:text-gray-300 hover:underline transition duration-200">
+                <span className="hover:text-gray-300">
                   Btidp Dikbud Ntb
                 </span>
               </a>
