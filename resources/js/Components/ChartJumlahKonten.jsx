@@ -1,55 +1,87 @@
-import { Bar } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2'; 
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 export default function ChartJumlahKonten() {
-    const data = {
-        labels: [
-            'Kelas 10 SMA',
-            'Kelas 11 SMA',
-            'Kelas 12 SMA',
-            'Kelas 10 SMK',
-            'Kelas 11 SMK',
-            'Kelas 12 SMK',
-            'Kelas 10 SLB',
-            'Kelas 11 SLB',
-            'Kelas 12 SLB',
-        ], // Label jenjang
-        datasets: [
-            {
-                data: [15, 20, 25, 10, 18, 22, 12, 17, 14], // Jumlah konten untuk setiap jenjang
-                backgroundColor: [
-                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
-                    '#9966FF', '#FF9F40', '#FFCD94', '#33FF99', '#FF6666',
-                ],
-                borderColor: [
-                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
-                    '#9966FF', '#FF9F40', '#FFCD94', '#33FF99', '#FF6666',
-                ],
-                borderWidth: 1,
-            },
-        ],
-    };
+    // State untuk menyimpan data chart
+    const [chartData, setChartData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
+    useEffect(() => {
+        axios.get("http://127.0.0.1:8000/api/jumlah-konten")
+            .then(response => {
+                // Daftar label default yang selalu ingin ditampilkan
+                const defaultLabels = [
+                    'Kelas 10 SMA',
+                    'Kelas 11 SMA',
+                    'Kelas 12 SMA',
+                    'Kelas 10 SMK',
+                    'Kelas 11 SMK',
+                    'Kelas 12 SMK',
+                    'Kelas 10 SLB',
+                    'Kelas 11 SLB',
+                    'Kelas 12 SLB',
+                ];
+
+                // Mapping data API ke label default
+                // Misal, response.data berupa array: [{ nama_jenjang: 'Kelas 10 SMA', jumlah: 15 }, ... ]
+                const counts = defaultLabels.map(label => {
+                    const found = response.data.find(item => item.nama_jenjang === label);
+                    return found ? found.jumlah : 0;
+                });
+
+                const data = {
+                    labels: defaultLabels,
+                    datasets: [
+                        {
+                            data: counts,
+                            backgroundColor: [
+                                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                                '#9966FF', '#FF9F40', '#FFCD94', '#33FF99', '#FF6666',
+                            ],
+                            borderColor: [
+                                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                                '#9966FF', '#FF9F40', '#FFCD94', '#33FF99', '#FF6666',
+                            ],
+                            borderWidth: 1,
+                        },
+                    ],
+                };
+
+                setChartData(data);
+            })
+            .catch(err => {
+                console.error("Error fetching chart data:", err);
+                setError("Gagal memuat data grafik.");
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, []);
+
+    // Opsi ChartJS
     const options = {
         responsive: true,
         plugins: {
             legend: {
-                display: false, // Menyembunyikan label/legenda
+                display: false,
             },
             tooltip: {
-                enabled: true, // Tooltip tetap diaktifkan
+                enabled: true,
             },
         },
         scales: {
             x: {
                 ticks: {
                     font: {
-                        size: 10, // Mengecilkan ukuran font untuk label sumbu X
+                        size: 10,
                     },
-                    maxRotation: 45, // Memiringkan teks untuk mencegah tumpang tindih
-                    minRotation: 45, // Memastikan teks tetap miring
+                    maxRotation: 45,
+                    minRotation: 45,
                 },
             },
             y: {
@@ -59,13 +91,16 @@ export default function ChartJumlahKonten() {
                 },
             },
         },
-        maintainAspectRatio: false, // Membuat grafik lebih responsif
+        maintainAspectRatio: false,
         layout: {
             padding: {
-                bottom: 20, // Tambahkan ruang di bawah grafik
+                bottom: 20,
             },
         },
     };
+
+    if (loading) return <div>Memuat grafik...</div>;
+    if (error) return <div>{error}</div>;
 
     return (
         <div className="bg-white rounded-lg p-6 shadow-md mx-auto max-w-full md:max-w-2xl" style={{ height: '400px' }}>
@@ -73,7 +108,7 @@ export default function ChartJumlahKonten() {
                 Jumlah Konten Berdasarkan Jenjang
             </h2>
             <div style={{ height: '100%', width: '100%' }}>
-                <Bar data={data} options={options} />
+                <Bar data={chartData} options={options} />
             </div>
         </div>
     );

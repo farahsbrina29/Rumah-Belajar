@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Konten;
+use Illuminate\Support\Facades\DB;
+
 
 class KontenController extends Controller
 {
@@ -35,5 +37,16 @@ class KontenController extends Controller
             'description' => $konten->deskripsi ?? 'Detail materi akan ditampilkan di sini...',
             'mata_pelajaran' => $konten->mataPelajaran->nama_pelajaran ?? 'Tidak Diketahui'
         ]);
+    }
+    public function getJumlahKonten()
+    {
+        // Pastikan nama kolom dan join sesuai dengan struktur tabel kamu.
+        $data = DB::table('konten')
+            ->join('jenjang', 'konten.id_jenjang', '=', 'jenjang.id') // sesuaikan nama kolom jika berbeda
+            ->select('jenjang.nama_jenjang', DB::raw('COUNT(konten.id) as jumlah'))
+            ->groupBy('jenjang.nama_jenjang')
+            ->get();
+
+        return response()->json($data);
     }
 }

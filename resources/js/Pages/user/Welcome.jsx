@@ -15,6 +15,10 @@ export default function Welcome({ auth }) {
     const [subjects, setSubjects] = useState([]); 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [rekomendasi, setRekomendasi] = useState([]);
+    const [loadingRekomendasi, setLoadingRekomendasi] = useState(true);
+    const [errorRekomendasi, setErrorRekomendasi] = useState(null);
+
 
     const openPopupKelas = () => setIsPopupKelasOpen(true);
     const closePopupKelas = () => setIsPopupKelasOpen(false);
@@ -38,6 +42,30 @@ export default function Welcome({ auth }) {
             setIdJenjang(storedIdJenjang);
         }
     }, []);
+
+    useEffect(() => {
+        setLoadingRekomendasi(true);
+        setErrorRekomendasi(null);
+    
+        axios.get("http://127.0.0.1:8000/api/rekomendasi") 
+            .then(response => {
+                if (response.data && Array.isArray(response.data)) {
+                    setRekomendasi(response.data);
+                } else {
+                    setErrorRekomendasi("Format data tidak valid");
+                    setRekomendasi([]);
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching rekomendasi:", error);
+                setErrorRekomendasi("Gagal memuat rekomendasi");
+                setRekomendasi([]);
+            })
+            .finally(() => {
+                setLoadingRekomendasi(false);
+            });
+    }, []);
+    
 
     const subjectIcons = [
         { name: 'Biologi', icon: '🧬' },
@@ -199,28 +227,32 @@ export default function Welcome({ auth }) {
 
                 {/* Rekomendasi Section */}
                 <section className="bg-blue-100 py-8">
-                    <div className="container mx-auto px-4">
-                        <div className="bg-[#154561] rounded-lg p-6 shadow-md max-w-5xl mx-auto">
-                            <h2 className="text-xl font-bold text-white mb-6">
-                                Rekomendasi Belajar Untuk Kamu!
-                            </h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {Array.from({ length: 4 }).map((_, index) => (
-                                    <div
-                                        key={index}
-                                        className="bg-white rounded-lg p-4 flex items-center gap-4"
-                                    >
-                                        <div className="text-3xl">📝</div>
-                                        <div>
-                                            <h3 className="font-semibold mb-1">Rekomendasi {index + 1}</h3>
-                                            <p className="text-sm text-gray-600">Deskripsi singkat</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+    <div className="container mx-auto px-4">
+        <div className="bg-[#154561] rounded-lg p-6 shadow-md max-w-5xl mx-auto">
+            <h2 className="text-xl font-bold text-white mb-6">
+                Rekomendasi Belajar Untuk Kamu!
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {rekomendasi.map((item, index) => (
+                    <div
+                        key={index}
+                        className="bg-white rounded-lg p-4 flex items-center gap-4"
+                    >
+                        {/* Gambar dari thumbnail */}
+                        <img src={item.thumbnail} alt={item.judul_konten} className="w-12 h-12 object-cover rounded" />
+                        <div>
+                            {/* Judul Konten */}
+                            <h3 className="font-semibold mb-1">{item.judul_konten}</h3>
+                            {/* Nama Pelajaran & Jenjang */}
+                            <p className="text-sm text-gray-600">{item.nama_pelajaran} - {item.nama_jenjang}</p>
                         </div>
                     </div>
-                </section>
+                ))}
+            </div>
+        </div>
+    </div>
+</section>
+
 
                 {/* Additional Sections */}
                 <section className="bg-blue-100 py-8">
