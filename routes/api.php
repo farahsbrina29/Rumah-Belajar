@@ -4,24 +4,41 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MataPelajaranController;
-use App\Http\Middleware\IsAdmin;use App\Http\Controllers\JenjangController;
+use App\Http\Controllers\JenjangController;
 use App\Http\Controllers\KontenController;
-use App\Models\Submateri;
+use App\Http\Controllers\RuangBelajarController;
+use App\Http\Controllers\SubMaterialController;
 use Illuminate\Support\Facades\DB;
 
+// Rute untuk submateri berdasarkan subject dan subject2
+Route::get('/submateri/{subject}/{subject2}', [SubMaterialController::class, 'show'])->name('submateri.show');
+
+// Rute untuk daftar konten
 Route::get('/konten', [KontenController::class, 'index']);
+
+// Rute untuk mata pelajaran berdasarkan jenjang
 Route::get('/mata-pelajaran/{id_jenjang}', [MataPelajaranController::class, 'getMataPelajaranByJenjang']);
-Route::get('/jenjang/{id}', [JenjangController::class, 'show']);
+
+// Rute untuk daftar jenjang
 Route::get('/jenjang', [JenjangController::class, 'index']);
+Route::get('/jenjang/{id}', [JenjangController::class, 'show']);
+
+// Rute untuk daftar user
 Route::get('/users', [UserController::class, 'index']);
 
+// API untuk mendapatkan daftar submateri dengan filter jenjang (jika ada)
 Route::get('/submateri', function (Request $request) {
     $query = DB::table('submateri')
         ->join('mata_pelajaran', 'submateri.id_mata_pelajaran', '=', 'mata_pelajaran.id')
         ->join('jenjang', 'mata_pelajaran.id_jenjang', '=', 'jenjang.id')
-        ->select('submateri.id', 'submateri.nama_submateri', 'mata_pelajaran.nama_pelajaran', 'jenjang.nama_jenjang', 'jenjang.id as id_jenjang');
+        ->select(
+            'submateri.id',
+            'submateri.nama_submateri',
+            'mata_pelajaran.nama_pelajaran',
+            'jenjang.nama_jenjang',
+            'jenjang.id as id_jenjang'
+        );
 
-    // Jika ada filter jenjang, tambahkan kondisi WHERE
     if ($request->has('id_jenjang')) {
         $query->where('jenjang.id', $request->id_jenjang);
     }
@@ -29,12 +46,8 @@ Route::get('/submateri', function (Request $request) {
     return response()->json($query->get());
 });
 
-// API untuk mendapatkan daftar jenjang
-Route::get('/jenjang', function () {
-    return response()->json(DB::table('jenjang')->select('id', 'nama_jenjang')->get());
-});
-
-// Rute untuk mendapatkan data user yang terautentikasi
+// Rute untuk mendapatkan user yang sedang login
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+

@@ -8,20 +8,12 @@ use Illuminate\Support\Str;
 class Submateri extends Model
 {
     protected $table = 'submateri'; 
-    protected $fillable = ['id', 'nama_submateri', 'id_mata_pelajaran', 'slug'];
+    protected $fillable = ['id', 'nama_submateri', 'id_mata_pelajaran'];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($submateri) {
-            $submateri->slug = Str::slug($submateri->nama_submateri);
-        });
-    }
 
     public function mataPelajaran()
     {
-        return $this->belongsTo(MataPelajaran::class);
+        return $this->belongsTo(MataPelajaran::class, 'id_mata_pelajaran');
     }
 
         public function konten()
