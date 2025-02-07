@@ -24,7 +24,6 @@ class SubmateriSeeder extends Seeder
                     DB::table('submateri')->insert([
                         'id_mata_pelajaran' => $mataPelajaranId,
                         'nama_submateri' => $materi,
-                        'slug' => Str::slug($materi, '-'),
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);

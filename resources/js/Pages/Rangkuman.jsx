@@ -11,7 +11,7 @@ export default function Rangkuman({ auth }) {
     
     // State untuk jenjang yang dipilih
     const [selectedJenjangId, setSelectedJenjangId] = useState(null);
-    const [selectedJenjangName, setSelectedJenjangName] = useState("Semua Jenjang");
+    const [selectedJenjangName, setSelectedJenjangName] = useState("Pilih Jenjang");
 
     useEffect(() => {
         // Fetch data submateri dari API

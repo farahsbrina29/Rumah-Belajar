@@ -33,6 +33,7 @@ export default function Konten({ auth }) {
                 console.error("Error fetching jenjang:", error);
             });
     }, []);
+
     if (!auth || !auth.user) {
         return (
             <div className="flex flex-col min-h-screen">
@@ -54,26 +55,25 @@ export default function Konten({ auth }) {
         }
     };
 
-    // Fungsi untuk mendapatkan nama_jenjang dari id_jenjang
     const getNamaJenjang = (id_jenjang) => {
         const jenjang = jenjangList.find(j => String(j.id) === String(id_jenjang));
         return jenjang ? jenjang.nama_jenjang : "Tidak Diketahui";
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-blue-50">
+        <div className="flex flex-col min-h-screen bg-blue-100">
             <Navbar auth={auth} />
-            <div className="flex-1 p-6 pt-28 flex flex-col items-center">
-                <h1 className="text-2xl font-bold text-center mb-6 text-[#154561]">
+            <div className="flex-1 p-4 pt-32">
+                <h1 className="text-2xl font-bold text-center mb-4 text-[#154561]">
                     Telusuri Berbagai Konten Menarik 🚀
                 </h1>
 
-                {/* Pencarian dan Pilihan Jenjang */}
-                <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-2xl mb-8">
+                {/* Pencarian dan Pilihan Jenjang - Updated styling */}
+                <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6 mt-12">
                     <input
                         type="text"
                         placeholder="Cari video..."
-                        className="border-[1px] border-gray-300 p-2 rounded-md flex-1 w-full sm:w-auto"
+                        className="border-[1px] border-gray-300 p-2 rounded-md flex-1"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -85,8 +85,8 @@ export default function Konten({ auth }) {
                     </button>
                 </div>
 
-                {/* Grid Video yang Ditengahkan */}
-                <div className="w-full max-w-6xl">
+                {/* Grid Video yang Ditengahkan - Keeping original design */}
+                <div className="w-full max-w-6xl mx-auto">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center">
                         {filteredKonten.length > 0 ? (
                             filteredKonten
@@ -105,7 +105,6 @@ export default function Konten({ auth }) {
                                             <p className="text-sm text-gray-500 text-center">
                                                 {getNamaJenjang(konten.id_jenjang)} - {konten.mata_pelajaran?.nama_pelajaran || "Tidak Diketahui"}
                                             </p>
-
                                         </div>
                                     </div>
                                 ))
