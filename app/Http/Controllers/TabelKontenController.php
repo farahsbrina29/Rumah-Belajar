@@ -14,12 +14,14 @@ class TabelKontenController extends Controller
             ->get()
             ->map(function ($submateri) {
                 return [
-                    'id' => $submateri->id,
-                    'nama_submateri' => $submateri->nama_submateri,
-                    'nama_jenjang' => $submateri->jenjang ? $submateri->jenjang->nama_jenjang : '-',
-                    'judul_konten' => $submateri->konten ? $submateri->konten->judul_konten : '-',
-                    'deskripsi' => $submateri->konten ? $submateri->konten->deskripsi : '-',
-                    'nama_pelajaran' => $submateri->mataPelajaran ? $submateri->mataPelajaran->nama_pelajaran : '-',
+                    'id'               => $submateri->id,
+                    'nama_submateri'   => $submateri->nama_submateri,
+                    'nama_jenjang'     => $submateri->jenjang ? $submateri->jenjang->nama_jenjang : '-',
+                    'judul_konten'     => $submateri->konten ? $submateri->konten->judul_konten : '-',
+                    'deskripsi'        => $submateri->konten ? $submateri->konten->deskripsi : '-',
+                    'nama_pelajaran'   => $submateri->mataPelajaran ? $submateri->mataPelajaran->nama_pelajaran : '-',
+                    'thumbnail'        => $submateri->konten ? $submateri->konten->thumbnail : '-', // Kolom tambahan
+                    'link_konten'      => $submateri->konten ? $submateri->konten->link_konten : '-', // Kolom tambahan
                 ];
             });
 
@@ -33,9 +35,9 @@ class TabelKontenController extends Controller
         
         // Validasi input
         $request->validate([
-            'nama_submateri' => 'string|max:255',
-            'id_jenjang' => 'exists:jenjang,id',
-            'id_mata_pelajaran' => 'exists:mata_pelajaran,id',
+            'nama_submateri'       => 'string|max:255',
+            'id_jenjang'           => 'exists:jenjang,id',
+            'id_mata_pelajaran'    => 'exists:mata_pelajaran,id',
         ]);
 
         $submateri->update($request->all());

@@ -105,14 +105,37 @@ const Content = () => {
         accessorKey: 'nama_pelajaran',
         header: 'Pelajaran',
       },
+      {
+        accessorKey: 'thumbnail',
+        header: 'Thumbnail',
+        // Anda bisa menambahkan rendering khusus, misalnya:
+        Cell: ({ cell }) => (
+          cell.getValue() !== '-' ? (
+            <img src={cell.getValue()} alt="Thumbnail" style={{ width: '50px', height: 'auto' }} />
+          ) : '-'
+        ),
+      },
+      {
+        accessorKey: 'link_konten',
+        header: 'Link Konten',
+        // Jika link konten merupakan URL, Anda bisa render sebagai tautan:
+        Cell: ({ cell }) => (
+          cell.getValue() !== '-' ? (
+            <a href={cell.getValue()} target="_blank" rel="noopener noreferrer">
+              {cell.getValue()}
+            </a>
+          ) : '-'
+        ),
+      },
     ],
     []
   );
-
+  
   return (
     <AdminNavbar>
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Tabel Konten</h1>
+
+        <div className="bg-white rounded-lg shadow-lg p-8">
+          <h1 className="text-2xl font-bold mb-4">Informasi Konten</h1>
 
         {/* Tampilkan pesan error jika ada */}
         {error && (

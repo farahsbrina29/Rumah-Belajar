@@ -11,6 +11,10 @@ use App\Http\Controllers\SubMaterialController;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\RekomendasiController;
 use App\Http\Controllers\TabelKontenController;
+use App\Http\Controllers\DashboardController;
+
+Route::get('/dashboard-stats', [DashboardController::class, 'index']);
+
 
 Route::get('/tabel-konten', [TabelKontenController::class, 'index']);
 Route::put('/tabel-konten/{id}', [TabelKontenController::class, 'update']);
