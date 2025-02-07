@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { useTable, useSortBy, usePagination } from "react-table";
-import AdminNavbar from "@/Components/AdminNavbar";
-import axios from "axios";
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { MaterialReactTable } from 'material-react-table';
+import { Trash } from 'lucide-react';
+import AdminNavbar from '@/Components/AdminNavbar';
+import axios from 'axios';
 
 const PageUser = () => {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
 
-  // Setup axios interceptor untuk menambahkan token ke semua request
+  // Setup interceptor untuk menambahkan token ke setiap request axios
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -16,12 +17,13 @@ const PageUser = () => {
 
     fetchUsers();
 
-    // Cleanup interceptor ketika komponen unmount
+    // Cleanup interceptor saat komponen unmount
     return () => {
       delete axios.defaults.headers.common["Authorization"];
     };
   }, []);
 
+  // Fungsi untuk mengambil data user dari API
   const fetchUsers = async () => {
     try {
       const response = await axios.get("/api/users");
@@ -37,37 +39,48 @@ const PageUser = () => {
     }
   };
 
-  // Kolom tabel untuk React Table
-  const columns = React.useMemo(
-    () => [
-      { Header: "Name", accessor: "name" },
-      { Header: "Email", accessor: "email" },
-      { Header: "Role", accessor: "role" },
-    ],
-    []
-  );
+  // Fungsi untuk menghapus user, menggunakan useCallback agar referensi fungsi tetap
+  const handleDelete = useCallback(async (id) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus user ini?")) {
+      try {
+        await axios.delete(`/api/users/${id}`);
+        // Perbarui state dengan mengeluarkan user yang dihapus
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+      } catch (error) {
+        console.error("Error deleting user:", error);
+        setError("Failed to delete user");
+      }
+    }
+  }, []);
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    canPreviousPage,
-    canNextPage,
-    pageOptions,
-    page,
-    nextPage,
-    previousPage,
-    state: { pageIndex },
-  } = useTable(
-    {
-      columns,
-      data: users,
-      initialState: { pageIndex: 0 },
-    },
-    useSortBy,
-    usePagination
+  // Definisikan kolom tabel menggunakan useMemo
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'name',
+        header: 'Name',
+      },
+      {
+        accessorKey: 'email',
+        header: 'Email',
+      },
+      {
+        accessorKey: 'role',
+        header: 'Role',
+      },
+      {
+        header: 'Actions',
+        id: 'actions',
+        Cell: ({ row }) => (
+          <Trash
+            size={20}
+            className="cursor-pointer"
+            onClick={() => handleDelete(row.original.id)}
+          />
+        ),
+      },
+    ],
+    [handleDelete]
   );
 
   return (
@@ -83,69 +96,14 @@ const PageUser = () => {
             </div>
           )}
 
-          <div className="overflow-x-auto">
-            <table
-              {...getTableProps()}
-              className="min-w-full table-auto border-collapse border border-gray-300"
-            >
-              <thead>
-                {headerGroups.map((headerGroup) => (
-                  <tr {...headerGroup.getHeaderGroupProps()} className="bg-gray-100">
-                    {headerGroup.headers.map((column) => (
-                      <th
-                        {...column.getHeaderProps(column.getSortByToggleProps())}
-                        className="px-4 py-2 border"
-                      >
-                        {column.render("Header")}
-                        <span>
-                          {column.isSorted
-                            ? column.isSortedDesc
-                              ? " 🔽"
-                              : " 🔼"
-                            : ""}
-                        </span>
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody {...getTableBodyProps()}>
-                {page.map((row) => {
-                  prepareRow(row);
-                  return (
-                    <tr {...row.getRowProps()} className="hover:bg-gray-50">
-                      {row.cells.map((cell) => (
-                        <td {...cell.getCellProps()} className="px-4 py-2 border">
-                          {cell.render("Cell")}
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-
-            {/* Kontrol Pagination */}
-            <div className="flex items-center justify-between mt-4">
-              <button
-                onClick={() => previousPage()}
-                disabled={!canPreviousPage}
-                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-              >
-                Previous
-              </button>
-              <span>
-                Page <strong>{pageIndex + 1} of {pageOptions.length}</strong>
-              </span>
-              <button
-                onClick={() => nextPage()}
-                disabled={!canNextPage}
-                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-              >
-                Next
-              </button>
-            </div>
-          </div>
+          {/* Material React Table untuk menampilkan data user */}
+          <MaterialReactTable
+            columns={columns}
+            data={users}
+            enableSorting
+            enablePagination
+            muiTableContainerProps={{ sx: { maxHeight: 500 } }}
+          />
         </div>
       </div>
     </AdminNavbar>

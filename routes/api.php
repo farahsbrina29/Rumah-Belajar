@@ -10,6 +10,12 @@ use App\Http\Controllers\RuangBelajarController;
 use App\Http\Controllers\SubMaterialController;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\RekomendasiController;
+use App\Http\Controllers\TabelKontenController;
+
+Route::get('/tabel-konten', [TabelKontenController::class, 'index']);
+Route::put('/tabel-konten/{id}', [TabelKontenController::class, 'update']);
+Route::delete('/tabel-konten/{id}', [TabelKontenController::class, 'destroy']);
+
 
 Route::get('/rekomendasi', [RekomendasiController::class, 'getRekomendasi']);
 Route::get('/jumlah-konten', [KontenController::class, 'getJumlahKonten']);
