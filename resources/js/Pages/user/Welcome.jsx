@@ -19,12 +19,12 @@ export default function Welcome({ auth }) {
     const [loadingRekomendasi, setLoadingRekomendasi] = useState(true);
     const [errorRekomendasi, setErrorRekomendasi] = useState(null);
 
-
     const openPopupKelas = () => setIsPopupKelasOpen(true);
     const closePopupKelas = () => setIsPopupKelasOpen(false);
     const openPopupJenjang = () => setIsPopupJenjangOpen(true);
     const closePopupJenjang = () => setIsPopupJenjangOpen(false);
 
+    // Ketika jenjang dipilih dari popup, simpan di state dan localStorage
     const handleSelectJenjang = (id, nama) => {
         setSelectedJenjang(nama);
         setIdJenjang(id);
@@ -43,11 +43,18 @@ export default function Welcome({ auth }) {
         }
     }, []);
 
+    // --- USE EFFECT UNTUK MENGAMBIL DATA REKOMENDASI ---
     useEffect(() => {
         setLoadingRekomendasi(true);
         setErrorRekomendasi(null);
-    
-        axios.get("http://127.0.0.1:8000/api/rekomendasi") 
+        
+        // Jika API mendukung filter dengan query parameter, gunakan URL berikut:
+        let url = "http://127.0.0.1:8000/api/rekomendasi";
+        if (idJenjang) {
+            url += `?idJenjang=${idJenjang}`;
+        }
+        
+        axios.get(url) 
             .then(response => {
                 if (response.data && Array.isArray(response.data)) {
                     setRekomendasi(response.data);
@@ -64,8 +71,12 @@ export default function Welcome({ auth }) {
             .finally(() => {
                 setLoadingRekomendasi(false);
             });
-    }, []);
-    
+    }, [idJenjang]); // Refetch setiap kali idJenjang berubah
+
+    // Jika API tidak mendukung filter, kamu bisa lakukan filter di sisi client:
+    const filteredRekomendasi = idJenjang
+        ? rekomendasi.filter(item => item.id_jenjang == idJenjang)
+        : rekomendasi;
 
     const subjectIcons = [
         { name: 'Biologi', icon: '🧬' },
@@ -97,7 +108,6 @@ export default function Welcome({ auth }) {
         { name: 'Tunawicara', icon: '✍️' },
         { name: 'Tunaganda', icon: '📖' },
     ];
-
 
     useEffect(() => {
         if (idJenjang) {
@@ -227,32 +237,43 @@ export default function Welcome({ auth }) {
 
                 {/* Rekomendasi Section */}
                 <section className="bg-blue-100 py-8">
-    <div className="container mx-auto px-4">
-        <div className="bg-[#154561] rounded-lg p-6 shadow-md max-w-5xl mx-auto">
-            <h2 className="text-xl font-bold text-white mb-6">
-                Rekomendasi Belajar Untuk Kamu!
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {rekomendasi.map((item, index) => (
-                    <div
-                        key={index}
-                        className="bg-white rounded-lg p-4 flex items-center gap-4"
-                    >
-                        {/* Gambar dari thumbnail */}
-                        <img src={item.thumbnail} alt={item.judul_konten} className="w-12 h-12 object-cover rounded" />
-                        <div>
-                            {/* Judul Konten */}
-                            <h3 className="font-semibold mb-1">{item.judul_konten}</h3>
-                            {/* Nama Pelajaran & Jenjang */}
-                            <p className="text-sm text-gray-600">{item.nama_pelajaran} - {item.nama_jenjang}</p>
+                    <div className="container mx-auto px-4">
+                        <div className="bg-[#154561] rounded-lg p-6 shadow-md max-w-5xl mx-auto">
+                            <h2 className="text-xl font-bold text-white mb-6">
+                                Rekomendasi Belajar Untuk Kamu!
+                            </h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                {loadingRekomendasi ? (
+                                    <div className="text-center text-white">Memuat rekomendasi...</div>
+                                ) : errorRekomendasi ? (
+                                    <div className="text-center text-red-400">{errorRekomendasi}</div>
+                                ) : filteredRekomendasi.length > 0 ? (
+                                    filteredRekomendasi.map((item, index) => (
+                                        <div
+                                            key={index}
+                                            className="bg-white rounded-lg p-4 flex items-center gap-4"
+                                        >
+                                            {/* Gambar dari thumbnail */}
+                                            <img src={item.thumbnail} alt={item.judul_konten} className="w-12 h-12 object-cover rounded" />
+                                            <div>
+                                                {/* Judul Konten */}
+                                                <h3 className="font-semibold mb-1">{item.judul_konten}</h3>
+                                                {/* Nama Pelajaran & Jenjang */}
+                                                <p className="text-sm text-gray-600">
+                                                    {item.nama_pelajaran} - {item.nama_jenjang}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="text-center text-white">
+                                        Belum ada rekomendasi untuk jenjang terpilih.
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                ))}
-            </div>
-        </div>
-    </div>
-</section>
-
+                </section>
 
                 {/* Additional Sections */}
                 <section className="bg-blue-100 py-8">

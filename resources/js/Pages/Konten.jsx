@@ -33,6 +33,17 @@ export default function Konten({ auth }) {
                 console.error("Error fetching jenjang:", error);
             });
     }, []);
+    if (!auth || !auth.user) {
+        return (
+            <div className="flex flex-col min-h-screen">
+                <Navbar auth={auth} />
+                <div className="flex-1 flex items-center justify-center">
+                    <h1 className="text-xl font-bold text-[#154561]">Anda harus login untuk mengakses halaman ini.</h1>
+                </div>
+                <Footer />
+            </div>
+        );
+    }
 
     const handleSelectJenjang = (id, nama) => {
         setSelectedJenjang({ id, nama });
