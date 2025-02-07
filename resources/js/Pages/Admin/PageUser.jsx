@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { MaterialReactTable } from 'material-react-table';
-import { Trash } from 'lucide-react';
 import AdminNavbar from '@/Components/AdminNavbar';
 import axios from 'axios';
 
@@ -8,7 +7,7 @@ const PageUser = () => {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
 
-  // Setup interceptor untuk menambahkan token ke setiap request axios
+  // Setup interceptor untuk menambahkan token ke semua request axios
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -39,21 +38,7 @@ const PageUser = () => {
     }
   };
 
-  // Fungsi untuk menghapus user, menggunakan useCallback agar referensi fungsi tetap
-  const handleDelete = useCallback(async (id) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus user ini?")) {
-      try {
-        await axios.delete(`/api/users/${id}`);
-        // Perbarui state dengan mengeluarkan user yang dihapus
-        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-      } catch (error) {
-        console.error("Error deleting user:", error);
-        setError("Failed to delete user");
-      }
-    }
-  }, []);
-
-  // Definisikan kolom tabel menggunakan useMemo
+  // Definisi kolom tabel tanpa kolom action
   const columns = useMemo(
     () => [
       {
@@ -68,26 +53,15 @@ const PageUser = () => {
         accessorKey: 'role',
         header: 'Role',
       },
-      {
-        header: 'Actions',
-        id: 'actions',
-        Cell: ({ row }) => (
-          <Trash
-            size={20}
-            className="cursor-pointer"
-            onClick={() => handleDelete(row.original.id)}
-          />
-        ),
-      },
     ],
-    [handleDelete]
+    []
   );
 
   return (
     <AdminNavbar>
       <div className="flex-grow p-6">
         <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-2xl font-bold mb-4">Dashboard Admin</h1>
+          <h1 className="text-2xl font-bold mb-4">Informasi Pengguna</h1>
 
           {/* Tampilkan pesan error jika ada */}
           {error && (
