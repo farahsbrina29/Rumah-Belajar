@@ -15,6 +15,11 @@ class Submateri extends Model
     {
         return $this->belongsTo(MataPelajaran::class, 'id_mata_pelajaran');
     }
+    
+    public function jenjang()
+    {
+        return $this->belongsTo(Jenjang::class, 'id_jenjang', 'id');
+    }
 
         public function konten()
     {
