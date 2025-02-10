@@ -2,12 +2,16 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import { Trash, Edit } from 'lucide-react';
 import AdminNavbar from '@/Components/AdminNavbar';
+import AddSubmateri from '@/Components/AddSubmateri';
+import EditKonten from '@/Components/EditKonten'; // Pastikan EditKonten diimpor
 
 const Content = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const [isAddSubmateriOpen, setIsAddSubmateriOpen] = useState(false); 
+  const [isEditKontenOpen, setIsEditKontenOpen] = useState(false); // State untuk membuka EditKonten
+  const [selectedKonten, setSelectedKonten] = useState(null); // State untuk menyimpan data konten yang dipilih untuk diedit
 
-  // Ambil data dari API saat komponen pertama kali dirender
   useEffect(() => {
     const token = localStorage.getItem('token');
     fetchData(token);
@@ -22,16 +26,13 @@ const Content = () => {
       });
       const jsonData = await response.json();
       if (!response.ok) throw new Error(jsonData.message || 'Failed to fetch');
-      console.log("Data fetched:", jsonData);
       setData(jsonData);
       setError(null);
     } catch (err) {
-      console.error('Error fetching data:', err);
       setError('Gagal mengambil data');
     }
   };
 
-  // Fungsi untuk menghapus data
   const handleDelete = useCallback(async (id) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus baris ini?')) {
       try {
@@ -45,42 +46,11 @@ const Content = () => {
         if (!response.ok) throw new Error('Failed to delete');
         setData((prevData) => prevData.filter((item) => item.id !== id));
       } catch (err) {
-        console.error('Error deleting data:', err);
         setError('Gagal menghapus data');
       }
     }
   }, []);
 
-  // Fungsi untuk menyimpan hasil edit baris menggunakan modal editing bawaan Material React Table
-  const handleSaveRowEdits = useCallback(
-    async ({ exitEditingMode, row, values }) => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/tabel-konten/${row.original.id}`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(values),
-        });
-        if (!response.ok) throw new Error('Failed to update');
-        // Perbarui state data
-        setData((prevData) =>
-          prevData.map((item) =>
-            item.id === row.original.id ? { ...item, ...values } : item
-          )
-        );
-        exitEditingMode(); // keluar dari mode editing
-      } catch (err) {
-        console.error('Error updating data:', err);
-        setError('Gagal memperbarui data');
-      }
-    },
-    []
-  );
-
-  // Definisi kolom untuk Material React Table (tanpa kolom Judul)
   const columns = useMemo(
     () => [
       {
@@ -102,73 +72,96 @@ const Content = () => {
         enableEditing: true,
       },
       {
+        accessorKey: 'jenis_konten',
+        header: 'Jenis Konten',
+        enableEditing: true,
+      },
+      {
         accessorKey: 'nama_pelajaran',
         header: 'Pelajaran',
       },
       {
         accessorKey: 'thumbnail',
         header: 'Thumbnail',
-        // Anda bisa menambahkan rendering khusus, misalnya:
-        Cell: ({ cell }) => (
+        Cell: ({ cell }) =>
           cell.getValue() !== '-' ? (
             <img src={cell.getValue()} alt="Thumbnail" style={{ width: '50px', height: 'auto' }} />
-          ) : '-'
-        ),
+          ) : '-',
       },
       {
         accessorKey: 'link_konten',
         header: 'Link Konten',
-        // Jika link konten merupakan URL, Anda bisa render sebagai tautan:
-        Cell: ({ cell }) => (
+        Cell: ({ cell }) =>
           cell.getValue() !== '-' ? (
             <a href={cell.getValue()} target="_blank" rel="noopener noreferrer">
               {cell.getValue()}
             </a>
-          ) : '-'
+          ) : '-',
+      },
+      {
+        id: 'actions',
+        header: 'Aksi',
+        Cell: ({ row }) => (
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <button
+              onClick={() => {
+                setSelectedKonten(row.original); // Menyimpan data konten yang dipilih
+                setIsEditKontenOpen(true); // Membuka komponen EditKonten
+              }}
+              className="text-blue-600 hover:text-blue-900"
+            >
+              <Edit size={20} />
+            </button>
+            <button
+              onClick={() => handleDelete(row.original.id)}
+              className="text-red-600 hover:text-red-900"
+            >
+              <Trash size={20} />
+            </button>
+          </div>
         ),
       },
     ],
     []
   );
-  
+
   return (
     <AdminNavbar>
+      <div className="bg-white rounded-lg shadow-lg p-8">
+        <h1 className="text-2xl font-bold mb-4">Informasi Konten</h1>
 
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h1 className="text-2xl font-bold mb-4">Informasi Konten</h1>
-
-        {/* Tampilkan pesan error jika ada */}
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             {error}
           </div>
         )}
 
+        <button
+          onClick={() => setIsAddSubmateriOpen(true)} 
+          className="mb-4 px-4 py-2 bg-blue-600 text-white rounded"
+        >
+          Tambah Submateri
+        </button>
+
+        {isAddSubmateriOpen && (
+          <AddSubmateri
+            onClose={() => setIsAddSubmateriOpen(false)} 
+            fetchData={fetchData}
+          />
+        )}
+
+        {isEditKontenOpen && (
+          <EditKonten
+            konten={selectedKonten} // Mengirimkan data konten yang akan diedit
+            onClose={() => setIsEditKontenOpen(false)} // Menutup EditKonten
+            fetchData={fetchData} // Memperbarui data setelah edit
+          />
+        )}
+
         <MaterialReactTable
           columns={columns}
           data={data}
-          editingMode="modal" // Mode editing dengan modal
-          enableEditing
-          onEditingRowSave={handleSaveRowEdits}
-          positionActionsColumn="last" // Tempatkan kolom aksi di akhir
-          // Render aksi di tiap baris: tombol edit dan hapus
-          renderRowActions={({ row, table }) => (
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button
-                onClick={() => table.setEditingRow(row)}
-                className="text-blue-600 hover:text-blue-900"
-              >
-                <Edit size={20} />
-              </button>
-              <button
-                onClick={() => handleDelete(row.original.id)}
-                className="text-red-600 hover:text-red-900"
-              >
-                <Trash size={20} />
-              </button>
-            </div>
-          )}
-          muiTableContainerProps={{ sx: { maxHeight: 500 } }}
+          onEditingRowSave={() => {}}
         />
       </div>
     </AdminNavbar>
