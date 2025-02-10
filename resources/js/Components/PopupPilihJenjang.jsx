@@ -42,7 +42,10 @@ export default function PopupPilihJenjang({ isOpen, onClose, onSelectJenjang }) 
                 </div>
                 <div className="flex justify-center">
                     <button
-                        onClick={onClose}
+                        onClick={() => {
+                            onSelectJenjang("", "Pilih Jenjang"); // Send empty string for ID and "Pilih Jenjang" for name
+                            onClose();
+                        }}
                         className="bg-[#A8C9F1] text-[#154561] px-12 py-2 rounded-lg font-semibold focus:outline-none"
                     >
                         Tutup
