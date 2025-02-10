@@ -20,6 +20,7 @@ class TabelKontenController extends Controller
                     'judul_konten'     => $submateri->konten ? $submateri->konten->judul_konten : '-',
                     'deskripsi'        => $submateri->konten ? $submateri->konten->deskripsi : '-',
                     'nama_pelajaran'   => $submateri->mataPelajaran ? $submateri->mataPelajaran->nama_pelajaran : '-',
+                    'jenis_konten'     => $submateri->konten ? $submateri->konten->jenis_konten : '-',
                     'thumbnail'        => $submateri->konten ? $submateri->konten->thumbnail : '-', // Kolom tambahan
                     'link_konten'      => $submateri->konten ? $submateri->konten->link_konten : '-', // Kolom tambahan
                 ];
@@ -38,6 +39,7 @@ class TabelKontenController extends Controller
             'nama_submateri'       => 'string|max:255',
             'id_jenjang'           => 'exists:jenjang,id',
             'id_mata_pelajaran'    => 'exists:mata_pelajaran,id',
+            'jenis_konten'         => 'nullable|string|max:255', // 
         ]);
 
         $submateri->update($request->all());
