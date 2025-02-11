@@ -12,13 +12,21 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\RekomendasiController;
 use App\Http\Controllers\TabelKontenController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AddSubmateriController;
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/add-submateri', [AddSubmateriController::class, 'store']);
+});
+Route::get('/mata_pelajaran_jenjang/{jenjang_id}', [AddSubmateriController::class, 'getListMataPelajaran']);
+
 
 Route::get('/dashboard-stats', [DashboardController::class, 'index']);
 
 
 Route::get('/tabel-konten', [TabelKontenController::class, 'index']);
-Route::put('/tabel-konten/{id}', [TabelKontenController::class, 'update']);
-Route::delete('/tabel-konten/{id}', [TabelKontenController::class, 'destroy']);
+Route::get('tabel-konten/{id}', [TabelKontenController::class, 'show']);
+Route::POST('/tabel-konten/{id}', [TabelKontenController::class, 'update']);
+Route::DELETE('/tabel-konten/{id}', [TabelKontenController::class, 'destroy']);
 
 
 Route::get('/rekomendasi', [RekomendasiController::class, 'getRekomendasi']);
@@ -65,3 +73,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/mata-pelajaran', [MataPelajaranController::class, 'getAllMataPelajaran']);
