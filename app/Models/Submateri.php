@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 class Submateri extends Model
 {
     protected $table = 'submateri'; 
-    protected $fillable = ['id', 'nama_submateri', 'id_mata_pelajaran'];
+    protected $fillable = ['id', 'nama_submateri', 'id_mata_pelajaran', 'id_jenjang'];
 
 
     public function mataPelajaran()
@@ -18,7 +18,7 @@ class Submateri extends Model
     
     public function jenjang()
     {
-        return $this->belongsTo(Jenjang::class, 'id_jenjang', 'id');
+        return $this->belongsTo(Jenjang::class, 'id_jenjang');
     }
 
         public function konten()

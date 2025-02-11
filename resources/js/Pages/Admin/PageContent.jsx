@@ -3,14 +3,14 @@ import { MaterialReactTable } from 'material-react-table';
 import { Trash, Edit } from 'lucide-react';
 import AdminNavbar from '@/Components/AdminNavbar';
 import AddSubmateri from '@/Components/AddSubmateri';
-import EditKonten from '@/Components/EditKonten'; // Pastikan EditKonten diimpor
+import EditKonten from '@/Components/EditKonten';
 
 const Content = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
-  const [isAddSubmateriOpen, setIsAddSubmateriOpen] = useState(false); 
-  const [isEditKontenOpen, setIsEditKontenOpen] = useState(false); // State untuk membuka EditKonten
-  const [selectedKonten, setSelectedKonten] = useState(null); // State untuk menyimpan data konten yang dipilih untuk diedit
+  const [isAddSubmateriOpen, setIsAddSubmateriOpen] = useState(false);
+  const [isEditKontenOpen, setIsEditKontenOpen] = useState(false);
+  const [selectedKonten, setSelectedKonten] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -33,6 +33,29 @@ const Content = () => {
     }
   };
 
+  const handleUpdate = async (konten) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/tabel-konten/${konten.id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          judul_konten: "Judul Baru",
+          deskripsi: "Deskripsi Baru",
+          jenis_konten: "Tipe Baru",
+          link_konten: "https://contoh.com",
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to update');
+      fetchData(token);
+    } catch (err) {
+      setError('Gagal mengupdate data');
+    }
+  };
+
   const handleDelete = useCallback(async (id) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus baris ini?')) {
       try {
@@ -51,79 +74,53 @@ const Content = () => {
     }
   }, []);
 
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: 'nama_submateri',
-        header: 'Submateri',
-      },
-      {
-        accessorKey: 'nama_jenjang',
-        header: 'Jenjang',
-      },
-      {
-        accessorKey: 'judul_konten',
-        header: 'Judul Konten',
-        enableEditing: true,
-      },
-      {
-        accessorKey: 'deskripsi',
-        header: 'Deskripsi',
-        enableEditing: true,
-      },
-      {
-        accessorKey: 'jenis_konten',
-        header: 'Jenis Konten',
-        enableEditing: true,
-      },
-      {
-        accessorKey: 'nama_pelajaran',
-        header: 'Pelajaran',
-      },
-      {
-        accessorKey: 'thumbnail',
-        header: 'Thumbnail',
-        Cell: ({ cell }) =>
-          cell.getValue() !== '-' ? (
-            <img src={cell.getValue()} alt="Thumbnail" style={{ width: '50px', height: 'auto' }} />
-          ) : '-',
-      },
-      {
-        accessorKey: 'link_konten',
-        header: 'Link Konten',
-        Cell: ({ cell }) =>
-          cell.getValue() !== '-' ? (
-            <a href={cell.getValue()} target="_blank" rel="noopener noreferrer">
-              {cell.getValue()}
-            </a>
-          ) : '-',
-      },
-      {
-        id: 'actions',
-        header: 'Aksi',
-        Cell: ({ row }) => (
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button
-              onClick={() => {
-                setSelectedKonten(row.original); // Menyimpan data konten yang dipilih
-                setIsEditKontenOpen(true); // Membuka komponen EditKonten
-              }}
-              className="text-blue-600 hover:text-blue-900"
-            >
-              <Edit size={20} />
-            </button>
-            <button
-              onClick={() => handleDelete(row.original.id)}
-              className="text-red-600 hover:text-red-900"
-            >
-              <Trash size={20} />
-            </button>
-          </div>
-        ),
-      },
-    ],
-    []
-  );
+  const columns = useMemo(() => [
+    { accessorKey: 'nama_submateri', header: 'Submateri' },
+    { accessorKey: 'nama_jenjang', header: 'Jenjang' },
+    { accessorKey: 'nama_pelajaran', header: 'Pelajaran' },
+    { accessorKey: 'judul_konten', header: 'Judul Konten', enableEditing: true },
+    { accessorKey: 'deskripsi', header: 'Deskripsi', enableEditing: true },
+    { accessorKey: 'jenis_konten', header: 'Jenis Konten', enableEditing: true },
+    {
+      accessorKey: 'thumbnail',
+      header: 'Thumbnail',
+      Cell: ({ cell }) =>
+        cell.getValue() !== '-' ? (
+          <img src={cell.getValue()} alt="Thumbnail" style={{ width: '50px', height: 'auto' }} />
+        ) : '-',
+    },
+    {
+      accessorKey: 'link_konten',
+      header: 'Link Konten',
+      Cell: ({ cell }) =>
+        cell.getValue() !== '-' ? (
+          <a href={cell.getValue()} target="_blank" rel="noopener noreferrer">{cell.getValue()}</a>
+        ) : '-',
+    },
+    {
+      id: 'actions',
+      header: 'Aksi',
+      Cell: ({ row }) => (
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button
+            onClick={() => {
+              setSelectedKonten(row.original);
+              setIsEditKontenOpen(true);
+            }}
+            className="text-blue-600 hover:text-blue-900"
+          >
+            <Edit size={20} />
+          </button>
+          <button
+            onClick={() => handleDelete(row.original.id)}
+            className="text-red-600 hover:text-red-900"
+          >
+            <Trash size={20} />
+          </button>
+        </div>
+      ),
+    },
+  ], []);
 
   return (
     <AdminNavbar>
@@ -137,7 +134,7 @@ const Content = () => {
         )}
 
         <button
-          onClick={() => setIsAddSubmateriOpen(true)} 
+          onClick={() => setIsAddSubmateriOpen(true)}
           className="mb-4 px-4 py-2 bg-blue-600 text-white rounded"
         >
           Tambah Submateri
@@ -145,23 +142,22 @@ const Content = () => {
 
         {isAddSubmateriOpen && (
           <AddSubmateri
-            onClose={() => setIsAddSubmateriOpen(false)} 
+            onClose={() => setIsAddSubmateriOpen(false)}
             fetchData={fetchData}
           />
         )}
 
         {isEditKontenOpen && (
           <EditKonten
-            konten={selectedKonten} // Mengirimkan data konten yang akan diedit
-            onClose={() => setIsEditKontenOpen(false)} // Menutup EditKonten
-            fetchData={fetchData} // Memperbarui data setelah edit
+            konten={selectedKonten}
+            onClose={() => setIsEditKontenOpen(false)}
+            fetchData={fetchData}
           />
         )}
 
         <MaterialReactTable
           columns={columns}
           data={data}
-          onEditingRowSave={() => {}}
         />
       </div>
     </AdminNavbar>
