@@ -13,6 +13,12 @@ class MataPelajaranController extends Controller
 
         return response()->json($mataPelajaran);
     }
+
+        public function getAllMataPelajaran()
+    {
+        return response()->json(MataPelajaran::all());
+    }
+
 }
 
 
