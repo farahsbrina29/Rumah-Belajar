@@ -74,3 +74,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/mata-pelajaran', [MataPelajaranController::class, 'getAllMataPelajaran']);
+

@@ -10,29 +10,68 @@ import axios from 'axios';
 export default function Welcome({ auth }) {
     const [isPopupKelasOpen, setIsPopupKelasOpen] = useState(false);
     const [isPopupJenjangOpen, setIsPopupJenjangOpen] = useState(false);
-    const [selectedJenjang, setSelectedJenjang] = useState("Pilih Jenjang"); 
-    const [idJenjang, setIdJenjang] = useState(null); 
-    const [subjects, setSubjects] = useState([]); 
+    const [selectedJenjang, setSelectedJenjang] = useState("Pilih Jenjang");
+    const [idJenjang, setIdJenjang] = useState(null);
+    const [subjects, setSubjects] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [rekomendasi, setRekomendasi] = useState([]);
     const [loadingRekomendasi, setLoadingRekomendasi] = useState(true);
     const [errorRekomendasi, setErrorRekomendasi] = useState(null);
 
-    const openPopupKelas = () => setIsPopupKelasOpen(true);
+    const openPopupKelas = () => {
+        if (!loading && subjects.length > 0) {
+            setIsPopupKelasOpen(true);
+        }
+    };
     const closePopupKelas = () => setIsPopupKelasOpen(false);
     const openPopupJenjang = () => setIsPopupJenjangOpen(true);
     const closePopupJenjang = () => setIsPopupJenjangOpen(false);
 
-    // Ketika jenjang dipilih dari popup, simpan di state dan localStorage
+    // Modified handleSelectJenjang to handle "no filter" case
     const handleSelectJenjang = (id, nama) => {
-        setSelectedJenjang(nama);
-        setIdJenjang(id);
-        localStorage.setItem('selectedJenjang', nama);
-        localStorage.setItem('idJenjang', id);
+        if (nama === "Semua Jenjang") {
+            setSelectedJenjang("Pilih Jenjang");
+            setIdJenjang(null);
+            localStorage.removeItem('selectedJenjang');
+            localStorage.removeItem('idJenjang');
+        } else {
+            setSelectedJenjang(nama);
+            setIdJenjang(id);
+            localStorage.setItem('selectedJenjang', nama);
+            localStorage.setItem('idJenjang', id);
+        }
         closePopupJenjang();
+        fetchSubjects(id); // Explicitly fetch subjects when jenjang changes
     };
 
+    // Separate function to fetch subjects
+    const fetchSubjects = async (jenjangId) => {
+        setLoading(true);
+        setError(null);
+        
+        try {
+            const url = jenjangId 
+                ? `/api/mata-pelajaran/${jenjangId}`
+                : '/api/mata-pelajaran';
+                
+            const response = await axios.get(url);
+            
+            if (response.data && Array.isArray(response.data)) {
+                setSubjects(response.data);
+            } else {
+                throw new Error("Format data tidak valid");
+            }
+        } catch (error) {
+            console.error("Gagal mengambil data mata pelajaran", error);
+            setError("Gagal memuat mata pelajaran");
+            setSubjects([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Load stored jenjang and fetch subjects on mount
     useEffect(() => {
         const storedJenjang = localStorage.getItem('selectedJenjang');
         const storedIdJenjang = localStorage.getItem('idJenjang');
@@ -40,21 +79,23 @@ export default function Welcome({ auth }) {
         if (storedJenjang && storedIdJenjang) {
             setSelectedJenjang(storedJenjang);
             setIdJenjang(storedIdJenjang);
+            fetchSubjects(storedIdJenjang);
+        } else {
+            fetchSubjects(null); // Fetch all subjects if no jenjang is selected
         }
     }, []);
 
-    // --- USE EFFECT UNTUK MENGAMBIL DATA REKOMENDASI ---
+    // Load rekomendasi
     useEffect(() => {
         setLoadingRekomendasi(true);
         setErrorRekomendasi(null);
         
-        // Jika API mendukung filter dengan query parameter, gunakan URL berikut:
         let url = "http://127.0.0.1:8000/api/rekomendasi";
         if (idJenjang) {
             url += `?idJenjang=${idJenjang}`;
         }
         
-        axios.get(url) 
+        axios.get(url)
             .then(response => {
                 if (response.data && Array.isArray(response.data)) {
                     setRekomendasi(response.data);
@@ -71,12 +112,7 @@ export default function Welcome({ auth }) {
             .finally(() => {
                 setLoadingRekomendasi(false);
             });
-    }, [idJenjang]); // Refetch setiap kali idJenjang berubah
-
-    // Jika API tidak mendukung filter, kamu bisa lakukan filter di sisi client:
-    const filteredRekomendasi = idJenjang
-        ? rekomendasi.filter(item => item.id_jenjang == idJenjang)
-        : rekomendasi;
+    }, [idJenjang]);
 
     const subjectIcons = [
         { name: 'Biologi', icon: '🧬' },
@@ -101,43 +137,14 @@ export default function Welcome({ auth }) {
         { name: 'Seni dan Industri Kreatif', icon: '🎨' },
         { name: 'Energi dan Pertambangan', icon: '⛏️' },
         { name: 'Tunanetra', icon: '🔊' },
-        { name: 'Tunarungu', icon: '🔠' }, 
-        { name: 'Tunagrahita', icon: '💡' }, 
+        { name: 'Tunarungu', icon: '🔠' },
+        { name: 'Tunagrahita', icon: '💡' },
         { name: 'Tunadaksa', icon: '🖥️' },
         { name: 'Tunalaras', icon: '🌟' },
         { name: 'Tunawicara', icon: '✍️' },
         { name: 'Tunaganda', icon: '📖' },
     ];
 
-    useEffect(() => {
-        if (idJenjang) {
-            setLoading(true);
-            setError(null);
-            axios.get(`/api/mata-pelajaran/${idJenjang}`)
-                .then(response => {
-                    if (response.data && Array.isArray(response.data)) {
-                        setSubjects(response.data);
-                    } else {
-                        setError("Format data tidak valid");
-                        setSubjects([]);
-                    }
-                })
-                .catch(error => {
-                    console.error("Gagal mengambil data mata pelajaran", error);
-                    setError("Gagal memuat mata pelajaran");
-                    setSubjects([]);
-                })
-                .finally(() => {
-                    setLoading(false);
-                });
-        }
-    }, [idJenjang]);
-
-    useEffect(() => {
-        console.log("Popup state:", isPopupKelasOpen);
-        console.log("Subjects:", subjects);
-    }, [isPopupKelasOpen, subjects]);
-    
     const handleSubjectClick = (subjectName) => {
         router.visit(`/ruang-belajar/${subjectName}`);
     };
@@ -192,7 +199,7 @@ export default function Welcome({ auth }) {
                         )}
                     </div>
 
-                    {/* Ruang Belajar */}
+                    {/* Ruang Belajar Section */}
                     <div className="mt-8 bg-white rounded-lg p-6 shadow-md max-w-5xl mx-auto">
                         <h2 className="text-xl font-bold text-[#154561] mb-6">
                             Ruang Belajar
@@ -200,35 +207,43 @@ export default function Welcome({ auth }) {
                         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
                             {loading ? (
                                 <div className="col-span-full text-center">Memuat mata pelajaran...</div>
-                            ) : subjects && subjects.slice(0, 7).map((subject, index) => {
-                                const matchedSubject = subjectIcons.find(s => 
-                                    s.name.toLowerCase() === subject.nama_pelajaran.toLowerCase()
-                                );
-                                const icon = matchedSubject ? matchedSubject.icon : '📘';
+                            ) : error ? (
+                                <div className="col-span-full text-center text-red-500">{error}</div>
+                            ) : subjects && subjects.length > 0 ? (
+                                <>
+                                    {subjects.slice(0, 7).map((subject, index) => {
+                                        const matchedSubject = subjectIcons.find(s => 
+                                            s.name.toLowerCase() === subject.nama_pelajaran.toLowerCase()
+                                        );
+                                        const icon = matchedSubject ? matchedSubject.icon : '📘';
 
-                                return (
+                                        return (
+                                            <div
+                                                key={index}
+                                                className="flex flex-col items-center cursor-pointer hover:bg-blue-50 p-2 rounded-lg transition-colors"
+                                                onClick={() => handleSubjectClick(subject.nama_pelajaran)}
+                                            >
+                                                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-2">
+                                                    <span className="text-2xl">{icon}</span>
+                                                </div>
+                                                <p className="text-xs text-center">{subject.nama_pelajaran}</p>
+                                            </div>
+                                        );
+                                    })}
+                                    
                                     <div
-                                        key={index}
-                                        className="flex flex-col items-center cursor-pointer hover:bg-blue-50 p-2 rounded-lg transition-colors"
-                                        onClick={() => handleSubjectClick(subject.nama_pelajaran)}
+                                        onClick={loading ? undefined : openPopupKelas}
+                                        className={`flex flex-col items-center ${loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-gray-50'} p-2 rounded-lg transition-colors`}
                                     >
-                                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-2">
-                                            <span className="text-2xl">{icon}</span>
+                                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
+                                            <span className="text-2xl">⋯</span>
                                         </div>
-                                        <p className="text-xs text-center">{subject.nama_pelajaran}</p>
+                                        <p className="text-xs text-center">Semua</p>
                                     </div>
-                                );
-                            })}
-                            
-                            {subjects && subjects.length > 0 && (
-                                <div
-                                    onClick={openPopupKelas}
-                                    className="flex flex-col items-center cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
-                                >
-                                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-                                        <span className="text-2xl">⋯</span>
-                                    </div>
-                                    <p className="text-xs text-center">Semua</p>
+                                </>
+                            ) : (
+                                <div className="col-span-full text-center">
+                                    Belum ada mata pelajaran tersedia.
                                 </div>
                             )}
                         </div>
@@ -247,18 +262,15 @@ export default function Welcome({ auth }) {
                                     <div className="text-center text-white">Memuat rekomendasi...</div>
                                 ) : errorRekomendasi ? (
                                     <div className="text-center text-red-400">{errorRekomendasi}</div>
-                                ) : filteredRekomendasi.length > 0 ? (
-                                    filteredRekomendasi.map((item, index) => (
+                                ) : rekomendasi.length > 0 ? (
+                                    rekomendasi.map((item, index) => (
                                         <div
                                             key={index}
                                             className="bg-white rounded-lg p-4 flex items-center gap-4"
                                         >
-                                            {/* Gambar dari thumbnail */}
                                             <img src={item.thumbnail} alt={item.judul_konten} className="w-12 h-12 object-cover rounded" />
                                             <div>
-                                                {/* Judul Konten */}
                                                 <h3 className="font-semibold mb-1">{item.judul_konten}</h3>
-                                                {/* Nama Pelajaran & Jenjang */}
                                                 <p className="text-sm text-gray-600">
                                                     {item.nama_pelajaran} - {item.nama_jenjang}
                                                 </p>
