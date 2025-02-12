@@ -8,12 +8,12 @@ const Footer = () => {
         <div className="flex flex-col items-center md:items-start">
           {/* Logo */}
           <img
-            src="/assets/logorbn.png" // Ganti dengan path/logo Anda
-            alt="Logo Rumah Belajar NTB"
-            className="w-12 h-12 mb-4"
+            src="/assets/logo final.png" // Ganti dengan path/logo Anda
+            alt="Logo Rumah Belajar BTIDP NTB"
+            className="w-22 h-10 mb-4"
           />
           <h2 className="text-lg sm:text-xl font-semibold mb-4 text-center md:text-left">
-            Rumah Belajar NTB
+            Rumah Belajar
           </h2>
           <p className="text-sm sm:text-base leading-relaxed text-center md:text-left break-words">
             Jl. Pendidikan No.19A, Gomong <br />
