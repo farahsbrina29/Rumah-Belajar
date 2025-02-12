@@ -25,8 +25,8 @@ Route::get('/dashboard-stats', [DashboardController::class, 'index']);
 
 Route::get('/tabel-konten', [TabelKontenController::class, 'index']);
 Route::get('tabel-konten/{id}', [TabelKontenController::class, 'show']);
-Route::POST('/tabel-konten/{id}', [TabelKontenController::class, 'update']);
-Route::DELETE('/tabel-konten/{id}', [TabelKontenController::class, 'destroy']);
+Route::put('/tabel-konten/{id}', [TabelKontenController::class, 'update']);
+Route::delete('/tabel-konten/{id}', [TabelKontenController::class, 'destroy']);
 
 
 Route::get('/rekomendasi', [RekomendasiController::class, 'getRekomendasi']);

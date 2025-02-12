@@ -12,7 +12,7 @@ class Konten extends Model
     protected $table = 'konten'; 
 
     protected $fillable = [
-        'id_submateri', 'judul_konten', 'deskripsi', 'thumbnail', 'jenis_konten','link_konten', 'id_jenjang'
+        'id_submateri', 'judul_konten', 'deskripsi', 'thumbnail', 'jenis_konten','link_konten', 'id_jenjang', 'id_mata_pelajaran'
     ];
 
     public function submateri()

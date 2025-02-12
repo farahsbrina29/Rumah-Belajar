@@ -58,63 +58,6 @@ class TabelKontenController extends Controller
         ], 200);
     }
     
-    public function store(Request $request)
-    {
-        try {
-            DB::beginTransaction();
-
-            // Validasi input
-            $request->validate([
-                'nama_submateri' => 'required|string|max:255',
-                'id_jenjang' => 'required|exists:jenjang,id',
-                'id_mata_pelajaran' => 'required|exists:mata_pelajaran,id',
-                'judul_konten' => 'required|string|max:255',
-                'deskripsi' => 'required|string',
-                'jenis_konten' => 'required|string',
-                'link_konten' => 'required|string',
-                'thumbnail' => 'nullable|image|max:5120',
-            ]);
-
-            // Buat submateri baru
-            $submateri = Submateri::create([
-                'nama_submateri' => $request->nama_submateri,
-                'id_jenjang' => $request->id_jenjang,
-                'id_mata_pelajaran' => $request->id_mata_pelajaran,
-            ]);
-
-            // Simpan thumbnail jika ada
-            $thumbnailPath = null;
-            if ($request->hasFile('thumbnail')) {
-                $thumbnailPath = $request->file('thumbnail')->store('thumbnails', 'public');
-            }
-
-            // Buat konten yang terkait dengan submateri
-            $konten = Konten::create([
-                'id_submateri' => $submateri->id, // Menyimpan FK ke tabel konten
-                'judul_konten' => $request->judul_konten,
-                'deskripsi' => $request->deskripsi,
-                'jenis_konten' => $request->jenis_konten,
-                'link_konten' => $request->link_konten,
-                'thumbnail' => $thumbnailPath,
-            ]);
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Submateri dan konten berhasil ditambahkan',
-                'submateri' => $submateri,
-                'konten' => $konten
-            ], 201);
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal menambahkan submateri dan konten: ' . $e->getMessage()
-            ], 500);
-        }
-    }
 
 
     // Update konten yang terkait dengan submateri
@@ -122,17 +65,16 @@ class TabelKontenController extends Controller
     {
         try {
             DB::beginTransaction();
-
+    
             // Cari submateri berdasarkan ID
             $submateri = Submateri::findOrFail($id_submateri);
-
+    
             // Pastikan submateri memiliki konten yang terkait
-            if (!$submateri->konten) {
+            $konten = Konten::where('id_submateri', $id_submateri)->first();
+            if (!$konten) {
                 return response()->json(['message' => 'Konten tidak ditemukan untuk submateri ini'], 404);
             }
-
-            $konten = $submateri->konten;
-
+    
             // Validasi data input
             $request->validate([
                 'judul_konten' => 'required|string|max:255',
@@ -141,7 +83,7 @@ class TabelKontenController extends Controller
                 'link_konten' => 'required|string',
                 'thumbnail' => 'nullable|image|max:5120',
             ]);
-
+    
             // Hapus thumbnail lama jika ada thumbnail baru
             if ($request->hasFile('thumbnail')) {
                 if ($konten->thumbnail && Storage::disk('public')->exists($konten->thumbnail)) {
@@ -150,7 +92,7 @@ class TabelKontenController extends Controller
                 $thumbnailPath = $request->file('thumbnail')->store('thumbnails', 'public');
                 $konten->thumbnail = $thumbnailPath;
             }
-
+    
             // Update konten
             $konten->update([
                 'judul_konten' => $request->judul_konten,
@@ -158,14 +100,14 @@ class TabelKontenController extends Controller
                 'jenis_konten' => $request->jenis_konten,
                 'link_konten' => $request->link_konten,
             ]);
-
+    
             DB::commit();
             return response()->json([
                 'success' => true,
                 'message' => 'Konten berhasil diperbarui',
                 'data' => $konten
             ], 200);
-
+    
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
@@ -174,10 +116,7 @@ class TabelKontenController extends Controller
             ], 500);
         }
     }
-
     
-
-
 
     public function destroy($id_submateri)
     {
@@ -219,5 +158,4 @@ class TabelKontenController extends Controller
     }
     
     }
-
     
