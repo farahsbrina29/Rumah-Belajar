@@ -12,11 +12,11 @@ export default function Navbar({ auth }) {
                 {/* Logo dan Nama */}
                 <div className="flex items-center space-x-2">
                     <img
-                        src="/path-to-your-logo.png" // Ganti dengan path logo Anda
+                        src="/assets/logo final.png" // Ganti dengan path logo Anda
                         alt="Logo"
-                        className="h-8 w-8"
+                        className="h-7 w-15"
                     />
-                    <span className="text-sm font-bold" style={{ color: '#154561' }}>Rumah Belajar NTB</span>
+                    <span className="text-sm font-bold" style={{ color: '#154561' }}>Rumah Belajar</span>
                 </div>
 
                 {/* Hamburger Menu untuk Mobile */}

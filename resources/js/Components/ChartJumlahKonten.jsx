@@ -6,7 +6,6 @@ import axios from 'axios';
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 export default function ChartJumlahKonten() {
-    // State untuk menyimpan data chart
     const [chartData, setChartData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -14,7 +13,6 @@ export default function ChartJumlahKonten() {
     useEffect(() => {
         axios.get("http://127.0.0.1:8000/api/jumlah-konten")
             .then(response => {
-                // Daftar label default yang selalu ingin ditampilkan
                 const defaultLabels = [
                     'Kelas 10 SMA',
                     'Kelas 11 SMA',
@@ -27,8 +25,6 @@ export default function ChartJumlahKonten() {
                     'Kelas 12 SLB',
                 ];
 
-                // Mapping data API ke label default
-                // Misal, response.data berupa array: [{ nama_jenjang: 'Kelas 10 SMA', jumlah: 15 }, ... ]
                 const counts = defaultLabels.map(label => {
                     const found = response.data.find(item => item.nama_jenjang === label);
                     return found ? found.jumlah : 0;
@@ -63,7 +59,6 @@ export default function ChartJumlahKonten() {
             });
     }, []);
 
-    // Opsi ChartJS
     const options = {
         responsive: true,
         plugins: {
@@ -103,11 +98,11 @@ export default function ChartJumlahKonten() {
     if (error) return <div>{error}</div>;
 
     return (
-        <div className="bg-white rounded-lg p-6 shadow-md mx-auto max-w-full md:max-w-2xl" style={{ height: '400px' }}>
+        <div className="bg-white rounded-lg p-6 shadow-lg border border-white/10 backdrop-blur-sm">
             <h2 className="text-xl font-bold mb-4 text-center">
                 Jumlah Konten Berdasarkan Jenjang
             </h2>
-            <div style={{ height: '100%', width: '100%' }}>
+            <div className="h-80">
                 <Bar data={chartData} options={options} />
             </div>
         </div>

@@ -323,7 +323,7 @@ export default function Welcome({ auth }) {
                 {/* Grafik Section */}
                 <section className="bg-blue-100 py-8">
                     <div className="container mx-auto px-4">
-                        <div className="max-w-5xl mx-auto">
+                        <div className="max-w-2xl mx-auto">
                             <ChartJumlahKonten />
                         </div>
                     </div>
