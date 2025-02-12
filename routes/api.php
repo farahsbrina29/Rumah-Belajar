@@ -14,9 +14,9 @@ use App\Http\Controllers\TabelKontenController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AddSubmateriController;
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/add-submateri', [AddSubmateriController::class, 'store']);
-});
+Route::get('user/getRoleDistribution', [UserController::class, 'getRoleDistribution']);
+
+Route::post('/add-submateri', [AddSubmateriController::class, 'store']);
 Route::get('/mata_pelajaran_jenjang/{jenjang_id}', [AddSubmateriController::class, 'getListMataPelajaran']);
 
 
