@@ -10,34 +10,42 @@ use Illuminate\Support\Facades\DB;
 class KontenController extends Controller
 {
     public function index(Request $request)
-    {
-        $query = Konten::with(['jenjang', 'mataPelajaran']); // Ambil data konten beserta jenjang & mata pelajaran
+{
+    $query = Konten::with(['jenjang', 'mataPelajaran']); // Ambil data konten beserta jenjang & mata pelajaran
 
-        // Filter berdasarkan nama_jenjang jika ada request
-        if ($request->has('jenjang')) {
-            $query->whereHas('jenjang', function ($q) use ($request) {
-                $q->where('nama_jenjang', $request->jenjang);
-            });
-        }
-
-        // Filter berdasarkan id_submateri jika ada request
-        if ($request->has('id_submateri')) {
-            $query->where('id_submateri', $request->id_submateri);
-        }
-
-        return response()->json($query->get());
+    // Filter berdasarkan nama_jenjang jika ada request
+    if ($request->has('jenjang')) {
+        $query->whereHas('jenjang', function ($q) use ($request) {
+            $q->where('nama_jenjang', $request->jenjang);
+        });
     }
 
-    public function show($submateriId)
-    {
-        $konten = Konten::where('id_submateri', $submateriId)->first();
-
-        return response()->json([
-            'video_id' => $konten->link_konten ?? 'default123',
-            'description' => $konten->deskripsi ?? 'Detail materi akan ditampilkan di sini...',
-            'mata_pelajaran' => $konten->mataPelajaran->nama_pelajaran ?? 'Tidak Diketahui'
-        ]);
+    // Filter berdasarkan id_submateri jika ada request
+    if ($request->has('id_submateri')) {
+        $query->where('id_submateri', $request->id_submateri);
     }
+
+    // Include the thumbnail URL in the response
+    return response()->json($query->get()->map(function ($konten) {
+        if ($konten->thumbnail) {
+            $konten->thumbnail = asset('storage/' . str_replace('public/', '', $konten->thumbnail));
+        }
+        return $konten;
+    }));
+}
+
+public function show($submateriId)
+{
+    $konten = Konten::where('id_submateri', $submateriId)->first();
+
+    return response()->json([
+        'video_id' => $konten->link_konten ?? 'default123',
+        'description' => $konten->deskripsi ?? 'Detail materi akan ditampilkan di sini...',
+        'mata_pelajaran' => $konten->mataPelajaran->nama_pelajaran ?? 'Tidak Diketahui',
+        'thumbnail' => $konten->thumbnail ? asset('storage/' . str_replace('public/', '', $konten->thumbnail)) : null,
+    ]);
+}
+
     public function getJumlahKonten()
     {
         // Pastikan nama kolom dan join sesuai dengan struktur tabel kamu.

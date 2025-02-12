@@ -28,6 +28,14 @@ class RekomendasiController extends Controller
 
         $rekomendasi = $query->limit(4)->get();
 
+        // Pastikan thumbnail dalam format yang bisa diakses frontend
+        $rekomendasi = $rekomendasi->map(function ($item) {
+            if ($item->thumbnail) {
+                $item->thumbnail = asset('storage/' . str_replace('public/', '', $item->thumbnail));
+            }
+            return $item;
+        });
+
         return response()->json($rekomendasi);
     }
 }
