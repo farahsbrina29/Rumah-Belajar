@@ -33,29 +33,6 @@ const Content = () => {
     }
   };
 
-  const handleUpdate = async (konten) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/tabel-konten/${konten.id}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          judul_konten: "Judul Baru",
-          deskripsi: "Deskripsi Baru",
-          jenis_konten: "Tipe Baru",
-          link_konten: "https://contoh.com",
-        }),
-      });
-      if (!response.ok) throw new Error('Failed to update');
-      fetchData(token);
-    } catch (err) {
-      setError('Gagal mengupdate data');
-    }
-  };
-
   const handleDelete = useCallback(async (id) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus baris ini?')) {
       try {

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const EditKonten = ({ onClose, fetchData, konten }) => {
   const [judul, setJudul] = useState(konten?.judul_konten || '');
   const [deskripsi, setDeskripsi] = useState(konten?.deskripsi || '');
-  const [jenisKonten, setJenisKonten] = useState(konten?.jenis_konten || 'video');
+  const [jenisKonten, setJenisKonten] = useState(konten?.jenis_konten);
   const [thumbnail, setThumbnail] = useState(null);
   const [linkKonten, setLinkKonten] = useState(konten?.link_konten || '');
   const [isLoading, setIsLoading] = useState(false);
@@ -12,16 +13,18 @@ const EditKonten = ({ onClose, fetchData, konten }) => {
     setThumbnail(e.target.files[0]);
   };
 
+  
   const handleSubmit = async () => {
     if (!judul || !deskripsi || !linkKonten) {
       alert('Semua field harus diisi!');
       return;
     }
-
+  
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
       const formData = new FormData();
+      formData.append('_method', 'PUT'); // Laravel membutuhkan ini untuk method spoofing
       formData.append('judul_konten', judul);
       formData.append('deskripsi', deskripsi);
       formData.append('jenis_konten', jenisKonten);
@@ -29,25 +32,26 @@ const EditKonten = ({ onClose, fetchData, konten }) => {
       if (thumbnail) {
         formData.append('thumbnail', thumbnail);
       }
-
-      const response = await fetch(`/api/tabel-konten/${konten.id}`, {
-        method: 'PUT',
+  
+      const response = await axios.post(`/api/tabel-konten/${konten.id}`, formData, {
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
         },
-        body: formData,
       });
-
-      if (!response.ok) throw new Error('Gagal memperbarui konten');
-
+  
+      if (response.status !== 200) throw new Error('Gagal memperbarui konten');
+  
       fetchData();
       onClose();
     } catch (error) {
-      alert(error.message);
+      alert(error.response?.data?.message || 'Terjadi kesalahan');
     } finally {
       setIsLoading(false);
     }
   };
+  
+  
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-50">
@@ -79,6 +83,7 @@ const EditKonten = ({ onClose, fetchData, konten }) => {
             onChange={(e) => setJenisKonten(e.target.value)}
             className="w-full p-2 border rounded"
           >
+            <option value="" disabled>Pilih jenis konten</option> 
             <option value="video">Video</option>
             <option value="lainnya">Lainnya</option>
           </select>
@@ -116,5 +121,4 @@ const EditKonten = ({ onClose, fetchData, konten }) => {
     </div>
   );
 };
-
 export default EditKonten;
