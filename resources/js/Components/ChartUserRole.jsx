@@ -19,9 +19,9 @@ const ChartUserRole = () => {
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-gray-800 p-3 rounded-lg border border-gray-700 text-white shadow-lg">
-          <p className="font-semibold">{`${payload[0].name}`}</p>
-          <p className="text-cyan-400">Total: {payload[0].value}</p>
+        <div className="bg-[#2C3141] p-4 rounded-lg border border-white/10">
+          <p className="text-white font-medium">{`${payload[0].name}`}</p>
+          <p className="text-cyan-400">{`Total: ${payload[0].value}`}</p>
         </div>
       );
     }
@@ -29,31 +29,41 @@ const ChartUserRole = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-xl border border-gray-200 dark:bg-gray-900 dark:border-gray-800">
-      <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Distribusi User Berdasarkan Role</h2>
-      <div className="h-80 flex justify-center items-center">
+    <div className="bg-white rounded-lg p-6 shadow-md">
+      <h2 className="text-xl font-bold mb-4">
+        Distribusi User Berdasarkan Role
+      </h2>
+      <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={data}
               cx="50%"
-              cy="50%"
+              cy="45%"
               innerRadius={60}
               outerRadius={80}
+              fill="#8884d8"
               paddingAngle={5}
               dataKey="value"
               label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={COLORS[index % COLORS.length]}
+                />
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
             <Legend 
-              formatter={(value) => <span className="text-gray-800 dark:text-white">{value}</span>} 
-              layout="vertical" 
-              align="right" 
-              verticalAlign="middle" 
+              formatter={(value) => <span className="text-gray-800 text-sm">{value}</span>}
+              layout="horizontal"
+              align="center"
+              verticalAlign="bottom"
+              wrapperStyle={{
+                paddingTop: 20,
+                fontSize: '12px'
+              }}
             />
           </PieChart>
         </ResponsiveContainer>
