@@ -58,22 +58,26 @@ class AddSubmateriController extends Controller
         DB::beginTransaction();
 
         try {
-            // Simpan submateri
+            \Log::info('Mulai menyimpan submateri');
+            
             $submateri = Submateri::create([
                 'nama_submateri' => $request->nama_submateri,
                 'id_jenjang' => $request->jenjang_id,
                 'id_mata_pelajaran' => $request->mata_pelajaran_id,
             ]);
-
-            // Buat konten dengan id_jenjang dan id_mata_pelajaran
+        
+            \Log::info('Submateri berhasil disimpan', ['id' => $submateri->id]);
+        
             $konten = $this->createKonten(
                 $submateri->id,
                 $request->jenjang_id,
                 $request->mata_pelajaran_id
             );
-
+        
+            \Log::info('Konten berhasil disimpan', ['id' => $konten->id]);
+        
             DB::commit();
-
+        
             return response()->json([
                 'success' => true,
                 'message' => 'Submateri dan konten berhasil ditambahkan',
@@ -82,14 +86,17 @@ class AddSubmateriController extends Controller
                     'konten' => $konten
                 ]
             ], 201);
-
+        
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Tambah submateri gagal: ' . $e->getMessage());
+        
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan',
                 'error' => $e->getMessage()
             ], 500);
         }
+        
     }
 }

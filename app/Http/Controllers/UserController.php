@@ -14,6 +14,28 @@ class UserController extends Controller
         $users = User::select('id', 'name', 'email', 'role')->get();
         return response()->json($users, 200);
     }
+    // UserController.php
+    public function getRoleDistribution()
+    {
+        // Hitung jumlah user berdasarkan role menggunakan query builder
+        $roleCounts = [
+            'orangtua' => User::where('role', 'orangtua')->count(),
+            'umum' => User::where('role', 'umum')->count(),
+            'siswa' => User::where('role', 'siswa')->count(),
+            'guru' => User::where('role', 'guru')->count(),
+        ];
+
+        // Format data untuk chart
+        $data = [];
+        foreach ($roleCounts as $role => $count) {
+            $data[] = [
+                'name' => ucfirst($role),  // Menampilkan nama role dengan huruf kapital pertama
+                'value' => $count,
+            ];
+        }
+
+    return response()->json($data, 200);
+}
 
    
 }

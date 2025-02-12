@@ -18,7 +18,7 @@ const AddSubmateri = ({ onClose, fetchData }) => {
   useEffect(() => {
     if (jenjang) {
       console.log(`Fetching mata pelajaran untuk jenjang_id: ${jenjang}`);
-      axios.get(`http://localhost:8000/api/mata_pelajaran_jenjang/${jenjang}`)
+      axios.get(`/api/mata_pelajaran_jenjang/${jenjang}`)
         .then(response => {
           console.log("Data mata pelajaran:", response.data);
           setMataPelajaranList(response.data);
