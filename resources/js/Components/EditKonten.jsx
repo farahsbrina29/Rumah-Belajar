@@ -31,7 +31,7 @@ const EditKonten = ({ onClose, fetchData, konten }) => {
       }
 
       const response = await fetch(`/api/tabel-konten/${konten.id}`, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
         },
