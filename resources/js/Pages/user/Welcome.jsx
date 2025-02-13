@@ -257,7 +257,7 @@ export default function Welcome({ auth }) {
                             <h2 className="text-xl font-bold text-white mb-6">
                                 Rekomendasi Belajar Untuk Kamu!
                             </h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"> {/* Ubah dari 4 kolom menjadi 3 kolom */}
                                 {loadingRekomendasi ? (
                                     <div className="text-center text-white">Memuat rekomendasi...</div>
                                 ) : errorRekomendasi ? (
@@ -266,12 +266,16 @@ export default function Welcome({ auth }) {
                                     rekomendasi.map((item, index) => (
                                         <div
                                             key={index}
-                                            className="bg-white rounded-lg p-4 flex items-center gap-4"
+                                            className="bg-white rounded-lg p-3 flex items-center gap-3 w-full"
                                         >
-                                            <img src={item.thumbnail} alt={item.judul_konten} className="w-12 h-12 object-cover rounded" />
-                                            <div>
-                                                <h3 className="font-semibold mb-1">{item.judul_konten}</h3>
-                                                <p className="text-sm text-gray-600">
+                                            <img 
+                                                src={item.thumbnail} 
+                                                alt={item.judul_konten} 
+                                                className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
+                                            />
+                                            <div className="flex flex-col justify-center flex-1">
+                                                <h3 className="font-medium text-xs mb-0.5 line-clamp-3">{item.judul_konten}</h3>
+                                                <p className="text-xs text-gray-600 truncate">
                                                     {item.nama_pelajaran} - {item.nama_jenjang}
                                                 </p>
                                             </div>
