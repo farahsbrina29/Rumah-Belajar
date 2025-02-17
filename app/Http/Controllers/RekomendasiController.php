@@ -26,7 +26,7 @@ class RekomendasiController extends Controller
             $query->where('jenjang.id', $idJenjang);
         }
 
-        $rekomendasi = $query->limit(4)->get();
+        $rekomendasi = $query->limit(3)->get();
 
         // Pastikan thumbnail dalam format yang bisa diakses frontend
         $rekomendasi = $rekomendasi->map(function ($item) {
