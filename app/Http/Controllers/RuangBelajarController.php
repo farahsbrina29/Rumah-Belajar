@@ -9,16 +9,11 @@ use App\Models\SubMateri;
 
 class RuangBelajarController extends Controller
 {
-    public function index($subject)
+    public function index($idMataPelajaran, $idJenjang)
     {
-        // Ambil submateri berdasarkan subject
-        $subMateri = SubMateri::whereHas('mataPelajaran', function ($query) use ($subject) {
-            $query->where('nama_pelajaran', $subject);
-        })->get();
-
         return Inertia::render('RuangBelajar', [
-            'subject' => $subject,
-            'subMaterials' => $subMateri, // Ubah variabel agar sesuai dengan frontend
+            'idMataPelajaran' => $idMataPelajaran,
+            'idJenjang' => $idJenjang,
             'auth' => ['user' => Auth::user()],
         ]);
     }

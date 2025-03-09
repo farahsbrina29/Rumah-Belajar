@@ -11,16 +11,13 @@ use App\Http\Controllers\SubmaterialController;
 use Illuminate\Support\Facades\Auth;
 
 // Route ruang belajar dan submateri
-// Rute ruang belajar dan submateri dengan autentikasi
-Route::middleware(['auth', 'verified'])->group(function () {
-    // Menampilkan list submateri dari suatu mata pelajaran (subject)
-    Route::get('/ruang-belajar/{subject}', [RuangBelajarController::class, 'index'])
-        ->name('ruang-belajar.index');
 
-    // Menampilkan halaman spesifik dari submateri (subject2)
-    Route::get('/ruang-belajar/{subject}/{subject2}', [RuangBelajarController::class, 'showSubMaterial'])
-        ->name('ruang-belajar.submaterial');
-});
+Route::get('/ruang-belajar/{idMataPelajaran}/{idJenjang}', function ($idMataPelajaran, $idJenjang) {
+    return Inertia::render('RuangBelajar', [
+        'idMataPelajaran' => $idMataPelajaran,
+        'idJenjang' => $idJenjang
+    ]);
+})->name('ruang-belajar');
 
 // Rute untuk halaman beranda
 Route::get('/', function () {
