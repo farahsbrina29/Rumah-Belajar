@@ -18,7 +18,12 @@ export default function Welcome({ auth }) {
     const [rekomendasi, setRekomendasi] = useState([]);
     const [loadingRekomendasi, setLoadingRekomendasi] = useState(true);
     const [errorRekomendasi, setErrorRekomendasi] = useState(null);
+    const [selectedMataPelajaran, setSelectedMataPelajaran] = useState(null);
+    const [submateri, setSubmateri] = useState([]);
 
+
+
+    // Fungsi membuka dan menutup popup
     const openPopupKelas = () => {
         if (!loading && subjects.length > 0) {
             setIsPopupKelasOpen(true);
@@ -28,7 +33,7 @@ export default function Welcome({ auth }) {
     const openPopupJenjang = () => setIsPopupJenjangOpen(true);
     const closePopupJenjang = () => setIsPopupJenjangOpen(false);
 
-    // Modified handleSelectJenjang to handle "no filter" case
+    // Fungsi untuk menangani pemilihan jenjang
     const handleSelectJenjang = (id, nama) => {
         if (nama === "Semua Jenjang") {
             setSelectedJenjang("Pilih Jenjang");
@@ -41,22 +46,22 @@ export default function Welcome({ auth }) {
             localStorage.setItem('selectedJenjang', nama);
             localStorage.setItem('idJenjang', id);
         }
-        closePopupJenjang();
-        fetchSubjects(id); // Explicitly fetch subjects when jenjang changes
     };
 
-    // Separate function to fetch subjects
+    
+    // Fungsi untuk mengambil data mata pelajaran
     const fetchSubjects = async (jenjangId) => {
         setLoading(true);
         setError(null);
-        
+
         try {
             const url = jenjangId 
-                ? `/api/mata-pelajaran/${jenjangId}`
-                : '/api/mata-pelajaran';
-                
+            ? `/api/mata-pelajaran/${jenjangId}`
+            : '/api/mata-pelajaran';
+
+
             const response = await axios.get(url);
-            
+
             if (response.data && Array.isArray(response.data)) {
                 setSubjects(response.data);
             } else {
@@ -71,19 +76,81 @@ export default function Welcome({ auth }) {
         }
     };
 
-    // Load stored jenjang and fetch subjects on mount
+    const handleSelectMataPelajaran = async (idMataPelajaran) => {
+        setSelectedMataPelajaran(idMataPelajaran);
+        
+        // Pastikan idJenjang tidak null sebelum melanjutkan
+        if (!idJenjang) {
+            console.error("Jenjang belum dipilih");
+            // Beri tahu pengguna untuk memilih jenjang terlebih dahulu
+            return;
+        }
+        
+        try {
+            const response = await axios.get("http://127.0.0.1:8000/api/submateri", {
+                params: {
+                    id_mata_pelajaran: idMataPelajaran,
+                    id_jenjang: idJenjang,
+                },
+            });
+    
+            if (response.data && Array.isArray(response.data)) {
+                setSubmateri(response.data);
+                // Navigasi ke halaman baru dengan parameter
+                router.visit(`/ruang-belajar/${idMataPelajaran}/${idJenjang}`);
+            } else {
+                console.error("Format data tidak valid");
+                setSubmateri([]);
+            }
+        } catch (error) {
+            console.error("Gagal mengambil data submateri", error);
+            setSubmateri([]);
+        }
+    };
+    
+    
+
+    const fetchSubmateri = async (idMataPelajaran, idJenjang) => {
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/api/submateri`, {
+                params: {
+                    idMataPelajaran,
+                    idJenjang
+                }
+            });
+    
+            if (response.data && Array.isArray(response.data)) {
+                setSubmateri(response.data);
+            } else {
+                console.error("Format data tidak valid");
+                setSubmateri([]);
+            }
+        } catch (error) {
+            console.error("Gagal mengambil data submateri", error);
+            setSubmateri([]);
+        }
+    };
+    
+
+    // Ambil jenjang dari localStorage saat pertama kali komponen dimuat
     useEffect(() => {
         const storedJenjang = localStorage.getItem('selectedJenjang');
         const storedIdJenjang = localStorage.getItem('idJenjang');
-        
+
         if (storedJenjang && storedIdJenjang) {
             setSelectedJenjang(storedJenjang);
             setIdJenjang(storedIdJenjang);
-            fetchSubjects(storedIdJenjang);
-        } else {
-            fetchSubjects(null); // Fetch all subjects if no jenjang is selected
         }
     }, []);
+
+    // Ambil data mata pelajaran setiap kali `idJenjang` berubah
+    useEffect(() => {
+        if (idJenjang !== null) {
+            fetchSubjects(idJenjang);
+        } else {
+            fetchSubjects(null);
+        }
+    }, [idJenjang]);
 
     // Load rekomendasi
     useEffect(() => {
@@ -221,7 +288,7 @@ export default function Welcome({ auth }) {
                                             <div
                                                 key={index}
                                                 className="flex flex-col items-center cursor-pointer hover:bg-blue-50 p-2 rounded-lg transition-colors"
-                                                onClick={() => handleSubjectClick(subject.nama_pelajaran)}
+                                                onClick={() => handleSelectMataPelajaran(subject.id)}
                                             >
                                                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-2">
                                                     <span className="text-2xl">{icon}</span>
@@ -230,6 +297,7 @@ export default function Welcome({ auth }) {
                                             </div>
                                         );
                                     })}
+
                                     
                                     <div
                                         onClick={loading ? undefined : openPopupKelas}

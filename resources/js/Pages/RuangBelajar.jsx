@@ -1,19 +1,43 @@
 import { Head, router } from '@inertiajs/react'; // Mengimpor router dari inertia
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import Navbar from '@/Components/NavbarUser';
 import Footer from '@/Components/Footer';
 
-export default function RuangBelajar({ auth, subject, subMaterials }) {
-    // Menggunakan router.visit untuk navigasi halaman
-    const handleSubjectClick = (subject, subject2) => {
-        // Navigasi ke halaman submateri berdasarkan subject dan subject2
-        const subjectUrl = `/ruang-belajar/${subject}/${subject2}`;
-        router.visit(subjectUrl);  // Navigasi programatis ke halaman yang sesuai
+export default function RuangBelajar({ auth, idMataPelajaran, idJenjang }) {
+    const [subMaterials, setSubMaterials] = useState([]);
+
+    // Mengambil data submateri ketika komponen dimuat
+    useEffect(() => {
+        const fetchSubMaterials = async () => {
+            try {
+                const response = await axios.get(`http://127.0.0.1:8000/api/submateri`, {
+                    params: { id_mata_pelajaran: idMataPelajaran, id_jenjang: idJenjang },
+                });
+
+                if (response.data && Array.isArray(response.data)) {
+                    setSubMaterials(response.data);
+                } else {
+                    console.error("Format data tidak valid");
+                    setSubMaterials([]);
+                }
+            } catch (error) {
+                console.error("Gagal mengambil data submateri", error);
+                setSubMaterials([]);
+            }
+        };
+
+        fetchSubMaterials();
+    }, [idMataPelajaran, idJenjang]); // Dipanggil setiap kali idMataPelajaran atau idJenjang berubah
+
+    // Navigasi ke halaman submateri
+    const handleSubMateriClick = (idSubMateri) => {
+        router.visit(`/ruang-belajar/${idMataPelajaran}/${idJenjang}/${idSubMateri}`);
     };
-    
 
     return (
         <>
-            <Head title={`Ruang Belajar - ${subject}`} />
+            <Head title={`Ruang Belajar - Mata Pelajaran ${idMataPelajaran}`} />
             <div className="bg-gray-50 text-black min-h-screen">
                 <Navbar auth={auth} />
                 
@@ -23,10 +47,10 @@ export default function RuangBelajar({ auth, subject, subMaterials }) {
                             <div className="flex items-center space-x-2 text-sm text-gray-600">
                                 <span className="cursor-pointer" onClick={() => router.visit('/')}>Beranda</span>
                                 <span>/</span>
-                                <span className="font-medium">{subject}</span>
+                                <span className="font-medium">Mata Pelajaran {idMataPelajaran}</span>
                             </div>
                             <h1 className="text-2xl md:text-3xl font-bold text-[#154561] mt-2">
-                                {subject} <span role="img" aria-label="buku">{getSubjectEmoji(subject)}</span>
+                                Mata Pelajaran {idMataPelajaran}
                             </h1>
                         </div>
                     </div>
@@ -40,13 +64,11 @@ export default function RuangBelajar({ auth, subject, subMaterials }) {
                                 subMaterials.map((material) => (
                                     <div
                                         key={material.id}
-                                        onClick={() => handleSubjectClick(subject, subject2)} // Navigasi ke submateri
+                                        onClick={() => handleSubMateriClick(material.id)}
                                         className="flex items-center p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
                                     >
                                         <div className="flex-1">
-                                            <h3 className="text-lg font-medium">
-                                                {material.nama_submateri}
-                                            </h3>
+                                            <h3 className="text-lg font-medium">{material.nama_submateri}</h3>
                                         </div>
                                         <div className="flex items-center space-x-4">
                                             <svg
@@ -76,38 +98,4 @@ export default function RuangBelajar({ auth, subject, subMaterials }) {
             </div>
         </>
     );
-}
-
-function getSubjectEmoji(subject) {
-    const emojiMap = {
-        'Biologi': '🧬',
-        'PKN': '🛡️',
-        'Fisika': '⚡',
-        'Matematika': '📊',
-        'Bahasa Indonesia': '📚' ,
-        'Bahasa Inggris': '🌍' ,
-        'Kimia': '🧪',
-        'Ekonomi': '💵',
-        'Sosiologi': '💬',
-        'Geografi': '🧭',
-        'Sejarah': '📜',
-        'Penjaskes': '🏃‍♂️',
-        'Teknologi dan Rekayasa': '🛠️',
-        'Teknologi Informasi dan Komunikasi': '💻',
-        'Kesehatan dan Farmasi': '⚕️',
-        'Agribisnis dan Agriteknologi': '🌾',
-        'Kemaritiman': '⚓',
-        'Bisnis Manajemen': '📈',
-        'Pariwisata': '🌴',
-        'Seni dan Industri Kreatif': '🎨',
-        'Energi dan Pertambangan': '⛏️',
-        'Tunanetra': '🔊' ,
-        'Tunarungu': '🔠' ,
-        'Tunagrahita': '💡',
-        'Tunadaksa': '🖥️',
-        'Tunalaras': '🌟',
-        'Tunawicara': '✍️',
-        'Tunaganda': '📖',
-    };
-    return emojiMap[subject] || '📚';
 }

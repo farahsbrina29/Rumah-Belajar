@@ -13,6 +13,12 @@ use App\Http\Controllers\RekomendasiController;
 use App\Http\Controllers\TabelKontenController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AddSubmateriController;
+use App\Http\Controllers\SubmateriController;
+
+Route::get('/submateri', [SubmateriController::class, 'getSubmateri']);
+Route::get('/submateri', [SubMateriController::class, 'getFiltered']);
+Route::get('/mata-pelajaran-info/{id}', [SubmateriController::class, 'getMataPelajaranInfo']);
+Route::get('/jenjang-info/{id}', [SubmateriController::class, 'getJenjangInfo']);
 
 Route::get('user/getRoleDistribution', [UserController::class, 'getRoleDistribution']);
 
