@@ -7,7 +7,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RuangBelajarController;
-use App\Http\Controllers\SubmaterialController;
+use App\Http\Controllers\SubMaterialController;
 use Illuminate\Support\Facades\Auth;
 
 // Route ruang belajar dan submateri
@@ -18,6 +18,16 @@ Route::get('/ruang-belajar/{idMataPelajaran}/{idJenjang}', function ($idMataPela
         'idJenjang' => $idJenjang
     ]);
 })->name('ruang-belajar');
+
+
+Route::get('/ruang-belajar/{idMataPelajaran}/{idJenjang}/{idSubMateri}', function ($idMataPelajaran, $idJenjang, $idSubMateri) {
+    return Inertia::render('SubMaterial', [
+        'idMataPelajaran' => $idMataPelajaran,
+        'idJenjang' => $idJenjang,
+        'idSubMateri' => $idSubMateri
+    ]);
+})->name('submaterial');
+
 
 // Rute untuk halaman beranda
 Route::get('/', function () {

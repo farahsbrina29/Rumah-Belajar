@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react'; // Mengimpor router dari inertia
+import { Head, router } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '@/Components/NavbarUser';
@@ -6,17 +6,33 @@ import Footer from '@/Components/Footer';
 
 export default function RuangBelajar({ auth, idMataPelajaran, idJenjang }) {
     const [subMaterials, setSubMaterials] = useState([]);
+    const [namaPelajaran, setNamaPelajaran] = useState('');
 
-    // Mengambil data submateri ketika komponen dimuat
     useEffect(() => {
         const fetchSubMaterials = async () => {
+            if (!idMataPelajaran || !idJenjang) {
+                console.error("Parameter tidak lengkap");
+                setSubMaterials([]);
+                return;
+            }
+            
             try {
+                console.log(`Mengambil data dengan id_mata_pelajaran=${idMataPelajaran}, id_jenjang=${idJenjang}`);
+                
                 const response = await axios.get(`http://127.0.0.1:8000/api/submateri`, {
-                    params: { id_mata_pelajaran: idMataPelajaran, id_jenjang: idJenjang },
+                    params: { 
+                        id_mata_pelajaran: idMataPelajaran, 
+                        id_jenjang: idJenjang 
+                    },
                 });
-
+                
+                console.log("Data dari API:", response.data);
+                
                 if (response.data && Array.isArray(response.data)) {
-                    setSubMaterials(response.data);
+                    setSubMaterials(response.data.filter(item => item.id_submateri !== null)); // Hanya ambil yang punya submateri
+                    if (response.data.length > 0) {
+                        setNamaPelajaran(response.data[0]?.nama_pelajaran || 'Tidak diketahui');
+                    }
                 } else {
                     console.error("Format data tidak valid");
                     setSubMaterials([]);
@@ -26,18 +42,17 @@ export default function RuangBelajar({ auth, idMataPelajaran, idJenjang }) {
                 setSubMaterials([]);
             }
         };
-
+    
         fetchSubMaterials();
-    }, [idMataPelajaran, idJenjang]); // Dipanggil setiap kali idMataPelajaran atau idJenjang berubah
+    }, [idMataPelajaran, idJenjang]);
 
-    // Navigasi ke halaman submateri
     const handleSubMateriClick = (idSubMateri) => {
         router.visit(`/ruang-belajar/${idMataPelajaran}/${idJenjang}/${idSubMateri}`);
     };
 
     return (
         <>
-            <Head title={`Ruang Belajar - Mata Pelajaran ${idMataPelajaran}`} />
+            <Head title={`Ruang Belajar - ${namaPelajaran || 'Loading...'}`} />
             <div className="bg-gray-50 text-black min-h-screen">
                 <Navbar auth={auth} />
                 
@@ -47,10 +62,10 @@ export default function RuangBelajar({ auth, idMataPelajaran, idJenjang }) {
                             <div className="flex items-center space-x-2 text-sm text-gray-600">
                                 <span className="cursor-pointer" onClick={() => router.visit('/')}>Beranda</span>
                                 <span>/</span>
-                                <span className="font-medium">Mata Pelajaran {idMataPelajaran}</span>
+                                <span className="font-medium">{namaPelajaran || 'Loading...'}</span>
                             </div>
                             <h1 className="text-2xl md:text-3xl font-bold text-[#154561] mt-2">
-                                Mata Pelajaran {idMataPelajaran}
+                                 {namaPelajaran || 'Loading...'}
                             </h1>
                         </div>
                     </div>
@@ -59,12 +74,13 @@ export default function RuangBelajar({ auth, idMataPelajaran, idJenjang }) {
                 <section className="container mx-auto px-4 py-8">
                     <div className="bg-white rounded-lg shadow-md p-6">
                         <h2 className="text-xl font-bold mb-6">Materi Pembelajaran</h2>
-                        <div className="space-y-4">
-                            {subMaterials.length > 0 ? (
-                                subMaterials.map((material) => (
+
+                        {subMaterials.length > 0 ? (
+                            <div className="space-y-4">
+                                {subMaterials.map((material) => (
                                     <div
-                                        key={material.id}
-                                        onClick={() => handleSubMateriClick(material.id)}
+                                        key={material.id_submateri}
+                                        onClick={() => handleSubMateriClick(material.id_submateri)}
                                         className="flex items-center p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
                                     >
                                         <div className="flex-1">
@@ -86,11 +102,11 @@ export default function RuangBelajar({ auth, idMataPelajaran, idJenjang }) {
                                             </svg>
                                         </div>
                                     </div>
-                                ))
-                            ) : (
-                                <p className="text-gray-600">Belum ada submateri untuk mata pelajaran ini.</p>
-                            )}
-                        </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-gray-600">Belum ada submateri untuk mata pelajaran ini.</p>
+                        )}
                     </div>
                 </section>
                 

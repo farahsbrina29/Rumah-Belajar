@@ -2,49 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
 use Illuminate\Http\Request;
-use App\Models\SubMateri;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Submateri;
+use App\Models\Konten;
+use App\Models\Latihan;
+use App\Models\Rangkuman;
 
 class SubMaterialController extends Controller
 {
-    // Menampilkan materi berdasarkan subject dan submateri
-    public function showBySubject($subject, $subject2)
+    public function getSubmaterial($idMataPelajaran, $idJenjang, $idSubMateri)
     {
-        $subMateri = SubMateri::whereHas('mataPelajaran', function ($query) use ($subject) {
-            $query->where('nama_pelajaran', $subject);
-        })->where('nama_submateri', $subject2)->first();
+        $submateri = Submateri::where('id_mata_pelajaran', $idMataPelajaran)
+            ->where('id_jenjang', $idJenjang)
+            ->where('id', $idSubMateri)
+            ->first();
 
-        if ($subMateri) {
-            return Inertia::render('SubMaterial', [
-                'subject' => $subject,
-                'material' => [
-                    'title' => $subMateri->nama_submateri,
-                    'video_id' => optional($subMateri->konten)->link_konten,
-                    'description' => optional($subMateri->konten)->deskripsi ?? 'Materi belum tersedia',
-                    'exercises' => $subMateri->latihan ? $subMateri->latihan->map(function ($exercise) {
-                        return [
-                            'id' => $exercise->id,
-                            'question' => $exercise->pertanyaan,
-                            'options' => [
-                                $exercise->opsi_a,
-                                $exercise->opsi_b,
-                                $exercise->opsi_c,
-                                $exercise->opsi_d
-                            ],
-                            'answer' => $exercise->jawaban_benar,
-                        ];
-                    }) : [],
-                    'summary' => optional($subMateri->rangkuman)->file_rangkuman ?? 'Rangkuman belum tersedia',
-                ]
-            ]);
+        if (!$submateri) {
+            return response()->json(['message' => 'Submateri tidak ditemukan'], 404);
         }
 
-        // Jika submateri tidak ditemukan, tampilkan halaman error
-        return Inertia::render('ErrorPage', [
-            'message' => 'Submateri tidak ditemukan',
+        // Mengambil data konten yang berkaitan dengan submateri
+        $konten = Konten::where('id_submateri', $idSubMateri)->get();
+        
+        // Mengambil data latihan soal yang berkaitan dengan submateri
+        $latihan = Latihan::where('id_submateri', $idSubMateri)->get();
+        
+        // Mengambil data rangkuman yang berkaitan dengan submateri
+        $rangkuman = Rangkuman::where('id_submateri', $idSubMateri)->get();
+
+        return response()->json([
+            'nama_submateri' => $submateri->nama_submateri,
+            'konten' => $konten->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'judul_konten' => $item->judul_konten,
+                    'deskripsi' => $item->deskripsi,
+                    'jenis_konten' => $item->jenis_konten,
+                    'thumbnail' => $item->thumbnail,
+                    'link_konten' => $item->link_konten
+                ];
+            }),
+            'latihan_soal' => $latihan->map(function ($soal) {
+                return [
+                    'id' => $soal->id,
+                    'pertanyaan' => $soal->pertanyaan,
+                    'opsi' => [
+                        'a' => $soal->opsi_a,
+                        'b' => $soal->opsi_b,
+                        'c' => $soal->opsi_c,
+                        'd' => $soal->opsi_d
+                    ],
+                    'jawaban_benar' => $soal->jawaban_benar
+                ];
+            }),
+            'rangkuman' => $rangkuman->map(function ($file) {
+                return [
+                    'id' => $file->id,
+                    'file_rangkuman' => $file->file_rangkuman
+                ];
+            })
         ]);
     }
 }
-
