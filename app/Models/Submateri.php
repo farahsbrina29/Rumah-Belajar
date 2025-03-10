@@ -8,7 +8,11 @@ use Illuminate\Support\Str;
 class Submateri extends Model
 {
     protected $table = 'submateri'; 
-    protected $fillable = ['id', 'nama_submateri', 'id_mata_pelajaran', 'id_jenjang'];
+    protected $fillable = [ 'nama_submateri', 'id_mata_pelajaran', 'id_jenjang'];
+    protected $casts = [
+        'id_mata_pelajaran' => 'integer',
+        'id_jenjang' => 'integer'
+    ];
 
 
     public function mataPelajaran()
