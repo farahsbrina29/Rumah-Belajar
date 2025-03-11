@@ -8,27 +8,26 @@ use App\Models\Submateri;
 
 class RangkumanController extends Controller
 {
-    /**
-     * Menampilkan rangkuman berdasarkan ID submateri.
-     */
-    public function showBySubmateri($id_submateri = null) // Bisa menerima ID dari URL
+    public function showBySubmateri(Request $request)
     {
+        $id_submateri = $request->query('id_submateri'); // Ambil parameter id_submateri dari query
+
+        // Cek apakah id_submateri diberikan
         if ($id_submateri) {
-            // Ambil rangkuman berdasarkan ID submateri
             $rangkuman = Rangkuman::join('submateri', 'rangkuman.id_submateri', '=', 'submateri.id')
                 ->where('rangkuman.id_submateri', $id_submateri)
                 ->select(
                     'rangkuman.id', 
                     'rangkuman.id_submateri', 
                     'rangkuman.file_rangkuman', 
-                    'submateri.nama_submateri'
-                )
+                    'submateri.nama_submateri' // Tambahkan nama_submateri
+                ) 
                 ->first();
 
             if (!$rangkuman) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Rangkuman tidak ditemukan untuk ID submateri ini.'
+                    'message' => 'Rangkuman tidak ditemukan'
                 ], 404);
             }
 
@@ -38,17 +37,17 @@ class RangkumanController extends Controller
             ]);
         }
 
-        // Jika ID tidak diberikan, tampilkan semua submateri yang memiliki rangkuman
+        // Jika tidak ada id_submateri, tampilkan semua submateri dengan rangkuman
         $submateriWithRangkuman = Submateri::join('rangkuman', 'submateri.id', '=', 'rangkuman.id_submateri')
-            ->join('jenjang', 'submateri.id_jenjang', '=', 'jenjang.id')
-            ->join('mata_pelajaran', 'submateri.id_mata_pelajaran', '=', 'mata_pelajaran.id')
+            ->join('jenjang', 'submateri.id_jenjang', '=', 'jenjang.id') 
+            ->join('mata_pelajaran', 'submateri.id_mata_pelajaran', '=', 'mata_pelajaran.id') 
             ->select(
                 'submateri.id as id_submateri',
                 'submateri.nama_submateri',
                 'jenjang.nama_jenjang',
                 'submateri.id_jenjang',
                 'mata_pelajaran.nama_pelajaran',
-                'rangkuman.id as id_rangkuman',
+                'rangkuman.id as id_rangkuman', 
                 'rangkuman.file_rangkuman'
             )
             ->distinct()
