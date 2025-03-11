@@ -14,11 +14,15 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AddSubmateriController;
 use App\Http\Controllers\SubmateriController;
 use App\Http\Controllers\SubMaterialController;
+use App\Http\Controllers\RangkumanController;
 
 Route::get('/submateri/{idMataPelajaran}/{idJenjang}/{idSubMateri}', [SubMaterialController::class, 'getSubMaterial']);
 
 
 Route::get('/submateri', [SubmateriController::class, 'index']);
+Route::get('/rangkuman/submateri/{id_submateri}', [RangkumanController::class, 'showBySubmateri']);
+
+
 
 Route::get('user/getRoleDistribution', [UserController::class, 'getRoleDistribution']);
 

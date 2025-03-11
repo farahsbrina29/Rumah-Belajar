@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RuangBelajarController;
 use App\Http\Controllers\SubMaterialController;
+use App\Http\Controllers\RangkumanController;
 use Illuminate\Support\Facades\Auth;
 
 // Route ruang belajar dan submateri
@@ -20,13 +21,19 @@ Route::get('/ruang-belajar/{idMataPelajaran}/{idJenjang}', function ($idMataPela
 })->name('ruang-belajar');
 
 
-Route::get('/ruang-belajar/{idMataPelajaran}/{idJenjang}/{idSubMateri}', function ($idMataPelajaran, $idJenjang, $idSubMateri) {
-    return Inertia::render('SubMaterial', [
+Route::get('/ruang-belajar/{idMataPelajaran}/{idJenjang}/{idSubmateri}', function ($idMataPelajaran, $idJenjang, $idSubmateri) {
+    return Inertia::render('submaterial', [
         'idMataPelajaran' => $idMataPelajaran,
         'idJenjang' => $idJenjang,
-        'idSubMateri' => $idSubMateri
+        'idSubmateri' => $idSubmateri
     ]);
 })->name('submaterial');
+
+Route::get('/rangkuman/{id_submateri}', function ( $id_submateri) {
+return Inertia::render('RangkumanDetail', [
+    'id_submateri' => $id_submateri, // Pastikan dikirim dari backend
+    ]);
+});
 
 
 // Rute untuk halaman beranda
