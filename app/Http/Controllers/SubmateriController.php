@@ -47,4 +47,7 @@ class SubmateriController extends Controller
 
         return response()->json($filteredResult);
     }
+
 }
+
+

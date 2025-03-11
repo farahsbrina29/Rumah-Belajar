@@ -18,7 +18,7 @@ export default function Welcome({ auth }) {
     const [rekomendasi, setRekomendasi] = useState([]);
     const [loadingRekomendasi, setLoadingRekomendasi] = useState(true);
     const [errorRekomendasi, setErrorRekomendasi] = useState(null);
-    const [selectedMataPelajaran, setSelectedMataPelajaran] = useState(null);
+    const [selectMataPelajaran, setSelectedMataPelajaran] = useState(null);
     const [submateri, setSubmateri] = useState([]);
 
 
@@ -108,29 +108,7 @@ export default function Welcome({ auth }) {
         }
     };
     
-    
 
-    const fetchSubmateri = async (idMataPelajaran, idJenjang) => {
-        try {
-            const response = await axios.get(`http://127.0.0.1:8000/api/submateri`, {
-                params: {
-                    idMataPelajaran,
-                    idJenjang
-                }
-            });
-    
-            if (response.data && Array.isArray(response.data)) {
-                setSubmateri(response.data);
-            } else {
-                console.error("Format data tidak valid");
-                setSubmateri([]);
-            }
-        } catch (error) {
-            console.error("Gagal mengambil data submateri", error);
-            setSubmateri([]);
-        }
-    };
-    
 
     // Ambil jenjang dari localStorage saat pertama kali komponen dimuat
     useEffect(() => {
@@ -212,9 +190,7 @@ export default function Welcome({ auth }) {
         { name: 'Tunaganda', icon: '📖' },
     ];
 
-    const handleSubjectClick = (subjectName) => {
-        router.visit(`/ruang-belajar/${subjectName}`);
-    };
+
 
     return (
         <>

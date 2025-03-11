@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react'; 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '@/Components/NavbarUser';
@@ -13,15 +13,12 @@ export default function SubMaterial({ auth, idMataPelajaran, idJenjang, idSubMat
     useEffect(() => {
         const fetchMaterial = async () => {
             try {
-                console.log(`Mengambil data submateri dengan id_mata_pelajaran=${idMataPelajaran}, id_jenjang=${idJenjang}, id_submateri=${idSubMateri}`);
-                
-                const response = await axios.get(`/api/submateri/${idMataPelajaran}/${idJenjang}/${idSubMateri}`);
-                
-                console.log("Data dari API:", response.data);
+                const response = await axios.get('/api/submateri', {
+                    params: { id_mata_pelajaran: idMataPelajaran, id_jenjang: idJenjang, id_submateri: idSubMateri }
+                });
                 setMaterial(response.data);
                 setLoading(false);
             } catch (error) {
-                console.error("Error fetching material:", error);
                 setError("Gagal memuat data. Silakan coba lagi nanti.");
                 setLoading(false);
             }
@@ -30,146 +27,70 @@ export default function SubMaterial({ auth, idMataPelajaran, idJenjang, idSubMat
         fetchMaterial();
     }, [idMataPelajaran, idJenjang, idSubMateri]);
 
-    const handleBackToList = () => {
-        router.visit(`/ruang-belajar/${idMataPelajaran}/${idJenjang}`);
-    };
-
-    if (loading) {
-        return (
-            <div className="bg-gray-50 text-black min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div className="mb-4">Loading...</div>
-                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="bg-gray-50 text-black min-h-screen flex items-center justify-center">
-                <div className="text-center bg-white p-8 rounded-lg shadow-md">
-                    <div className="text-red-500 text-xl mb-4">Error</div>
-                    <div>{error}</div>
-                </div>
-            </div>
-        );
-    }
-
-    // Pastikan material telah dimuat sebelum mencoba mengakses propertinya
-    if (!material) {
-        return (
-            <div className="bg-gray-50 text-black min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div>Data tidak ditemukan</div>
-                </div>
-            </div>
-        );
-    }
+    if (loading) return <div className="text-center mt-20">Loading...</div>;
+    if (error) return <div className="text-center text-red-500 mt-20">{error}</div>;
+    if (!material) return <div className="text-center mt-20">Data tidak ditemukan</div>;
 
     return (
         <>
             <Head title={material.nama_submateri || 'Materi Pembelajaran'} />
-            <div className="bg-gray-50 text-black min-h-screen">
-                <Navbar auth={auth} />
+            <Navbar auth={auth} />
+            <div className="container mx-auto px-4 py-8">
+                {/* Video Player */}
+                <div className="bg-white p-4 shadow rounded-lg">
+                    <iframe className="w-full h-64 md:h-96" src={material.konten?.[0]?.link_konten} title={material.nama_submateri} allowFullScreen></iframe>
+                    <h2 className="text-xl font-bold mt-4">{material.konten?.[0]?.judul_konten}</h2>
+                </div>
                 
-                <header className="bg-blue-100 pt-16 pb-6">
-                    <div className="bg-gradient-to-b from-blue-200 to-blue-300 w-full flex flex-col justify-center py-4">
-                        <div className="container mx-auto px-4">
-                            <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                <span className="cursor-pointer" onClick={() => router.visit('/')}>Beranda</span>
-                                <span>/</span>
-                                <span className="cursor-pointer" onClick={handleBackToList}>Daftar Materi</span>
-                                <span>/</span>
-                                <span className="font-medium">{material.nama_submateri}</span>
-                            </div>
-                            <h1 className="text-2xl md:text-3xl font-bold text-[#154561] mt-2">
-                                {material.nama_submateri}
-                            </h1>
-                        </div>
-                    </div>
-                </header>
-                
-                <main className="container mx-auto px-4 py-8">
-                    <div className="bg-[#1E4C6A] text-white rounded-lg p-4 mb-8">
-                        <h3 className="text-lg font-semibold mb-4">Navigasi</h3>
-                        <div className="flex flex-wrap gap-2">
-                            <button 
-                                className={`py-2 px-4 rounded ${activeTab === "materi" ? "bg-blue-500" : "bg-gray-700"}`}
-                                onClick={() => setActiveTab("materi")}
-                            >Materi</button>
-                            <button 
-                                className={`py-2 px-4 rounded ${activeTab === "latihan" ? "bg-blue-500" : "bg-gray-700"}`}
-                                onClick={() => setActiveTab("latihan")}
-                            >Latihan Soal</button>
-                            <button 
-                                className={`py-2 px-4 rounded ${activeTab === "rangkuman" ? "bg-blue-500" : "bg-gray-700"}`}
-                                onClick={() => setActiveTab("rangkuman")}
-                            >Rangkuman</button>
-                        </div>
+                {/* Tabs */}
+                <div className="mt-6">
+                    <div className="flex space-x-4 border-b">
+                        {['materi', 'latihan', 'rangkuman'].map(tab => (
+                            <button key={tab} className={`py-2 px-4 ${activeTab === tab ? 'border-b-2 border-blue-500' : ''}`} onClick={() => setActiveTab(tab)}>
+                                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                            </button>
+                        ))}
                     </div>
 
-                    <div className="bg-white rounded-lg shadow-md p-6">
+                    <div className="p-4 bg-gray-50 mt-2 rounded-lg">
                         {activeTab === "materi" && (
-                            <div className="prose max-w-none">
-                                <h2 className="text-xl font-bold mb-4">Detail Materi</h2>
-                                {material.konten && material.konten.length > 0 ? (
-                                    material.konten.map((konten) => (
-                                        <div key={konten.id} className="mb-6">
-                                            <h3 className="text-lg font-semibold">{konten.judul_konten}</h3>
-                                            <p>{konten.deskripsi}</p>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>Tidak ada konten materi tersedia.</p>
-                                )}
+                            <div>
+                                <h3 className="text-lg font-semibold">Detail Materi</h3>
+                                <p>{material.konten?.[0]?.deskripsi || 'Tidak ada deskripsi.'}</p>
                             </div>
                         )}
 
                         {activeTab === "latihan" && (
                             <div>
-                                <h2 className="text-xl font-bold mb-4">Latihan Soal</h2>
-                                {material.latihan_soal && material.latihan_soal.length > 0 ? (
-                                    material.latihan_soal.map((soal, index) => (
-                                        <div key={soal.id} className="p-4 border rounded-lg mb-4">
-                                            <p className="font-medium">Soal {index + 1}</p>
-                                            <p className="text-gray-600 mb-4">{soal.pertanyaan}</p>
-                                            <div className="space-y-2">
-                                                {soal.opsi && Object.entries(soal.opsi).map(([key, option]) => (
-                                                    <label key={key} className="flex items-center space-x-3">
-                                                        <input type="radio" name={`question-${soal.id}`} className="form-radio" />
-                                                        <span>{option}</span>
-                                                    </label>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>Tidak ada latihan soal tersedia.</p>
-                                )}
+                                <h3 className="text-lg font-semibold">Latihan Soal</h3>
+                                {material.latihan_soal?.map((soal, index) => (
+                                    <div key={index} className="mb-4 border p-4 rounded-lg">
+                                        <p><strong>{index + 1}. {soal.pertanyaan}</strong></p>
+                                        <ul className="list-disc ml-6">
+                                            <li>A. {soal.opsi_a}</li>
+                                            <li>B. {soal.opsi_b}</li>
+                                            <li>C. {soal.opsi_c}</li>
+                                            <li>D. {soal.opsi_d}</li>
+                                        </ul>
+                                    </div>
+                                ))}
                             </div>
                         )}
 
                         {activeTab === "rangkuman" && (
                             <div>
-                                <h2 className="text-xl font-bold mb-4">Rangkuman</h2>
-                                {material.rangkuman && material.rangkuman.length > 0 ? (
-                                    material.rangkuman.map((file) => (
-                                        <div key={file.id} className="mb-4">
-                                            <a href={file.file_rangkuman} className="text-blue-500 underline" target="_blank" rel="noopener noreferrer">
-                                                Download Rangkuman
-                                            </a>
-                                        </div>
-                                    ))
+                                <h3 className="text-lg font-semibold">Rangkuman</h3>
+                                {material.file_rangkuman ? (
+                                    <a href={material.file_rangkuman} download className="text-blue-500 underline">Download Rangkuman</a>
                                 ) : (
-                                    <p>Tidak ada rangkuman tersedia.</p>
+                                    <p>Rangkuman tidak tersedia.</p>
                                 )}
                             </div>
                         )}
                     </div>
-                </main>
-                <Footer />
+                </div>
             </div>
+            <Footer />
         </>
     );
 }
