@@ -30,7 +30,7 @@ Route::get('/ruang-belajar/{idMataPelajaran}/{idJenjang}/{idSubmateri}', functio
 })->name('submaterial');
 
 Route::get('/rangkuman/{id_submateri}', function ( $id_submateri) {
-return Inertia::render('RangkumanDetail', [
+return Inertia::render('DetailRangkuman', [
     'id_submateri' => $id_submateri, // Pastikan dikirim dari backend
     ]);
 });
