@@ -27,11 +27,12 @@ export default function RangkumanDetail({ auth, id_submateri }) {
 
                 console.log("Data dari API:", response.data);
 
-                if (response.data?.success) {
-                    setRangkuman(response.data.data);
+                if (response.data) {
+                    setRangkuman(response.data);
                 } else {
                     setError("Rangkuman tidak ditemukan.");
                 }
+                
             } catch (error) {
                 console.error("Gagal mengambil data rangkuman:", error);
                 setError("Terjadi kesalahan saat mengambil data.");
@@ -56,14 +57,16 @@ export default function RangkumanDetail({ auth, id_submateri }) {
                     <div className="bg-white shadow-md rounded-lg p-6">
                         <h2 className="text-xl font-bold mb-4">{rangkuman.nama_submateri}</h2>
                         <p className="text-gray-700">File Rangkuman: {rangkuman.file_rangkuman}</p>
-                        <a 
-                            href={`http://127.0.0.1:8000/storage/${rangkuman.file_rangkuman}`} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="text-blue-500 underline"
-                        >
-                            Unduh Rangkuman
-                        </a>
+                        {/* Ensure that the path to the file is correct and accessible */}
+                        {rangkuman.file_rangkuman && (
+                           <a 
+                           href={`http://127.0.0.1:8000/storage/${rangkuman.file_rangkuman}`} 
+                           download 
+                           className="text-blue-500 underline"
+                       >
+                           Unduh Rangkuman
+                       </a>
+                        )}
                     </div>
                 ) : (
                     <p className="text-center text-gray-500">Tidak ada rangkuman tersedia.</p>

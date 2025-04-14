@@ -3,64 +3,101 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Submateri;
-use App\Models\Konten;
-use App\Models\Latihan;
-use App\Models\Rangkuman;
+use Illuminate\Support\Facades\DB;
 
 class SubMaterialController extends Controller
 {
-    public function getSubmaterial($idMataPelajaran, $idJenjang, $idSubMateri)
+    public function getSubmaterial(Request $request)
     {
-        $submateri = Submateri::where('id_mata_pelajaran', $idMataPelajaran)
-            ->where('id_jenjang', $idJenjang)
-            ->where('id', $idSubMateri)
-            ->first();
+        $idMataPelajaran = $request->query('id_mata_pelajaran');
+        $idJenjang = $request->query('id_jenjang');
+        $idSubMateri = $request->query('id_submateri');
 
-        if (!$submateri) {
-            return response()->json(['message' => 'Submateri tidak ditemukan'], 404);
+        $query = DB::table('submateri')
+            ->join('mata_pelajaran', 'submateri.id_mata_pelajaran', '=', 'mata_pelajaran.id')
+            ->join('jenjang', 'mata_pelajaran.id_jenjang', '=', 'jenjang.id')
+            ->leftJoin('konten', 'konten.id_submateri', '=', 'submateri.id')
+            ->leftJoin('latihan', 'latihan.id_submateri', '=', 'submateri.id')
+            ->leftJoin('rangkuman', 'rangkuman.id_submateri', '=', 'submateri.id')
+            ->select(
+                'submateri.id as id_submateri',
+                'submateri.nama_submateri',
+                'mata_pelajaran.id as id_mata_pelajaran',
+                'mata_pelajaran.nama_pelajaran',
+                'jenjang.id as id_jenjang',
+                'jenjang.nama_jenjang',
+                'konten.id as konten_id',
+                'konten.judul_konten',
+                'konten.deskripsi',
+                'konten.jenis_konten',
+                'konten.thumbnail',
+                'konten.link_konten',
+                'latihan.id as latihan_id',
+                'latihan.pertanyaan',
+                'latihan.opsi_a',
+                'latihan.opsi_b',
+                'latihan.opsi_c',
+                'latihan.opsi_d',
+                'latihan.jawaban_benar',
+                'rangkuman.id as rangkuman_id',
+                'rangkuman.file_rangkuman'
+            );
+
+        if (!empty($idMataPelajaran)) {
+            $query->where('submateri.id_mata_pelajaran', $idMataPelajaran);
         }
 
-        // Mengambil data konten yang berkaitan dengan submateri
-        $konten = Konten::where('id_submateri', $idSubMateri)->get();
-        
-        // Mengambil data latihan soal yang berkaitan dengan submateri
-        $latihan = Latihan::where('id_submateri', $idSubMateri)->get();
-        
-        // Mengambil data rangkuman yang berkaitan dengan submateri
-        $rangkuman = Rangkuman::where('id_submateri', $idSubMateri)->get();
+        if (!empty($idJenjang)) {
+            $query->where('mata_pelajaran.id_jenjang', $idJenjang);
+        }
 
-        return response()->json([
-            'nama_submateri' => $submateri->nama_submateri,
-            'konten' => $konten->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'judul_konten' => $item->judul_konten,
-                    'deskripsi' => $item->deskripsi,
-                    'jenis_konten' => $item->jenis_konten,
-                    'thumbnail' => $item->thumbnail,
-                    'link_konten' => $item->link_konten
-                ];
-            }),
-            'latihan_soal' => $latihan->map(function ($soal) {
-                return [
-                    'id' => $soal->id,
-                    'pertanyaan' => $soal->pertanyaan,
-                    'opsi' => [
-                        'a' => $soal->opsi_a,
-                        'b' => $soal->opsi_b,
-                        'c' => $soal->opsi_c,
-                        'd' => $soal->opsi_d
-                    ],
-                    'jawaban_benar' => $soal->jawaban_benar
-                ];
-            }),
-            'rangkuman' => $rangkuman->map(function ($file) {
-                return [
-                    'id' => $file->id,
-                    'file_rangkuman' => $file->file_rangkuman
-                ];
-            })
-        ]);
+        if (!empty($idSubMateri)) {
+            $query->where('submateri.id', $idSubMateri);
+        }
+
+        $result = $query->get();
+
+        // Kelompokkan hasil berdasarkan submateri
+        $grouped = $result->groupBy('id_submateri')->map(function ($items) {
+            $first = $items->first();
+
+            return [
+                'id_submateri' => $first->id_submateri,
+                'nama_submateri' => $first->nama_submateri,
+                'mata_pelajaran' => $first->nama_pelajaran,
+                'jenjang' => $first->nama_jenjang,
+                'konten' => $items->filter(fn($i) => $i->konten_id)->map(function ($i) {
+                    return [
+                        'id' => $i->konten_id,
+                        'judul_konten' => $i->judul_konten,
+                        'deskripsi' => $i->deskripsi,
+                        'jenis_konten' => $i->jenis_konten,
+                        'thumbnail' => $i->thumbnail,
+                        'link_konten' => $i->link_konten
+                    ];
+                })->values(),
+                'latihan_soal' => $items->filter(fn($i) => $i->latihan_id)->map(function ($i) {
+                    return [
+                        'id' => $i->latihan_id,
+                        'pertanyaan' => $i->pertanyaan,
+                        'opsi' => [
+                            'a' => $i->opsi_a,
+                            'b' => $i->opsi_b,
+                            'c' => $i->opsi_c,
+                            'd' => $i->opsi_d
+                        ],
+                        'jawaban_benar' => $i->jawaban_benar
+                    ];
+                })->values(),
+                'rangkuman' => $items->filter(fn($i) => $i->rangkuman_id)->map(function ($i) {
+                    return [
+                        'id' => $i->rangkuman_id,
+                        'file_rangkuman' => $i->file_rangkuman
+                    ];
+                })->values()
+            ];
+        })->values();
+
+        return response()->json($grouped);
     }
 }

@@ -25,7 +25,15 @@ Route::get('/ruang-belajar/{idMataPelajaran}/{idJenjang}/{idSubmateri}', functio
     return Inertia::render('submaterial', [
         'idMataPelajaran' => $idMataPelajaran,
         'idJenjang' => $idJenjang,
-        'idSubmateri' => $idSubmateri
+        'idSubMateri' => $idSubmateri
+    ]);
+})->name('submaterial');
+
+Route::get('/konten/{idMataPelajaran}/{idJenjang}/{idSubmateri}', function ($idMataPelajaran, $idJenjang, $idSubmateri) {
+    return Inertia::render('submaterial', [
+        'idMataPelajaran' => $idMataPelajaran,
+        'idJenjang' => $idJenjang,
+        'idSubMateri' => $idSubmateri
     ]);
 })->name('submaterial');
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Head, router } from '@inertiajs/react';
 import axios from "axios";
 import Navbar from "@/components/NavbarUser";
 import Footer from "@/components/Footer";
@@ -13,10 +14,9 @@ export default function Konten({ auth }) {
     const [selectedJenjang, setSelectedJenjang] = useState(null);
 
     useEffect(() => {
-        // Fetch data konten (termasuk nama_pelajaran)
+        // Fetch konten data
         axios.get("http://localhost:8000/api/konten")
             .then((response) => {
-                console.log("Data Konten:", response.data); // Debugging
                 setKontenList(response.data);
                 setFilteredKonten(response.data);
             })
@@ -24,7 +24,7 @@ export default function Konten({ auth }) {
                 console.error("Error fetching konten:", error);
             });
 
-        // Fetch data jenjang
+        // Fetch jenjang data
         axios.get("http://localhost:8000/api/jenjang")
             .then((response) => {
                 setJenjangList(response.data);
@@ -34,6 +34,7 @@ export default function Konten({ auth }) {
             });
     }, []);
 
+    // Redirect if not authenticated
     if (!auth || !auth.user) {
         return (
             <div className="flex flex-col min-h-screen">
@@ -60,6 +61,11 @@ export default function Konten({ auth }) {
         return jenjang ? jenjang.nama_jenjang : "Tidak Diketahui";
     };
 
+    // Filter konten berdasarkan pencarian
+    const filteredBySearch = filteredKonten.filter(konten => 
+        konten.judul_konten.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="flex flex-col min-h-screen bg-blue-100">
             <Navbar auth={auth} />
@@ -68,7 +74,7 @@ export default function Konten({ auth }) {
                     Telusuri Berbagai Konten Menarik 🚀
                 </h1>
 
-                {/* Pencarian dan Pilihan Jenjang - Updated styling */}
+                {/* Search and Jenjang selection */}
                 <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6 mt-12">
                     <input
                         type="text"
@@ -85,40 +91,43 @@ export default function Konten({ auth }) {
                     </button>
                 </div>
 
-                {/* Grid Video yang Ditengahkan - Keeping original design */}
-                <div className="w-full max-w-6xl mx-auto">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center">
-                        {filteredKonten.length > 0 ? (
-                            filteredKonten
-                                .filter((konten) => konten.judul_konten.toLowerCase().includes(searchTerm.toLowerCase()))
-                                .map((konten) => (
-                                    <div key={konten.id} className="border rounded-lg overflow-hidden shadow-md bg-white">
-                                        <img
-                                            src={konten.thumbnail || "https://via.placeholder.com/300"}
-                                            alt={konten.judul_konten}
-                                            className="w-full h-48 object-cover"
-                                        />
-                                        <div className="p-4">
-                                            <h2 className="font-bold text-lg text-center mb-2 text-[#154561]">
-                                                {konten.judul_konten}
-                                            </h2>
-                                            <p className="text-sm text-gray-500 text-center">
-                                                {getNamaJenjang(konten.id_jenjang)} - {konten.mata_pelajaran?.nama_pelajaran || "Tidak Diketahui"}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))
-                        ) : (
-                            <p className="text-center text-gray-500 col-span-full">Tidak ada konten tersedia</p>
-                        )}
+                {/* Konten Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {filteredBySearch.map((konten) => (
+                <div
+                    key={konten.id}
+                    onClick={() =>
+                        router.visit(`/konten/${konten.id_mata_pelajaran}/${konten.id_jenjang}/${konten.id_submateri}`)
+                    }
+                    className="cursor-pointer border rounded-lg overflow-hidden shadow-md bg-white hover:shadow-lg transition"
+                >
+                    <img
+                        src={konten.thumbnail || "https://via.placeholder.com/300"}
+                        alt={konten.judul_konten}
+                        className="w-full h-48 object-cover"
+                    />
+                    <div className="p-4">
+                        <h2 className="font-bold text-lg text-center mb-2 text-[#154561]">
+                            {konten.judul_konten}
+                        </h2>
+                        <p className="text-sm text-gray-500 text-center">
+                            {konten.jenjang?.nama_jenjang || "Tidak Diketahui"} - {konten.mata_pelajaran?.nama_pelajaran || "Tidak Diketahui"}
+                        </p>
                     </div>
+                </div>
+            ))}
+
                 </div>
             </div>
 
             <Footer />
 
             {/* Popup Pilih Jenjang */}
-            <PopupPilihJenjang isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)} onSelectJenjang={handleSelectJenjang} />
+            <PopupPilihJenjang 
+                isOpen={isPopupOpen} 
+                onClose={() => setIsPopupOpen(false)} 
+                onSelectJenjang={handleSelectJenjang} 
+            />
         </div>
     );
 }

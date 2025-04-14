@@ -11,17 +11,45 @@ export default function Submaterial({ auth, idMataPelajaran, idJenjang, idSubMat
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        axios.get('/api/submateri', {
-            params: { id_mata_pelajaran: idMataPelajaran, id_jenjang: idJenjang, id_submateri: idSubMateri }
-        })
-        .then(response => {
-            setData(response.data);
-            setLoading(false);
-        })
-        .catch(() => {
-            setError("Gagal memuat data. Silakan coba lagi nanti.");
-            setLoading(false);
-        });
+        const fetchSubMateri = async () => {
+            if (!idMataPelajaran || !idJenjang || !idSubMateri) {
+                setError("Parameter tidak lengkap");
+                setLoading(false);
+                return;
+            }
+
+            try {
+                console.log(`Mengambil submateri dengan id_mata_pelajaran=${idMataPelajaran}, id_jenjang=${idJenjang}, id_submateri=${idSubMateri}`);
+
+                const response = await axios.get(`http://127.0.0.1:8000/api/submaterial`, {
+                    params: {
+                        id_mata_pelajaran: idMataPelajaran,
+                        id_jenjang: idJenjang,
+                        id_submateri: idSubMateri
+                    }
+                });
+
+                console.log("Data submateri:", response.data);
+
+                if (response.data && Array.isArray(response.data)) {
+                    const found = response.data.find(item => item.id_submateri == idSubMateri);
+                    if (found) {
+                        setData(found);
+                    } else {
+                        setError("Submateri tidak ditemukan.");
+                    }
+                } else {
+                    setError("Format data tidak valid.");
+                }
+            } catch (err) {
+                console.error("Gagal mengambil data", err);
+                setError("Gagal memuat data. Silakan coba lagi nanti.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSubMateri();
     }, [idMataPelajaran, idJenjang, idSubMateri]);
 
     if (loading) return <div className="text-center mt-20">Loading...</div>;
@@ -73,14 +101,21 @@ export default function Submaterial({ auth, idMataPelajaran, idJenjang, idSubMat
                         )}
 
                         {activeTab === "rangkuman" && (
-                            <div>
-                                <h3 className="text-lg font-semibold">Rangkuman</h3>
-                                {data.file_rangkuman ? (
-                                    <a href={data.file_rangkuman} download className="text-blue-500 underline">Download Rangkuman</a>
-                                ) : (
-                                    <p>Rangkuman tidak tersedia.</p>
-                                )}
-                            </div>
+                           <div>
+                           <h3 className="text-lg font-semibold">Rangkuman</h3>
+                           {data.rangkuman && data.rangkuman.length > 0 ? (
+                             <a
+                               href={`/storage/${data.rangkuman[0].file_rangkuman}`}
+                               download
+                               className="text-blue-500 underline"
+                             >
+                               Download Rangkuman
+                             </a>
+                           ) : (
+                             <p>Rangkuman tidak tersedia.</p>
+                           )}
+                         </div>
+                         
                         )}
                     </div>
                 </div>

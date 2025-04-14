@@ -5,29 +5,45 @@ import Footer from "@/components/Footer";
 import PopupPilihJenjang from "@/components/PopupPilihJenjang";
 import axios from "axios";
 
-export default function Rangkuman({ auth, id_submateri }) {
+export default function Rangkuman({ auth }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [submateriList, setSubmateriList] = useState([]);
     const [selectedJenjangId, setSelectedJenjangId] = useState(null);
     const [selectedJenjangName, setSelectedJenjangName] = useState("Pilih Jenjang");
 
+    // 👉 Tambahkan useEffect untuk fetch data submateri saat pertama load
     useEffect(() => {
-        let url = "http://localhost:8000/api/rangkuman/submateri";
-        if (id_submateri) {
-            url += `/${id_submateri}`;
+        const fetchSubmateri = async () => {
+            try {
+                const response = await axios.get("http://127.0.0.1:8000/api/rangkuman/submateri");
+                if (Array.isArray(response.data)) {
+                    setSubmateriList(response.data);
+                } else {
+                    console.error("Format data submateri tidak valid:", response.data);
+                }
+            } catch (error) {
+                console.error("Gagal mengambil data submateri:", error);
+            }
+        };
+
+        fetchSubmateri();
+    }, []);
+
+    const handleSelectRangkuman = async (idSubmateri) => {
+        if (!idSubmateri) {
+            console.error("Submateri belum dipilih");
+            return;
         }
-        
-        axios.get(url) 
-            .then((response) => {
-                console.log("Data Submateri dengan Rangkuman:", response.data.data);
-                setSubmateriList(response.data.data);
-            })
-            .catch((error) => {
-                console.error("Error fetching data:", error);
-            });
-    }, [id_submateri]);
-    
+
+        try {
+            // Navigasi langsung ke halaman detail rangkuman
+            router.visit(`/rangkuman/${idSubmateri}`); // Sesuaikan dengan route yang tepat
+        } catch (error) {
+            console.error("Gagal mengambil data rangkuman", error);
+        }
+    };
+
     if (!auth || !auth.user) {
         return (
             <div className="flex flex-col min-h-screen">
@@ -41,13 +57,8 @@ export default function Rangkuman({ auth, id_submateri }) {
     }
 
     const handleSelectJenjang = (jenjangId, jenjangName) => {
-        console.log("Jenjang dipilih:", jenjangId, jenjangName);
         setSelectedJenjangId(jenjangId);
         setSelectedJenjangName(jenjangName);
-    };
-
-    const handleSelectRangkuman = (id_submateri) => {
-        router.visit(`/rangkuman/${id_submateri}`);
     };
 
     const filteredSubmateri = submateriList.filter((submateri) => {
@@ -83,9 +94,9 @@ export default function Rangkuman({ auth, id_submateri }) {
                 <div className="flex flex-col gap-4 mt-6">
                     {filteredSubmateri.length > 0 ? (
                         filteredSubmateri.map((submateri) => (
-                            <div 
-                                key={submateri.id_submateri} 
-                                className="border rounded-lg overflow-hidden shadow-md cursor-pointer" 
+                            <div
+                                key={submateri.id_submateri}
+                                className="border rounded-lg overflow-hidden shadow-md cursor-pointer"
                                 onClick={() => handleSelectRangkuman(submateri.id_submateri)}
                             >
                                 <div className="w-full h-5 bg-[#B9C9DA]" />
