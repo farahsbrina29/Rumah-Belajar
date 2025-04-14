@@ -20,21 +20,17 @@ class RangkumanController extends Controller
                     'rangkuman.id', 
                     'rangkuman.id_submateri', 
                     'rangkuman.file_rangkuman', 
-                    'submateri.nama_submateri' // Tambahkan nama_submateri
-                ) 
+                    'submateri.nama_submateri'
+                )
                 ->first();
 
             if (!$rangkuman) {
                 return response()->json([
-                    'success' => false,
                     'message' => 'Rangkuman tidak ditemukan'
                 ], 404);
             }
 
-            return response()->json([
-                'success' => true,
-                'data' => $rangkuman
-            ]);
+            return response()->json($rangkuman);
         }
 
         // Jika tidak ada id_submateri, tampilkan semua submateri dengan rangkuman
@@ -53,9 +49,6 @@ class RangkumanController extends Controller
             ->distinct()
             ->get();
 
-        return response()->json([
-            'success' => true,
-            'data' => $submateriWithRangkuman
-        ]);
+        return response()->json($submateriWithRangkuman);
     }
 }
