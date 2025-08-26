@@ -16,6 +16,9 @@ use App\Http\Controllers\SubmateriController;
 use App\Http\Controllers\SubMaterialController;
 use App\Http\Controllers\RangkumanController;
 
+Route::get('/submateri/{nama_submateri}/rangkuman', [RangkumanController::class, 'index']);
+Route::post('/submateri/{nama_submateri}/rangkuman', [RangkumanController::class, 'store']);
+
 Route::get('/submaterial', [SubMaterialController::class, 'getSubMaterial']);
 
 Route::get('/rangkuman/submateri', [RangkumanController::class, 'showBySubmateri']);

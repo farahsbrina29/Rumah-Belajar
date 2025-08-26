@@ -14,7 +14,11 @@ class Submateri extends Model
         'id_jenjang' => 'integer'
     ];
 
-
+     public function getSlugAttribute()
+    {
+        return Str::slug($this->nama_submateri, '-');
+    }
+    
     public function mataPelajaran()
     {
         return $this->belongsTo(MataPelajaran::class, 'id_mata_pelajaran');
