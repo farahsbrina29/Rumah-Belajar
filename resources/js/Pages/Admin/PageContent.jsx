@@ -58,7 +58,6 @@ const Content = () => {
 
   const columns = useMemo(
     () => [
-      { accessorKey: 'id_submateri', header: 'ID Submateri' },
       { accessorKey: 'nama_submateri', header: 'Submateri' },
       { accessorKey: 'nama_jenjang', header: 'Jenjang' },
       { accessorKey: 'nama_pelajaran', header: 'Pelajaran' },
@@ -121,7 +120,7 @@ const Content = () => {
               {/* Tambah Rangkuman */}
               <button
                 onClick={() =>
-                  (window.location.href = `/submateri/${nama_submateri}/rangkuman`)
+                  (window.location.href = `/admin/pageContent/${nama_submateri}/rangkuman`)
                 }
                 className="text-green-600 hover:text-green-900"
                 title="Tambah Rangkuman"
@@ -132,7 +131,7 @@ const Content = () => {
               {/* Tambah Pertanyaan */}
               <button
                 onClick={() =>
-                  (window.location.href = `/submateri/${nama_submateri}/pertanyaan`)
+                  (window.location.href = `/admin/pageContent/${nama_submateri}/pertanyaan`)
                 }
                 className="text-purple-600 hover:text-purple-900"
                 title="Tambah Pertanyaan"

@@ -46,6 +46,12 @@ return Inertia::render('DetailRangkuman', [
     ]);
 });
 
+// Di routes/web.php
+Route::get('/admin/pageContent/{nama_submateri}/rangkuman', function ($nama_submateri) {
+    return Inertia::render('AddRangkuman', [
+        'nama_submateri' => $nama_submateri
+    ]);
+})->name('rangkuman.index');
 
 // Rute untuk halaman beranda
 Route::get('/', function () {
