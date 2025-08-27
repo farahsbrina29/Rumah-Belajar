@@ -11,7 +11,6 @@ use App\Http\Controllers\SubMaterialController;
 use App\Http\Controllers\RangkumanController;
 use Illuminate\Support\Facades\Auth;
 
-// Route ruang belajar dan submateri
 
 Route::get('/ruang-belajar/{idMataPelajaran}/{idJenjang}', function ($idMataPelajaran, $idJenjang) {
     return Inertia::render('RuangBelajar', [
@@ -37,12 +36,17 @@ Route::get('/konten/{idMataPelajaran}/{idJenjang}/{idSubmateri}', function ($idM
     ]);
 })->name('submaterial');
 
-Route::get('/rangkuman/{id_submateri}', function ( $id_submateri) {
-return Inertia::render('DetailRangkuman', [
-    'id_submateri' => $id_submateri, // Pastikan dikirim dari backend
+Route::get('/rangkuman/{nama_submateri}', function ($nama_submateri) {
+    return Inertia::render('DetailRangkuman', [
+        'nama_submateri' => $nama_submateri,
     ]);
 });
 
+
+// Di routes/web.php
+// web.php
+Route::get('/admin/konten/{nama_submateri}/rangkuman', [RangkumanController::class, 'showPage'])
+    ->name('rangkuman.index');
 
 // Rute untuk halaman beranda
 Route::get('/', function () {
@@ -102,9 +106,9 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
     
     // Halaman admin lainnya
-    Route::get('/admin/ProfileAdmin', [AdminController::class, 'profileAdmin'])->name('admin.profileadmin');
-    Route::get('/admin/PageUser', [AdminController::class, 'pageUser'])->name('admin.pageuser'); 
-    Route::get('/admin/PageContent', [AdminController::class, 'pageContent'])->name('admin.pagecontent');
+    Route::get('/admin/profil', [AdminController::class, 'profileAdmin'])->name('admin.profileadmin');
+    Route::get('/admin/pengguna', [AdminController::class, 'pageUser'])->name('admin.pageuser'); 
+    Route::get('/admin/konten', [AdminController::class, 'pageContent'])->name('admin.pagecontent');
     
     Route::get('/admin/profile', [AdminController::class, 'showProfile'])->name('admin.profile');
     Route::put('/admin/password', [AdminController::class, 'updatePassword'])->name('admin.password.update');

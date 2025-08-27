@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { MaterialReactTable } from 'material-react-table';
-import { Trash, Edit } from 'lucide-react';
+import { Trash, Edit, FilePlus, MessageSquarePlus } from 'lucide-react';
 import AdminNavbar from '@/Components/AdminNavbar';
 import AddSubmateri from '@/Components/AddSubmateri';
 import EditKonten from '@/Components/EditKonten';
@@ -13,20 +13,23 @@ const Content = () => {
   const [selectedKonten, setSelectedKonten] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    fetchData(token);
+    fetchData();
   }, []);
 
-  const fetchData = async (token) => {
+  const fetchData = async () => {
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch('/api/tabel-konten', {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
         },
       });
+
       const jsonData = await response.json();
       if (!response.ok) throw new Error(jsonData.message || 'Failed to fetch');
-      setData(jsonData);
+
+      setData(jsonData.data ?? jsonData);
       setError(null);
     } catch (err) {
       setError('Gagal mengambil data');
@@ -40,9 +43,11 @@ const Content = () => {
         const response = await fetch(`/api/tabel-konten/${id}`, {
           method: 'DELETE',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
           },
         });
+
         if (!response.ok) throw new Error('Failed to delete');
         setData((prevData) => prevData.filter((item) => item.id !== id));
       } catch (err) {
@@ -51,53 +56,95 @@ const Content = () => {
     }
   }, []);
 
-  const columns = useMemo(() => [
-    { accessorKey: 'nama_submateri', header: 'Submateri' },
-    { accessorKey: 'nama_jenjang', header: 'Jenjang' },
-    { accessorKey: 'nama_pelajaran', header: 'Pelajaran' },
-    { accessorKey: 'judul_konten', header: 'Judul Konten', enableEditing: true },
-    { accessorKey: 'deskripsi', header: 'Deskripsi', enableEditing: true },
-    { accessorKey: 'jenis_konten', header: 'Jenis Konten', enableEditing: true },
-    {
-      accessorKey: 'thumbnail',
-      header: 'Thumbnail',
-      Cell: ({ cell }) =>
-        cell.getValue() !== '-' ? (
-          <img src={cell.getValue()} alt="Thumbnail" style={{ width: '50px', height: 'auto' }} />
-        ) : '-',
-    },
-    {
-      accessorKey: 'link_konten',
-      header: 'Link Konten',
-      Cell: ({ cell }) =>
-        cell.getValue() !== '-' ? (
-          <a href={cell.getValue()} target="_blank" rel="noopener noreferrer">{cell.getValue()}</a>
-        ) : '-',
-    },
-    {
-      id: 'actions',
-      header: 'Aksi',
-      Cell: ({ row }) => (
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <button
-            onClick={() => {
-              setSelectedKonten(row.original);
-              setIsEditKontenOpen(true);
-            }}
-            className="text-blue-600 hover:text-blue-900"
-          >
-            <Edit size={20} />
-          </button>
-          <button
-            onClick={() => handleDelete(row.original.id)}
-            className="text-red-600 hover:text-red-900"
-          >
-            <Trash size={20} />
-          </button>
-        </div>
-      ),
-    },
-  ], []);
+  const columns = useMemo(
+    () => [
+      { accessorKey: 'nama_submateri', header: 'Submateri' },
+      { accessorKey: 'nama_jenjang', header: 'Jenjang' },
+      { accessorKey: 'nama_pelajaran', header: 'Pelajaran' },
+      { accessorKey: 'judul_konten', header: 'Judul Konten', enableEditing: true },
+      { accessorKey: 'deskripsi', header: 'Deskripsi', enableEditing: true },
+      { accessorKey: 'jenis_konten', header: 'Jenis Konten', enableEditing: true },
+      {
+        accessorKey: 'thumbnail',
+        header: 'Thumbnail',
+        Cell: ({ cell }) =>
+          cell.getValue() && cell.getValue() !== '-' ? (
+            <img
+              src={cell.getValue()}
+              alt="Thumbnail"
+              style={{ width: '50px', height: 'auto' }}
+            />
+          ) : (
+            '-'
+          ),
+      },
+      {
+        accessorKey: 'link_konten',
+        header: 'Link Konten',
+        Cell: ({ cell }) =>
+          cell.getValue() && cell.getValue() !== '-' ? (
+            <a href={cell.getValue()} target="_blank" rel="noopener noreferrer">
+              {cell.getValue()}
+            </a>
+          ) : (
+            '-'
+          ),
+      },
+      {
+        id: 'actions',
+        header: 'Aksi',
+        Cell: ({ row }) => {
+          const { nama_submateri } = row.original;
+
+          return (
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              {/* Edit */}
+              <button
+                onClick={() => {
+                  setSelectedKonten(row.original);
+                  setIsEditKontenOpen(true);
+                }}
+                className="text-blue-600 hover:text-blue-900"
+              >
+                <Edit size={20} />
+              </button>
+
+              {/* Hapus */}
+              <button
+                onClick={() => handleDelete(row.original.id)}
+                className="text-red-600 hover:text-red-900"
+              >
+                <Trash size={20} />
+              </button>
+
+              {/* Tambah Rangkuman */}
+              <button
+                onClick={() =>
+                  (window.location.href = `/admin/konten/${nama_submateri}/rangkuman`)
+                }
+                className="text-green-600 hover:text-green-900"
+                title="Tambah Rangkuman"
+              >
+                <FilePlus size={20} />
+              </button>
+
+              {/* Tambah Pertanyaan */}
+              <button
+                onClick={() =>
+                  (window.location.href = `/admin/konten/${nama_submateri}/pertanyaan`)
+                }
+                className="text-purple-600 hover:text-purple-900"
+                title="Tambah Pertanyaan"
+              >
+                <MessageSquarePlus size={20} />
+              </button>
+            </div>
+          );
+        },
+      },
+    ],
+    [handleDelete],
+  );
 
   return (
     <AdminNavbar>
@@ -132,10 +179,7 @@ const Content = () => {
           />
         )}
 
-        <MaterialReactTable
-          columns={columns}
-          data={data}
-        />
+        <MaterialReactTable columns={columns} data={data} />
       </div>
     </AdminNavbar>
   );
