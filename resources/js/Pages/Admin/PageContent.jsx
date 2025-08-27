@@ -120,7 +120,7 @@ const Content = () => {
               {/* Tambah Rangkuman */}
               <button
                 onClick={() =>
-                  (window.location.href = `/admin/pageContent/${nama_submateri}/rangkuman`)
+                  (window.location.href = `/admin/konten/${nama_submateri}/rangkuman`)
                 }
                 className="text-green-600 hover:text-green-900"
                 title="Tambah Rangkuman"
@@ -131,7 +131,7 @@ const Content = () => {
               {/* Tambah Pertanyaan */}
               <button
                 onClick={() =>
-                  (window.location.href = `/admin/pageContent/${nama_submateri}/pertanyaan`)
+                  (window.location.href = `/admin/konten/${nama_submateri}/pertanyaan`)
                 }
                 className="text-purple-600 hover:text-purple-900"
                 title="Tambah Pertanyaan"

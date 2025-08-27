@@ -12,7 +12,7 @@ const AdminSidebar = () => {
       <nav className="mt-8 space-y-2">
         <div className="px-4">
           <Link 
-            href="/admin/ProfileAdmin" 
+            href="/Admin/Profil" 
             className="flex items-center px-4 py-3 rounded-lg hover:bg-white/10 transition-colors"
           >
             <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,7 +32,7 @@ const AdminSidebar = () => {
           </Link>
           
           <Link 
-            href="/admin/PageUser" 
+            href="/admin/pengguna" 
             className="flex items-center px-4 py-3 rounded-lg hover:bg-white/10 transition-colors"
           >
             <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,7 +42,7 @@ const AdminSidebar = () => {
           </Link>
           
           <Link 
-            href="/admin/PageContent" 
+            href="/admin/konten" 
             className="flex items-center px-4 py-3 rounded-lg hover:bg-white/10 transition-colors"
           >
             <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
