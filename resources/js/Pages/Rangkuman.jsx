@@ -12,20 +12,28 @@ export default function Rangkuman({ auth }) {
     const [selectedJenjangId, setSelectedJenjangId] = useState(null);
     const [selectedJenjangName, setSelectedJenjangName] = useState("Pilih Jenjang");
 
+    // ✅ tambahan state
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     // ✅ Fetch submateri + rangkuman dari API
     useEffect(() => {
         const fetchSubmateri = async () => {
+            setLoading(true);
+            setError(null);
             try {
                 const response = await axios.get("http://127.0.0.1:8000/api/rangkuman/submateri");
 
-                // karena API return { status: 'success', data: [...] }
                 if (Array.isArray(response.data.data)) {
                     setSubmateriList(response.data.data);
                 } else {
-                    console.error("Format data submateri tidak valid:", response.data);
+                    setError("Format data tidak valid.");
                 }
-            } catch (error) {
-                console.error("Gagal mengambil data submateri:", error);
+            } catch (err) {
+                console.error("Gagal mengambil data submateri:", err);
+                setError("Gagal memuat rangkuman. Silakan coba lagi.");
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -98,9 +106,27 @@ export default function Rangkuman({ auth }) {
                 </div>
 
                 {/* 📚 List Rangkuman */}
-                <div className="flex flex-col gap-4 mt-6">
-                    {filteredSubmateri.length > 0 ? (
-                        filteredSubmateri.map((submateri) => (
+                {loading ? (
+                    // Skeleton loading
+                    <div className="flex flex-col gap-4 mt-6">
+                        {Array.from({ length: 6 }).map((_, idx) => (
+                            <div
+                                key={idx}
+                                className="border rounded-lg overflow-hidden shadow-md bg-white animate-pulse"
+                            >
+                                <div className="w-full h-5 bg-gray-300" />
+                                <div className="p-4">
+                                    <div className="h-4 bg-gray-300 rounded mb-2 w-2/3"></div>
+                                    <div className="h-3 bg-gray-200 rounded w-1/3"></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : error ? (
+                    <p className="text-center text-red-500 mt-6">{error}</p>
+                ) : filteredSubmateri.length > 0 ? (
+                    <div className="flex flex-col gap-4 mt-6">
+                        {filteredSubmateri.map((submateri) => (
                             <div
                                 key={submateri.id_rangkuman}
                                 className="border rounded-lg overflow-hidden shadow-md cursor-pointer"
@@ -116,13 +142,13 @@ export default function Rangkuman({ auth }) {
                                     </p>
                                 </div>
                             </div>
-                        ))
-                    ) : (
-                        <p className="text-center text-gray-600">
-                            Tidak ada rangkuman yang sesuai.
-                        </p>
-                    )}
-                </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-center text-gray-600 mt-6">
+                        Tidak ada rangkuman yang sesuai.
+                    </p>
+                )}
             </div>
 
             <Footer />
