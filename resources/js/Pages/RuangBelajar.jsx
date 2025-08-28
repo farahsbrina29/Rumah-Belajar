@@ -4,34 +4,34 @@ import axios from 'axios';
 import Navbar from '@/Components/NavbarUser';
 import Footer from '@/Components/Footer';
 
-export default function RuangBelajar({ auth, idMataPelajaran, idJenjang }) {
+export default function RuangBelajar({ auth, nama_pelajaran, nama_jenjang }) {
     const [subMaterials, setSubMaterials] = useState([]);
-    const [namaPelajaran, setNamaPelajaran] = useState('');
+    const [namaPelajaran, setNamaPelajaran] = useState(nama_pelajaran || '');
 
     useEffect(() => {
         const fetchSubMaterials = async () => {
-            if (!idMataPelajaran || !idJenjang) {
+            if (!nama_pelajaran || !nama_jenjang) {
                 console.error("Parameter tidak lengkap");
                 setSubMaterials([]);
                 return;
             }
             
             try {
-                console.log(`Mengambil data dengan id_mata_pelajaran=${idMataPelajaran}, id_jenjang=${idJenjang}`);
+                console.log(`Mengambil data dengan nama_pelajaran=${nama_pelajaran}, nama_jenjang=${nama_jenjang}`);
                 
                 const response = await axios.get(`http://127.0.0.1:8000/api/submateri`, {
                     params: { 
-                        id_mata_pelajaran: idMataPelajaran, 
-                        id_jenjang: idJenjang 
+                        nama_pelajaran, 
+                        nama_jenjang 
                     },
                 });
                 
                 console.log("Data dari API:", response.data);
                 
                 if (response.data && Array.isArray(response.data)) {
-                    setSubMaterials(response.data.filter(item => item.id_submateri !== null)); // Hanya ambil yang punya submateri
+                    setSubMaterials(response.data.filter(item => item.nama_submateri !== null));
                     if (response.data.length > 0) {
-                        setNamaPelajaran(response.data[0]?.nama_pelajaran || 'Tidak diketahui');
+                        setNamaPelajaran(response.data[0]?.nama_pelajaran || nama_pelajaran);
                     }
                 } else {
                     console.error("Format data tidak valid");
@@ -44,10 +44,10 @@ export default function RuangBelajar({ auth, idMataPelajaran, idJenjang }) {
         };
     
         fetchSubMaterials();
-    }, [idMataPelajaran, idJenjang]);
+    }, [nama_pelajaran, nama_jenjang]);
 
-    const handleSubMateriClick = (idSubMateri) => {
-        router.visit(`/ruang-belajar/${idMataPelajaran}/${idJenjang}/${idSubMateri}`);
+    const handleSubMateriClick = (nama_submateri) => {
+        router.visit(`/konten/${nama_pelajaran}/${nama_jenjang}/${nama_submateri}`);
     };
 
     return (
@@ -79,8 +79,8 @@ export default function RuangBelajar({ auth, idMataPelajaran, idJenjang }) {
                             <div className="space-y-4">
                                 {subMaterials.map((material) => (
                                     <div
-                                        key={material.id_submateri}
-                                        onClick={() => handleSubMateriClick(material.id_submateri)}
+                                        key={material.nama_submateri}
+                                        onClick={() => handleSubMateriClick(material.nama_submateri)}
                                         className="flex items-center p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
                                     >
                                         <div className="flex-1">

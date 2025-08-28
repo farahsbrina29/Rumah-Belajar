@@ -12,27 +12,20 @@ use App\Http\Controllers\RangkumanController;
 use Illuminate\Support\Facades\Auth;
 
 
-Route::get('/ruang-belajar/{idMataPelajaran}/{idJenjang}', function ($idMataPelajaran, $idJenjang) {
+Route::get('/ruang-belajar/{nama_pelajaran}/{nama_jenjang}', function ($nama_pelajaran, $nama_jenjang) {
     return Inertia::render('RuangBelajar', [
-        'idMataPelajaran' => $idMataPelajaran,
-        'idJenjang' => $idJenjang
+        'nama_pelajaran' => $nama_pelajaran,
+        'nama_jenjang' => $nama_jenjang
     ]);
 })->name('ruang-belajar');
 
 
-Route::get('/ruang-belajar/{idMataPelajaran}/{idJenjang}/{idSubmateri}', function ($idMataPelajaran, $idJenjang, $idSubmateri) {
-    return Inertia::render('submaterial', [
-        'idMataPelajaran' => $idMataPelajaran,
-        'idJenjang' => $idJenjang,
-        'idSubMateri' => $idSubmateri
-    ]);
-})->name('submaterial');
 
-Route::get('/konten/{idMataPelajaran}/{idJenjang}/{idSubmateri}', function ($idMataPelajaran, $idJenjang, $idSubmateri) {
+Route::get('/konten/{nama_pelajaran}/{nama_jenjang}/{nama_submateri}', function ($nama_pelajaran, $nama_jenjang, $nama_submateri) {
     return Inertia::render('submaterial', [
-        'idMataPelajaran' => $idMataPelajaran,
-        'idJenjang' => $idJenjang,
-        'idSubMateri' => $idSubmateri
+        'nama_pelajaran' => $nama_pelajaran,
+        'nama_jenjang' => $nama_jenjang,
+        'nama_submateri' => $nama_submateri
     ]);
 })->name('submaterial');
 
