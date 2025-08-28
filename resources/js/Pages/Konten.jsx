@@ -8,23 +8,21 @@ import PopupPilihJenjang from "@/components/PopupPilihJenjang";
 export default function Konten({ auth }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [kontenList, setKontenList] = useState([]);
-    const [filteredKonten, setFilteredKonten] = useState([]);
+    const [submaterialList, setSubmaterialList] = useState([]); // ✅ pakai submaterial
+    const [filteredSubmaterial, setFilteredSubmaterial] = useState([]);
     const [jenjangList, setJenjangList] = useState([]);
     const [selectedJenjang, setSelectedJenjang] = useState(null);
 
     useEffect(() => {
-        // Fetch konten data
-        axios.get("http://localhost:8000/api/konten")
+        axios.get("http://localhost:8000/api/submaterial")
             .then((response) => {
-                setKontenList(response.data);
-                setFilteredKonten(response.data);
+                setSubmaterialList(response.data);
+                setFilteredSubmaterial(response.data);
             })
             .catch((error) => {
-                console.error("Error fetching konten:", error);
+                console.error("Error fetching submaterial:", error);
             });
 
-        // Fetch jenjang data
         axios.get("http://localhost:8000/api/jenjang")
             .then((response) => {
                 setJenjangList(response.data);
@@ -34,7 +32,6 @@ export default function Konten({ auth }) {
             });
     }, []);
 
-    // Redirect if not authenticated
     if (!auth || !auth.user) {
         return (
             <div className="flex flex-col min-h-screen">
@@ -47,23 +44,17 @@ export default function Konten({ auth }) {
         );
     }
 
-    const handleSelectJenjang = (id, nama) => {
-        setSelectedJenjang({ id, nama });
-        if (id) {
-            setFilteredKonten(kontenList.filter(konten => String(konten.id_jenjang) === String(id)));
+    const handleSelectJenjang = (nama) => {
+        setSelectedJenjang(nama);
+        if (nama) {
+            setFilteredSubmaterial(submaterialList.filter(sub => sub.jenjang === nama));
         } else {
-            setFilteredKonten(kontenList);
+            setFilteredSubmaterial(submaterialList);
         }
     };
 
-    const getNamaJenjang = (id_jenjang) => {
-        const jenjang = jenjangList.find(j => String(j.id) === String(id_jenjang));
-        return jenjang ? jenjang.nama_jenjang : "Tidak Diketahui";
-    };
-
-    // Filter konten berdasarkan pencarian
-    const filteredBySearch = filteredKonten.filter(konten => 
-        konten.judul_konten.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredBySearch = filteredSubmaterial.filter(sub =>
+        sub.konten?.[0]?.judul_konten?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -74,7 +65,6 @@ export default function Konten({ auth }) {
                     Telusuri Berbagai Konten Menarik 🚀
                 </h1>
 
-                {/* Search and Jenjang selection */}
                 <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6 mt-12">
                     <input
                         type="text"
@@ -87,46 +77,45 @@ export default function Konten({ auth }) {
                         onClick={() => setIsPopupOpen(true)}
                         className="bg-[#154561] text-white px-6 py-2 rounded-md font-semibold w-full sm:w-auto"
                     >
-                        {selectedJenjang ? selectedJenjang.nama : "Pilih Jenjang"}
+                        {selectedJenjang ? selectedJenjang : "Pilih Jenjang"}
                     </button>
                 </div>
 
-                {/* Konten Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {filteredBySearch.map((konten) => (
-                <div
-                    key={konten.id}
-                    onClick={() =>
-                        router.visit(`/konten/${konten.id_mata_pelajaran}/${konten.id_jenjang}/${konten.id_submateri}`)
-                    }
-                    className="cursor-pointer border rounded-lg overflow-hidden shadow-md bg-white hover:shadow-lg transition"
-                >
-                    <img
-                        src={konten.thumbnail || "https://via.placeholder.com/300"}
-                        alt={konten.judul_konten}
-                        className="w-full h-48 object-cover"
-                    />
-                    <div className="p-4">
-                        <h2 className="font-bold text-lg text-center mb-2 text-[#154561]">
-                            {konten.judul_konten}
-                        </h2>
-                        <p className="text-sm text-gray-500 text-center">
-                            {konten.jenjang?.nama_jenjang || "Tidak Diketahui"} - {konten.mata_pelajaran?.nama_pelajaran || "Tidak Diketahui"}
-                        </p>
-                    </div>
-                </div>
-            ))}
-
+                    {filteredBySearch.map((sub) => (
+                        <div
+                            key={sub.nama_submateri}
+                            onClick={() =>
+                                router.visit(
+                                    `/konten/${encodeURIComponent(sub.mata_pelajaran)}/${encodeURIComponent(sub.jenjang)}/${encodeURIComponent(sub.nama_submateri)}`
+                                )
+                            }
+                            className="cursor-pointer border rounded-lg overflow-hidden shadow-md bg-white hover:shadow-lg transition"
+                        >
+                            <img
+                                src={sub.konten?.[0]?.thumbnail || "https://via.placeholder.com/300"}
+                                alt={sub.konten?.[0]?.judul_konten || sub.nama_submateri}
+                                className="w-full h-48 object-cover"
+                            />
+                            <div className="p-4">
+                                <h2 className="font-bold text-lg text-center mb-2 text-[#154561]">
+                                    {sub.konten?.[0]?.judul_konten || sub.nama_submateri}
+                                </h2>
+                                <p className="text-sm text-gray-500 text-center">
+                                    {sub.jenjang || "Tidak Diketahui"} - {sub.mata_pelajaran || "Tidak Diketahui"}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
 
             <Footer />
 
-            {/* Popup Pilih Jenjang */}
             <PopupPilihJenjang 
                 isOpen={isPopupOpen} 
                 onClose={() => setIsPopupOpen(false)} 
-                onSelectJenjang={handleSelectJenjang} 
+                onSelectJenjang={(id, nama) => handleSelectJenjang(nama)} 
             />
         </div>
     );

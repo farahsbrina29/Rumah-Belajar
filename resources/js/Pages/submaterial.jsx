@@ -4,7 +4,7 @@ import axios from 'axios';
 import Navbar from '@/Components/NavbarUser';
 import Footer from '@/Components/Footer';
 
-export default function Submaterial({ auth, idMataPelajaran, idJenjang, idSubMateri }) {
+export default function Submaterial({ auth, nama_pelajaran, nama_jenjang, nama_submateri }) {
     const [data, setData] = useState(null);
     const [activeTab, setActiveTab] = useState("materi");
     const [loading, setLoading] = useState(true);
@@ -12,34 +12,29 @@ export default function Submaterial({ auth, idMataPelajaran, idJenjang, idSubMat
 
     useEffect(() => {
         const fetchSubMateri = async () => {
-            if (!idMataPelajaran || !idJenjang || !idSubMateri) {
+            if (!nama_pelajaran || !nama_jenjang || !nama_submateri) {
                 setError("Parameter tidak lengkap");
                 setLoading(false);
                 return;
             }
 
             try {
-                console.log(`Mengambil submateri dengan id_mata_pelajaran=${idMataPelajaran}, id_jenjang=${idJenjang}, id_submateri=${idSubMateri}`);
+                console.log(`Mengambil submateri: ${nama_pelajaran} - ${nama_jenjang} - ${nama_submateri}`);
 
                 const response = await axios.get(`http://127.0.0.1:8000/api/submaterial`, {
                     params: {
-                        id_mata_pelajaran: idMataPelajaran,
-                        id_jenjang: idJenjang,
-                        id_submateri: idSubMateri
+                        nama_pelajaran,
+                        nama_jenjang,
+                        nama_submateri
                     }
                 });
 
                 console.log("Data submateri:", response.data);
 
-                if (response.data && Array.isArray(response.data)) {
-                    const found = response.data.find(item => item.id_submateri == idSubMateri);
-                    if (found) {
-                        setData(found);
-                    } else {
-                        setError("Submateri tidak ditemukan.");
-                    }
+                if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+                    setData(response.data[0]); // ambil yang pertama
                 } else {
-                    setError("Format data tidak valid.");
+                    setError("Submateri tidak ditemukan.");
                 }
             } catch (err) {
                 console.error("Gagal mengambil data", err);
@@ -50,7 +45,7 @@ export default function Submaterial({ auth, idMataPelajaran, idJenjang, idSubMat
         };
 
         fetchSubMateri();
-    }, [idMataPelajaran, idJenjang, idSubMateri]);
+    }, [nama_pelajaran, nama_jenjang, nama_submateri]);
 
     if (loading) return <div className="text-center mt-20">Loading...</div>;
     if (error) return <div className="text-center text-red-500 mt-20">{error}</div>;
@@ -101,21 +96,20 @@ export default function Submaterial({ auth, idMataPelajaran, idJenjang, idSubMat
                         )}
 
                         {activeTab === "rangkuman" && (
-                           <div>
-                           <h3 className="text-lg font-semibold">Rangkuman</h3>
-                           {data.rangkuman && data.rangkuman.length > 0 ? (
-                             <a
-                               href={`/storage/${data.rangkuman[0].file_rangkuman}`}
-                               download
-                               className="text-blue-500 underline"
-                             >
-                               Download Rangkuman
-                             </a>
-                           ) : (
-                             <p>Rangkuman tidak tersedia.</p>
-                           )}
-                         </div>
-                         
+                            <div>
+                                <h3 className="text-lg font-semibold">Rangkuman</h3>
+                                {data.rangkuman && data.rangkuman.length > 0 ? (
+                                    <a
+                                        href={`/storage/${data.rangkuman[0].file_rangkuman}`}
+                                        download
+                                        className="text-blue-500 underline"
+                                    >
+                                        Download Rangkuman
+                                    </a>
+                                ) : (
+                                    <p>Rangkuman tidak tersedia.</p>
+                                )}
+                            </div>
                         )}
                     </div>
                 </div>

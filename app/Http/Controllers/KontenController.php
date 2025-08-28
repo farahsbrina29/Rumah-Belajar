@@ -11,7 +11,7 @@ class KontenController extends Controller
 {
     public function index(Request $request)
 {
-    $query = Konten::with(['jenjang', 'mataPelajaran']); // Ambil data konten beserta jenjang & mata pelajaran
+    $query = Konten::with(['jenjang', 'mataPelajaran', 'submateri']); // Ambil data konten beserta jenjang & mata pelajaran
 
     // Filter berdasarkan nama_jenjang jika ada request
     if ($request->has('jenjang')) {
@@ -21,8 +21,8 @@ class KontenController extends Controller
     }
 
     // Filter berdasarkan id_submateri jika ada request
-    if ($request->has('id_submateri')) {
-        $query->where('id_submateri', $request->id_submateri);
+    if ($request->has('nama_submateri')) {
+        $query->where('nama_submateri', $request->nama_submateri);
     }
 
     // Include the thumbnail URL in the response
