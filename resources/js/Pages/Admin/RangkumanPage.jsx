@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Head, usePage, router } from '@inertiajs/react';
-import { ArrowLeft, FileText, Upload, Download, Trash2 } from 'lucide-react';
+import { Head, usePage, router, Link } from '@inertiajs/react';
+import { FileText, Upload, Download, Trash2 } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import AdminNavbar from '@/Components/AdminNavbar';
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,18 +12,14 @@ export default function RangkumanPage() {
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState(null);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
+  const handleFileChange = (e) => setFile(e.target.files[0]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!file) {
       toast.error('Pilih file terlebih dahulu');
       return;
     }
-
     setUploading(true);
 
     const formData = new FormData();
@@ -34,7 +30,8 @@ export default function RangkumanPage() {
       body: formData,
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+        'X-CSRF-TOKEN':
+          document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
       },
     })
       .then(async (response) => {
@@ -44,16 +41,14 @@ export default function RangkumanPage() {
           router.reload({ only: ['rangkuman'] });
         } else {
           const errorData = await response.json().catch(() => ({}));
-          toast.error(errorData.message || ' Gagal upload rangkuman');
+          toast.error(errorData.message || 'Gagal upload rangkuman');
         }
       })
       .catch((error) => {
         console.error('Upload error:', error);
         toast.error('Terjadi kesalahan saat upload');
       })
-      .finally(() => {
-        setUploading(false);
-      });
+      .finally(() => setUploading(false));
   };
 
   const handleDownload = async () => {
@@ -61,10 +56,8 @@ export default function RangkumanPage() {
       toast.error('File rangkuman tidak tersedia');
       return;
     }
-
     const fileName = rangkuman[0].file_rangkuman.split('/').pop();
     const fileUrl = `/storage/${rangkuman[0].file_rangkuman}`;
-    
     try {
       await downloadViaEndpoint(rangkuman[0].id, fileName);
     } catch {
@@ -81,10 +74,10 @@ export default function RangkumanPage() {
       method: 'GET',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+        'X-CSRF-TOKEN':
+          document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
       },
     });
-
     if (!response.ok) throw new Error('Endpoint download tidak tersedia');
 
     const blob = await response.blob();
@@ -95,7 +88,6 @@ export default function RangkumanPage() {
   const downloadViaFetch = async (fileUrl, fileName) => {
     const response = await fetch(fileUrl);
     if (!response.ok) throw new Error('File tidak dapat diakses');
-
     const blob = await response.blob();
     downloadBlob(blob, fileName);
     toast.success('File berhasil didownload');
@@ -132,7 +124,8 @@ export default function RangkumanPage() {
         method: 'DELETE',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+          'X-CSRF-TOKEN':
+            document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
           'Content-Type': 'application/json',
         },
       })
@@ -182,24 +175,18 @@ export default function RangkumanPage() {
     <AdminNavbar>
       <Head title={`Rangkuman - ${submateri?.nama_submateri || nama_submateri}`} />
 
-      <div className="min-h-screen bg-white rounded-lg p-8">
-        {/* Header langsung ke kiri */}
-        <div className="flex items-center gap-3 mb-6">
-          <button
-            onClick={() => window.history.back()}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <ArrowLeft size={20} />
-          </button>
-          <div>
-            <h1 className="text-xl font-semibold text-gray-800">Tambah Rangkuman</h1>
-            <p className="text-gray-600 text-sm mt-1">
-              {submateri?.nama_submateri || nama_submateri.replace(/-/g, ' ')}
-            </p>
-          </div>
-        </div>
+   
+    {/* 🔹 Breadcrumbs */}
+    <div className="text-sm text-blue-900 mb-6 flex items-center space-x-2">
+      <Link href="/admin/konten" className="hover:underline">
+        Submateri
+      </Link>
+      <span>›</span>
+      <span className="text-gray-600">Tambah Rangkuman</span>
+    </div>
 
-        {/* Rangkuman Section */}
+      {/* 🔹 Card Section */}
+      <div className="min-h-screen bg-white rounded-lg p-8">
         <div className="space-y-6">
           <div>
             <h2 className="text-lg font-medium text-gray-800 mb-4">Unggah Rangkuman :</h2>
@@ -279,9 +266,9 @@ export default function RangkumanPage() {
         </div>
       </div>
 
-      <ToastContainer 
-        position="top-right" 
-        autoClose={3000} 
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
         hideProgressBar={false}
         newestOnTop
         closeOnClick

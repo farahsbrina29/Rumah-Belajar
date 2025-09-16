@@ -15,7 +15,13 @@ use App\Http\Controllers\AddSubmateriController;
 use App\Http\Controllers\SubmateriController;
 use App\Http\Controllers\SubMaterialController;
 use App\Http\Controllers\RangkumanController;
+use App\Http\Controllers\LatihanController;
 
+
+Route::get('/latihan/{nama_submateri}', [LatihanController::class, 'index']);
+Route::post('/latihan/{nama_submateri}', [LatihanController::class, 'store']);
+Route::put('/latihan/{id}', [LatihanController::class, 'update']);
+Route::delete('/latihan/{id}', [LatihanController::class, 'destroy']);
 
 Route::post('/submateri/{nama_submateri}/rangkuman', [RangkumanController::class, 'store']);
 Route::get('/rangkuman/all', [RangkumanController::class, 'getAllRangkuman']);
