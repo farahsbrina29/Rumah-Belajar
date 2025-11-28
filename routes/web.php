@@ -9,6 +9,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RuangBelajarController;
 use App\Http\Controllers\SubMaterialController;
 use App\Http\Controllers\RangkumanController;
+use App\Http\Controllers\LatihanController;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -68,6 +69,10 @@ Route::get('/rangkuman', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 })->name('rangkuman');
+
+Route::get('/admin/konten/{nama_submateri}/latihan', [LatihanController::class, 'showPage'])->name('latihan.showPage');
+
+
 
 // Rute untuk dashboard pengguna
 Route::get('/dashboard', function () {
