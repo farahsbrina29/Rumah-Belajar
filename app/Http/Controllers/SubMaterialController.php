@@ -69,7 +69,9 @@ class SubMaterialController extends Controller
                         'judul_konten' => $i->judul_konten,
                         'deskripsi' => $i->deskripsi,
                         'jenis_konten' => $i->jenis_konten,
-                        'thumbnail' => $i->thumbnail,
+                       'thumbnail' => $i->thumbnail
+                            ? asset('storage/' . str_replace('public/', '', $i->thumbnail))
+                            : null,
                         'link_konten' => $i->link_konten,
                     ];
                 })->values(),
