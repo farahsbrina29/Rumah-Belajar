@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Head, router } from "@inertiajs/react";
 import Navbar from "@/components/NavbarUser";
 import Footer from "@/components/Footer";
 import PopupPilihJenjang from "@/components/PopupPilihJenjang";
@@ -8,46 +9,74 @@ export default function Rangkuman({ auth }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [submateriList, setSubmateriList] = useState([]);
-    
-    // State untuk jenjang yang dipilih
     const [selectedJenjangId, setSelectedJenjangId] = useState(null);
     const [selectedJenjangName, setSelectedJenjangName] = useState("Pilih Jenjang");
 
+    // ✅ tambahan state
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // ✅ Fetch submateri + rangkuman dari API
     useEffect(() => {
-        // Fetch data submateri dari API
-        axios.get("http://localhost:8000/api/submateri") // Sesuaikan dengan API Anda
-            .then((response) => {
-                console.log("Data Submateri:", response.data); // Debugging
-                setSubmateriList(response.data);
-            })
-            .catch((error) => {
-                console.error("Error fetching submateri:", error);
-            });
+        const fetchSubmateri = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const response = await axios.get("http://127.0.0.1:8000/api/rangkuman/submateri");
+
+                if (Array.isArray(response.data.data)) {
+                    setSubmateriList(response.data.data);
+                } else {
+                    setError("Format data tidak valid.");
+                }
+            } catch (err) {
+                console.error("Gagal mengambil data submateri:", err);
+                setError("Gagal memuat rangkuman. Silakan coba lagi.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSubmateri();
     }, []);
+
+    // ✅ Aksi ketika klik rangkuman → buka halaman /rangkuman/:nama_submateri
+    const handleSelectRangkuman = (nama_submateri) => {
+        if (!nama_submateri) {
+            console.error("Nama Submateri belum ada");
+            return;
+        }
+        router.visit(`/rangkuman/${nama_submateri}`);
+    };
 
     if (!auth || !auth.user) {
         return (
             <div className="flex flex-col min-h-screen">
                 <Navbar auth={auth} />
                 <div className="flex-1 flex items-center justify-center">
-                    <h1 className="text-xl font-bold text-[#154561]">Anda harus login untuk mengakses halaman ini.</h1>
+                    <h1 className="text-xl font-bold text-[#154561]">
+                        Anda harus login untuk mengakses halaman ini.
+                    </h1>
                 </div>
                 <Footer />
             </div>
         );
     }
 
-    // Fungsi untuk menangani pemilihan jenjang dari PopupPilihJenjang
+    // ✅ Handler pilih jenjang dari popup
     const handleSelectJenjang = (jenjangId, jenjangName) => {
-        console.log("Jenjang dipilih:", jenjangId, jenjangName); // Debugging
         setSelectedJenjangId(jenjangId);
         setSelectedJenjangName(jenjangName);
     };
 
-    // Filter submateri berdasarkan jenjang dan pencarian
+    // ✅ Filtering submateri berdasarkan jenjang & search
     const filteredSubmateri = submateriList.filter((submateri) => {
-        const matchesJenjang = selectedJenjangId ? String(submateri.id_jenjang) === String(selectedJenjangId) : true;
-        const matchesSearch = submateri.nama_submateri.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesJenjang = selectedJenjangId
+            ? String(submateri.id_jenjang) === String(selectedJenjangId)
+            : true;
+        const matchesSearch = submateri.nama_submateri
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
         return matchesJenjang && matchesSearch;
     });
 
@@ -59,7 +88,7 @@ export default function Rangkuman({ auth }) {
                     Telusuri rangkuman materi belajarmu di sini ✨
                 </h1>
 
-                {/* Pencarian & Pilihan Jenjang */}
+                {/* 🔍 Search + Pilih Jenjang */}
                 <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6 mt-12">
                     <input
                         type="text"
@@ -76,27 +105,55 @@ export default function Rangkuman({ auth }) {
                     </button>
                 </div>
 
-                {/* Kotak Rangkuman dengan Filter Jenjang & Search */}
-                <div className="flex flex-col gap-4 mt-6">
-                    {filteredSubmateri.length > 0 ? (
-                        filteredSubmateri.map((submateri) => (
-                            <div key={submateri.id} className="border rounded-lg overflow-hidden shadow-md">
-                                <div className="w-full h-5 bg-[#B9C9DA]" />
-                                <div className="p-4 bg-white">
-                                    <h2 className="font-bold text-lg mb-2">{submateri.nama_submateri}</h2>
-                                    <p className="text-sm text-gray-500">{submateri.nama_jenjang} - {submateri.nama_pelajaran}</p>
+                {/* 📚 List Rangkuman */}
+                {loading ? (
+                    // Skeleton loading
+                    <div className="flex flex-col gap-4 mt-6">
+                        {Array.from({ length: 6 }).map((_, idx) => (
+                            <div
+                                key={idx}
+                                className="border rounded-lg overflow-hidden shadow-md bg-white animate-pulse"
+                            >
+                                <div className="w-full h-5 bg-gray-300" />
+                                <div className="p-4">
+                                    <div className="h-4 bg-gray-300 rounded mb-2 w-2/3"></div>
+                                    <div className="h-3 bg-gray-200 rounded w-1/3"></div>
                                 </div>
                             </div>
-                        ))
-                    ) : (
-                        <p className="text-center text-gray-600">Tidak ada rangkuman yang sesuai.</p>
-                    )}
-                </div>
+                        ))}
+                    </div>
+                ) : error ? (
+                    <p className="text-center text-red-500 mt-6">{error}</p>
+                ) : filteredSubmateri.length > 0 ? (
+                    <div className="flex flex-col gap-4 mt-6">
+                        {filteredSubmateri.map((submateri) => (
+                            <div
+                                key={submateri.id_rangkuman}
+                                className="border rounded-lg overflow-hidden shadow-md cursor-pointer"
+                                onClick={() => handleSelectRangkuman(submateri.nama_submateri)}
+                            >
+                                <div className="w-full h-5 bg-[#B9C9DA]" />
+                                <div className="p-4 bg-white">
+                                    <h2 className="font-bold text-lg mb-2">
+                                        {submateri.nama_submateri}
+                                    </h2>
+                                    <p className="text-sm text-gray-500">
+                                        {submateri.nama_jenjang} - {submateri.nama_pelajaran}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-center text-gray-600 mt-6">
+                        Tidak ada rangkuman yang sesuai.
+                    </p>
+                )}
             </div>
 
             <Footer />
 
-            {/* Popup Pilih Jenjang */}
+            {/* 📌 Popup Pilih Jenjang */}
             <PopupPilihJenjang
                 isOpen={isPopupOpen}
                 onClose={() => setIsPopupOpen(false)}

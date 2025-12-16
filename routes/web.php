@@ -8,26 +8,39 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RuangBelajarController;
 use App\Http\Controllers\SubMaterialController;
+use App\Http\Controllers\RangkumanController;
+use App\Http\Controllers\LatihanController;
 use Illuminate\Support\Facades\Auth;
 
-// Route ruang belajar dan submateri
 
-Route::get('/ruang-belajar/{idMataPelajaran}/{idJenjang}', function ($idMataPelajaran, $idJenjang) {
+Route::get('/ruang-belajar/{nama_pelajaran}/{nama_jenjang}', function ($nama_pelajaran, $nama_jenjang) {
     return Inertia::render('RuangBelajar', [
-        'idMataPelajaran' => $idMataPelajaran,
-        'idJenjang' => $idJenjang
+        'nama_pelajaran' => $nama_pelajaran,
+        'nama_jenjang' => $nama_jenjang
     ]);
 })->name('ruang-belajar');
 
 
-Route::get('/ruang-belajar/{idMataPelajaran}/{idJenjang}/{idSubMateri}', function ($idMataPelajaran, $idJenjang, $idSubMateri) {
-    return Inertia::render('SubMaterial', [
-        'idMataPelajaran' => $idMataPelajaran,
-        'idJenjang' => $idJenjang,
-        'idSubMateri' => $idSubMateri
+
+Route::get('/konten/{nama_pelajaran}/{nama_jenjang}/{nama_submateri}', function ($nama_pelajaran, $nama_jenjang, $nama_submateri) {
+    return Inertia::render('submaterial', [
+        'nama_pelajaran' => $nama_pelajaran,
+        'nama_jenjang' => $nama_jenjang,
+        'nama_submateri' => $nama_submateri
     ]);
 })->name('submaterial');
 
+Route::get('/rangkuman/{nama_submateri}', function ($nama_submateri) {
+    return Inertia::render('DetailRangkuman', [
+        'nama_submateri' => $nama_submateri,
+    ]);
+});
+
+
+// Di routes/web.php
+// web.php
+Route::get('/admin/konten/{nama_submateri}/rangkuman', [RangkumanController::class, 'showPage'])
+    ->name('rangkuman.index');
 
 // Rute untuk halaman beranda
 Route::get('/', function () {
@@ -56,6 +69,10 @@ Route::get('/rangkuman', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 })->name('rangkuman');
+
+Route::get('/admin/konten/{nama_submateri}/latihan', [LatihanController::class, 'showPage'])->name('latihan.showPage');
+
+
 
 // Rute untuk dashboard pengguna
 Route::get('/dashboard', function () {
@@ -87,9 +104,9 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
     
     // Halaman admin lainnya
-    Route::get('/admin/ProfileAdmin', [AdminController::class, 'profileAdmin'])->name('admin.profileadmin');
-    Route::get('/admin/PageUser', [AdminController::class, 'pageUser'])->name('admin.pageuser'); 
-    Route::get('/admin/PageContent', [AdminController::class, 'pageContent'])->name('admin.pagecontent');
+    Route::get('/admin/profil', [AdminController::class, 'profileAdmin'])->name('admin.profileadmin');
+    Route::get('/admin/pengguna', [AdminController::class, 'pageUser'])->name('admin.pageuser'); 
+    Route::get('/admin/konten', [AdminController::class, 'pageContent'])->name('admin.pagecontent');
     
     Route::get('/admin/profile', [AdminController::class, 'showProfile'])->name('admin.profile');
     Route::put('/admin/password', [AdminController::class, 'updatePassword'])->name('admin.password.update');

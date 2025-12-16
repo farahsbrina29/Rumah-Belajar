@@ -18,7 +18,7 @@ export default function Welcome({ auth }) {
     const [rekomendasi, setRekomendasi] = useState([]);
     const [loadingRekomendasi, setLoadingRekomendasi] = useState(true);
     const [errorRekomendasi, setErrorRekomendasi] = useState(null);
-    const [selectedMataPelajaran, setSelectedMataPelajaran] = useState(null);
+    const [selectMataPelajaran, setSelectedMataPelajaran] = useState(null);
     const [submateri, setSubmateri] = useState([]);
 
 
@@ -76,61 +76,39 @@ export default function Welcome({ auth }) {
         }
     };
 
-    const handleSelectMataPelajaran = async (idMataPelajaran) => {
-        setSelectedMataPelajaran(idMataPelajaran);
-        
-        // Pastikan idJenjang tidak null sebelum melanjutkan
-        if (!idJenjang) {
-            console.error("Jenjang belum dipilih");
-            // Beri tahu pengguna untuk memilih jenjang terlebih dahulu
-            return;
-        }
-        
-        try {
-            const response = await axios.get("http://127.0.0.1:8000/api/submateri", {
-                params: {
-                    id_mata_pelajaran: idMataPelajaran,
-                    id_jenjang: idJenjang,
-                },
-            });
-    
-            if (response.data && Array.isArray(response.data)) {
-                setSubmateri(response.data);
-                // Navigasi ke halaman baru dengan parameter
-                router.visit(`/ruang-belajar/${idMataPelajaran}/${idJenjang}`);
-            } else {
-                console.error("Format data tidak valid");
-                setSubmateri([]);
-            }
-        } catch (error) {
-            console.error("Gagal mengambil data submateri", error);
+    const handleSelectMataPelajaran = async (namaPelajaran) => {
+    setSelectedMataPelajaran(namaPelajaran);
+
+    if (!selectedJenjang || selectedJenjang === "Pilih Jenjang") {
+        console.error("Jenjang belum dipilih");
+        return;
+    }
+
+    try {
+        const response = await axios.get("http://127.0.0.1:8000/api/submateri", {
+            params: {
+                nama_pelajaran: namaPelajaran,
+                nama_jenjang: selectedJenjang,
+            },
+        });
+
+        if (response.data && Array.isArray(response.data)) {
+            setSubmateri(response.data);
+
+            // 🚀 Routing sekarang pakai nama_pelajaran & nama_jenjang (sesuai web.php)
+            router.visit(`/ruang-belajar/${namaPelajaran}/${selectedJenjang}`);
+        } else {
+            console.error("Format data tidak valid");
             setSubmateri([]);
         }
-    };
-    
+    } catch (error) {
+        console.error("Gagal mengambil data submateri", error);
+        setSubmateri([]);
+    }
+};
+
     
 
-    const fetchSubmateri = async (idMataPelajaran, idJenjang) => {
-        try {
-            const response = await axios.get(`http://127.0.0.1:8000/api/submateri`, {
-                params: {
-                    idMataPelajaran,
-                    idJenjang
-                }
-            });
-    
-            if (response.data && Array.isArray(response.data)) {
-                setSubmateri(response.data);
-            } else {
-                console.error("Format data tidak valid");
-                setSubmateri([]);
-            }
-        } catch (error) {
-            console.error("Gagal mengambil data submateri", error);
-            setSubmateri([]);
-        }
-    };
-    
 
     // Ambil jenjang dari localStorage saat pertama kali komponen dimuat
     useEffect(() => {
@@ -212,9 +190,7 @@ export default function Welcome({ auth }) {
         { name: 'Tunaganda', icon: '📖' },
     ];
 
-    const handleSubjectClick = (subjectName) => {
-        router.visit(`/ruang-belajar/${subjectName}`);
-    };
+
 
     return (
         <>
@@ -273,30 +249,44 @@ export default function Welcome({ auth }) {
                         </h2>
                         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
                             {loading ? (
-                                <div className="col-span-full text-center">Memuat mata pelajaran...</div>
+                                // Skeleton loading
+                                <>
+                                {Array.from({ length: 7 }).map((_, index) => (
+                                    <div
+                                    key={index}
+                                    className="flex flex-col items-center p-2 rounded-lg animate-pulse"
+                                    >
+                                    <div className="w-12 h-12 bg-gray-300 rounded-lg mb-2"></div>
+                                    <div className="w-16 h-3 bg-gray-300 rounded"></div>
+                                    </div>
+                                ))}
+                                </>
                             ) : error ? (
                                 <div className="col-span-full text-center text-red-500">{error}</div>
                             ) : subjects && subjects.length > 0 ? (
                                 <>
-                                    {subjects.slice(0, 7).map((subject, index) => {
-                                        const matchedSubject = subjectIcons.find(s => 
-                                            s.name.toLowerCase() === subject.nama_pelajaran.toLowerCase()
-                                        );
-                                        const icon = matchedSubject ? matchedSubject.icon : '📘';
+                                {subjects.slice(0, 7).map((subject, index) => {
+                                    const matchedSubject = subjectIcons.find(
+                                    (s) =>
+                                        s.name.toLowerCase() === subject.nama_pelajaran.toLowerCase()
+                                    );
+                                    const icon = matchedSubject ? matchedSubject.icon : "📘";
 
-                                        return (
-                                            <div
-                                                key={index}
-                                                className="flex flex-col items-center cursor-pointer hover:bg-blue-50 p-2 rounded-lg transition-colors"
-                                                onClick={() => handleSelectMataPelajaran(subject.id)}
-                                            >
-                                                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-2">
-                                                    <span className="text-2xl">{icon}</span>
-                                                </div>
-                                                <p className="text-xs text-center">{subject.nama_pelajaran}</p>
-                                            </div>
-                                        );
-                                    })}
+                                    return (
+                                    <div
+                                        key={index}
+                                        className="flex flex-col items-center cursor-pointer hover:bg-blue-50 p-2 rounded-lg transition-colors"
+                                        onClick={() =>
+                                        handleSelectMataPelajaran(subject.nama_pelajaran)
+                                        }
+                                    >
+                                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-2">
+                                        <span className="text-2xl">{icon}</span>
+                                        </div>
+                                        <p className="text-xs text-center">{subject.nama_pelajaran}</p>
+                                    </div>
+                                    );
+                                })}
 
                                     
                                     <div

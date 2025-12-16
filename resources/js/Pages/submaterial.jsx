@@ -1,175 +1,192 @@
-import { Head, router } from '@inertiajs/react';
+import { Head } from '@inertiajs/react'; 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Download } from "lucide-react";
 import Navbar from '@/Components/NavbarUser';
 import Footer from '@/Components/Footer';
 
-export default function SubMaterial({ auth, idMataPelajaran, idJenjang, idSubMateri }) {
-    const [material, setMaterial] = useState(null);
-    const [activeTab, setActiveTab] = useState("materi");
+export default function Submaterial({ auth, nama_pelajaran, nama_jenjang, nama_submateri }) {
+    const [data, setData] = useState(null);
+    const [activeTab, setActiveTab] = useState("detail");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchMaterial = async () => {
-            try {
-                console.log(`Mengambil data submateri dengan id_mata_pelajaran=${idMataPelajaran}, id_jenjang=${idJenjang}, id_submateri=${idSubMateri}`);
-                
-                const response = await axios.get(`/api/submateri/${idMataPelajaran}/${idJenjang}/${idSubMateri}`);
-                
-                console.log("Data dari API:", response.data);
-                setMaterial(response.data);
+        const fetchSubMateri = async () => {
+            if (!nama_pelajaran || !nama_jenjang || !nama_submateri) {
+                setError("Parameter tidak lengkap");
                 setLoading(false);
-            } catch (error) {
-                console.error("Error fetching material:", error);
+                return;
+            }
+
+            try {
+                console.log(`Mengambil submateri: ${nama_pelajaran} - ${nama_jenjang} - ${nama_submateri}`);
+
+                const response = await axios.get(`http://127.0.0.1:8000/api/submaterial`, {
+                    params: {
+                        nama_pelajaran,
+                        nama_jenjang,
+                        nama_submateri
+                    }
+                });
+
+                console.log("Data submateri:", response.data);
+
+                if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+                    setData(response.data[0]); // ambil yang pertama
+                } else {
+                    setError("Submateri tidak ditemukan.");
+                }
+            } catch (err) {
+                console.error("Gagal mengambil data", err);
                 setError("Gagal memuat data. Silakan coba lagi nanti.");
+            } finally {
                 setLoading(false);
             }
         };
-        
-        fetchMaterial();
-    }, [idMataPelajaran, idJenjang, idSubMateri]);
 
-    const handleBackToList = () => {
-        router.visit(`/ruang-belajar/${idMataPelajaran}/${idJenjang}`);
-    };
+        fetchSubMateri();
+    }, [nama_pelajaran, nama_jenjang, nama_submateri]);
 
-    if (loading) {
-        return (
-            <div className="bg-gray-50 text-black min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div className="mb-4">Loading...</div>
-                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="bg-gray-50 text-black min-h-screen flex items-center justify-center">
-                <div className="text-center bg-white p-8 rounded-lg shadow-md">
-                    <div className="text-red-500 text-xl mb-4">Error</div>
-                    <div>{error}</div>
-                </div>
-            </div>
-        );
-    }
-
-    // Pastikan material telah dimuat sebelum mencoba mengakses propertinya
-    if (!material) {
-        return (
-            <div className="bg-gray-50 text-black min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div>Data tidak ditemukan</div>
-                </div>
-            </div>
-        );
-    }
+    if (loading) return <div className="text-center mt-20">Loading...</div>;
+    if (error) return <div className="text-center text-red-500 mt-20">{error}</div>;
+    if (!data) return <div className="text-center mt-20">Data tidak ditemukan</div>;
 
     return (
         <>
-            <Head title={material.nama_submateri || 'Materi Pembelajaran'} />
-            <div className="bg-gray-50 text-black min-h-screen">
-                <Navbar auth={auth} />
+            <Head title={data.nama_submateri || 'Materi Pembelajaran'} />
+            <Navbar auth={auth} />
+            <div className="container mx-auto px-4 py-8">
+                <div className="bg-white p-4 shadow rounded-lg">
+                    <iframe
+                        className="w-full h-64 md:h-96"
+                        src={data.konten?.[0]?.link_konten}
+                        title={data.nama_submateri}
+                        allowFullScreen
+                    ></iframe>
+                    <h2 className="text-xl font-bold mt-4">{data.konten?.[0]?.judul_konten}</h2>
+                </div>
                 
-                <header className="bg-blue-100 pt-16 pb-6">
-                    <div className="bg-gradient-to-b from-blue-200 to-blue-300 w-full flex flex-col justify-center py-4">
-                        <div className="container mx-auto px-4">
-                            <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                <span className="cursor-pointer" onClick={() => router.visit('/')}>Beranda</span>
-                                <span>/</span>
-                                <span className="cursor-pointer" onClick={handleBackToList}>Daftar Materi</span>
-                                <span>/</span>
-                                <span className="font-medium">{material.nama_submateri}</span>
-                            </div>
-                            <h1 className="text-2xl md:text-3xl font-bold text-[#154561] mt-2">
-                                {material.nama_submateri}
-                            </h1>
-                        </div>
-                    </div>
-                </header>
-                
-                <main className="container mx-auto px-4 py-8">
-                    <div className="bg-[#1E4C6A] text-white rounded-lg p-4 mb-8">
-                        <h3 className="text-lg font-semibold mb-4">Navigasi</h3>
-                        <div className="flex flex-wrap gap-2">
-                            <button 
-                                className={`py-2 px-4 rounded ${activeTab === "materi" ? "bg-blue-500" : "bg-gray-700"}`}
-                                onClick={() => setActiveTab("materi")}
-                            >Materi</button>
-                            <button 
-                                className={`py-2 px-4 rounded ${activeTab === "latihan" ? "bg-blue-500" : "bg-gray-700"}`}
-                                onClick={() => setActiveTab("latihan")}
-                            >Latihan Soal</button>
-                            <button 
-                                className={`py-2 px-4 rounded ${activeTab === "rangkuman" ? "bg-blue-500" : "bg-gray-700"}`}
-                                onClick={() => setActiveTab("rangkuman")}
-                            >Rangkuman</button>
-                        </div>
+                <div className="mt-6">
+                    <div className="flex space-x-4 border-b">
+                        {['detail', 'latihan', 'rangkuman'].map(tab => (
+                            <button
+                                key={tab}
+                                className={`py-2 px-4 ${activeTab === tab ? 'border-b-2 border-blue-500' : ''}`}
+                                onClick={() => setActiveTab(tab)}
+                            >
+                                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                            </button>
+                        ))}
                     </div>
 
-                    <div className="bg-white rounded-lg shadow-md p-6">
-                        {activeTab === "materi" && (
-                            <div className="prose max-w-none">
-                                <h2 className="text-xl font-bold mb-4">Detail Materi</h2>
-                                {material.konten && material.konten.length > 0 ? (
-                                    material.konten.map((konten) => (
-                                        <div key={konten.id} className="mb-6">
-                                            <h3 className="text-lg font-semibold">{konten.judul_konten}</h3>
-                                            <p>{konten.deskripsi}</p>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>Tidak ada konten materi tersedia.</p>
-                                )}
+                    <div className="p-4 bg-gray-50 mt-2 rounded-lg">
+                        {activeTab === "detail" && (
+                            <div>
+                                <h3 className="text-lg font-semibold">Detail Materi</h3>
+                                <p>{data.konten?.[0]?.deskripsi || 'Tidak ada deskripsi.'}</p>
                             </div>
                         )}
 
                         {activeTab === "latihan" && (
                             <div>
-                                <h2 className="text-xl font-bold mb-4">Latihan Soal</h2>
-                                {material.latihan_soal && material.latihan_soal.length > 0 ? (
-                                    material.latihan_soal.map((soal, index) => (
-                                        <div key={soal.id} className="p-4 border rounded-lg mb-4">
-                                            <p className="font-medium">Soal {index + 1}</p>
-                                            <p className="text-gray-600 mb-4">{soal.pertanyaan}</p>
-                                            <div className="space-y-2">
-                                                {soal.opsi && Object.entries(soal.opsi).map(([key, option]) => (
-                                                    <label key={key} className="flex items-center space-x-3">
-                                                        <input type="radio" name={`question-${soal.id}`} className="form-radio" />
-                                                        <span>{option}</span>
-                                                    </label>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>Tidak ada latihan soal tersedia.</p>
-                                )}
+                                <h3 className="text-lg font-semibold mb-4">Latihan Soal</h3>
+                                {data.latihan_soal?.map((soal, index) => (
+                                    <LatihanCard key={index} soal={soal} index={index} />
+                                ))}
                             </div>
                         )}
 
                         {activeTab === "rangkuman" && (
                             <div>
-                                <h2 className="text-xl font-bold mb-4">Rangkuman</h2>
-                                {material.rangkuman && material.rangkuman.length > 0 ? (
-                                    material.rangkuman.map((file) => (
-                                        <div key={file.id} className="mb-4">
-                                            <a href={file.file_rangkuman} className="text-blue-500 underline" target="_blank" rel="noopener noreferrer">
-                                                Download Rangkuman
-                                            </a>
-                                        </div>
-                                    ))
+                                <h3 className="text-lg font-semibold ">Rangkuman</h3>
+                                {data.rangkuman && data.rangkuman.length > 0 ? (
+                                <a
+                                    href={`/storage/${data.rangkuman[0].file_rangkuman}`}
+                                    download
+                                    className="flex items-center justify-center gap-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition w-fit"
+                                >
+                                    <Download size={18} />
+                                    <span>Download Rangkuman</span>
+                                </a>
                                 ) : (
-                                    <p>Tidak ada rangkuman tersedia.</p>
+                                <p>Rangkuman tidak tersedia.</p>
                                 )}
                             </div>
                         )}
                     </div>
-                </main>
-                <Footer />
+                </div>
             </div>
+            <Footer />
         </>
     );
+}
+
+// 🔹 Komponen Kartu Latihan
+function LatihanCard({ soal, index }) {
+  const [selected, setSelected] = useState(null);
+  const [feedback, setFeedback] = useState(null);
+
+  const handleSelect = (opsi) => {
+    setSelected(opsi);
+
+    if (opsi === soal.jawaban_benar) {
+      setFeedback({ correct: true, message: "✅ Jawaban kamu benar!" });
+    } else {
+      setFeedback({
+        correct: false,
+        message: `❌ Jawaban salah. Jawaban yang benar adalah: ${soal.jawaban_benar}`,
+      });
+    }
+  };
+
+  const opsiList = [
+    { key: "A", text: soal.opsi_a },
+    { key: "B", text: soal.opsi_b },
+    { key: "C", text: soal.opsi_c },
+    { key: "D", text: soal.opsi_d },
+  ];
+
+  return (
+    <div className="mb-6 border p-4 rounded-lg">
+      <p className="font-medium mb-3">
+        {index + 1}. {soal.pertanyaan}
+      </p>
+
+      <div className="space-y-2">
+        {opsiList.map((opsi) => (
+          <label
+            key={opsi.key}
+            className={`block p-2 border rounded cursor-pointer ${
+              selected === opsi.key
+                ? "bg-blue-100 border-blue-500"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            <input
+              type="radio"
+              name={`soal-${index}`}
+              value={opsi.key}
+              checked={selected === opsi.key}
+              onChange={() => handleSelect(opsi.key)}
+              className="mr-2"
+            />
+            {opsi.key}. {opsi.text}
+          </label>
+        ))}
+      </div>
+
+      {feedback && (
+        <div
+          className={`mt-3 p-2 rounded ${
+            feedback.correct
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
+        >
+          {feedback.message}
+        </div>
+      )}
+    </div>
+  );
 }

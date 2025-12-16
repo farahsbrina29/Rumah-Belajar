@@ -14,11 +14,26 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AddSubmateriController;
 use App\Http\Controllers\SubmateriController;
 use App\Http\Controllers\SubMaterialController;
+use App\Http\Controllers\RangkumanController;
+use App\Http\Controllers\LatihanController;
 
-Route::get('/submateri/{idMataPelajaran}/{idJenjang}/{idSubMateri}', [SubMaterialController::class, 'getSubMaterial']);
 
+Route::get('/latihan/{nama_submateri}', [LatihanController::class, 'index']);
+Route::post('/latihan/{nama_submateri}', [LatihanController::class, 'store']);
+Route::put('/latihan/{id}', [LatihanController::class, 'update']);
+Route::delete('/latihan/{id}', [LatihanController::class, 'destroy']);
 
+Route::post('/submateri/{nama_submateri}/rangkuman', [RangkumanController::class, 'store']);
+Route::get('/rangkuman/all', [RangkumanController::class, 'getAllRangkuman']);
+Route::get('/rangkuman/{id}/download', [RangkumanController::class, 'download'])->name('rangkuman.download');
+Route::delete('/rangkuman/{id}', [RangkumanController::class, 'destroy']);
+
+Route::get('/submaterial', [SubMaterialController::class, 'getSubMaterial']);
+
+Route::get('/rangkuman/submateri', [RangkumanController::class, 'showBySubmateri']);
+Route::get('/rangkuman/submateri/{nama_submateri?}', [RangkumanController::class, 'showBySubmateri']);
 Route::get('/submateri', [SubmateriController::class, 'index']);
+
 
 Route::get('user/getRoleDistribution', [UserController::class, 'getRoleDistribution']);
 

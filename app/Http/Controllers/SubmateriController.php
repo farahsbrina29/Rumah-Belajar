@@ -21,17 +21,17 @@ class SubmateriController extends Controller
                 'submateri.nama_submateri'
             );
 
-        // Ambil parameter dari request
-        $idMataPelajaran = $request->query('id_mata_pelajaran');
-        $idJenjang = $request->query('id_jenjang');
+        // Ambil parameter dari request (sekarang pakai nama, bukan id)
+        $nama_pelajaran = $request->query('nama_pelajaran');
+        $nama_jenjang = $request->query('nama_jenjang');
 
         // Tambahkan filter jika parameter ada
-        if (!empty($idMataPelajaran)) {
-            $query->where('mata_pelajaran.id', $idMataPelajaran);
+        if (!empty($nama_pelajaran)) {
+            $query->where('mata_pelajaran.nama_pelajaran', $nama_pelajaran);
         }
 
-        if (!empty($idJenjang)) {
-            $query->where('jenjang.id', $idJenjang);
+        if (!empty($nama_jenjang)) {
+            $query->where('jenjang.nama_jenjang', $nama_jenjang);
         }
 
         // Eksekusi query dan ambil data
