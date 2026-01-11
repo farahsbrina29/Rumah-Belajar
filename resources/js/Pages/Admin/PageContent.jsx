@@ -131,7 +131,7 @@ const Content = () => {
               {/* Tambah Pertanyaan */}
               <button
                 onClick={() =>
-                  (window.location.href = `/admin/konten/${nama_submateri}/pertanyaan`)
+                  (window.location.href = `/admin/konten/${nama_submateri}/latihan`)
                 }
                 className="text-purple-600 hover:text-purple-900"
                 title="Tambah Pertanyaan"
