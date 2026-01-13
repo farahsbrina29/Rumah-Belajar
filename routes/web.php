@@ -108,7 +108,6 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/pengguna', [AdminController::class, 'pageUser'])->name('admin.pageuser'); 
     Route::get('/admin/konten', [AdminController::class, 'pageContent'])->name('admin.pagecontent');
     
-    Route::get('/admin/profile', [AdminController::class, 'showProfile'])->name('admin.profile');
     Route::put('/admin/password', [AdminController::class, 'updatePassword'])->name('admin.password.update');
 });
 

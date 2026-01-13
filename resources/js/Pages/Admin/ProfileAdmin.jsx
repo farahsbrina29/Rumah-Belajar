@@ -6,7 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import AdminNavbar from '@/Components/AdminNavbar';
 
 export default function ProfileAdmin({ auth }) {
-    const [admin] = useState(auth.user);
+    const admin = auth?.user;
     const { data, setData, errors, put, processing, reset } = useForm({
         current_password: '',
         password: '',
@@ -24,7 +24,7 @@ export default function ProfileAdmin({ auth }) {
         <AdminNavbar>
             <div className="flex-grow p-6">
                 <div className="bg-white rounded-lg shadow-lg p-8">
-                    <h1 className="text-2xl font-bold">Profile Page</h1>
+                    <h1 className="text-2xl font-bold">Informasi Profil</h1>
 
                     <div className="mt-4">
                         <h2 className="text-lg font-semibold">Akun Admin</h2>
@@ -45,7 +45,7 @@ export default function ProfileAdmin({ auth }) {
                     </div>
                     <form onSubmit={updatePassword} className="mt-6 space-y-6">
                         <div>
-                            <InputLabel htmlFor="current_password" value="Current Password" />
+                            <InputLabel htmlFor="current_password" value="Kata Sandi Sekarang" />
                             <TextInput
                                 id="current_password"
                                 value={data.current_password}
@@ -56,7 +56,7 @@ export default function ProfileAdmin({ auth }) {
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="password" value="New Password" />
+                            <InputLabel htmlFor="password" value="Kata Sandi Baru" />
                             <TextInput
                                 id="password"
                                 value={data.password}
@@ -67,7 +67,7 @@ export default function ProfileAdmin({ auth }) {
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="password_confirmation" value="Confirm Password" />
+                            <InputLabel htmlFor="password_confirmation" value="Konfirmasi Kata Sandi" />
                             <TextInput
                                 id="password_confirmation"
                                 value={data.password_confirmation}
@@ -77,7 +77,7 @@ export default function ProfileAdmin({ auth }) {
                             />
                         </div>
 
-                        <PrimaryButton disabled={processing}>Update Password</PrimaryButton>
+                        <PrimaryButton disabled={processing}>Perbaharui Kata Sandi</PrimaryButton>
 
                         {errors && (
                             <div className="mt-4 text-red-500">

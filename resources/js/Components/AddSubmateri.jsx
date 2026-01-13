@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddSubmateri = ({ onClose, fetchData }) => {
   const [submateri, setSubmateri] = useState('');
@@ -7,88 +9,116 @@ const AddSubmateri = ({ onClose, fetchData }) => {
   const [mataPelajaran, setMataPelajaran] = useState('');
   const [jenjangList, setJenjangList] = useState([]);
   const [mataPelajaranList, setMataPelajaranList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+ 
   useEffect(() => {
-    // Ambil daftar jenjang dari API
     axios.get('/api/jenjang')
-      .then(response => setJenjangList(response.data))
-      .catch(error => console.error('Error fetching jenjang:', error));
+      .then(res => {
+        setJenjangList(Array.isArray(res.data) ? res.data : []);
+      })
+      .catch(err => {
+        console.error('Gagal mengambil jenjang:', err);
+      });
   }, []);
 
+  
   useEffect(() => {
-    if (jenjang) {
-      console.log(`Fetching mata pelajaran untuk jenjang_id: ${jenjang}`);
-      axios.get(`/api/mata_pelajaran_jenjang/${jenjang}`)
-        .then(response => {
-          console.log("Data mata pelajaran:", response.data);
-          setMataPelajaranList(response.data);
-        })
-        .catch(error => {
-          console.error('Error fetching mata pelajaran:', error.response ? error.response.data : error.message);
-        });
-    } else {
+    if (!jenjang) {
       setMataPelajaranList([]);
+      setMataPelajaran('');
+      return;
     }
-  }, [jenjang]);
-  
-  
 
-  const handleSubmit = () => {
-    axios.post('/api/add-submateri', {
-        nama_submateri: submateri,
-        jenjang_id: jenjang,
-        mata_pelajaran_id: mataPelajaran,
-      }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    axios.get(`/api/mata_pelajaran_jenjang/${jenjang}`)
+      .then(res => {
+        setMataPelajaranList(Array.isArray(res.data) ? res.data : []);
       })
-      .then(() => {
-        fetchData();
-        onClose();
-      })
-      .catch(error => console.error('Error adding submateri:', error));
-  };
+      .catch(err => {
+        console.error('Gagal mengambil mata pelajaran:', err);
+      });
+  }, [jenjang]);
+
+  const handleSubmit = async () => {
+  if (!submateri || !jenjang || !mataPelajaran) {
+    toast.warning('Semua field wajib diisi');
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    await axios.post('/api/add-submateri', {
+      nama_submateri: submateri,
+      jenjang_id: jenjang,
+      mata_pelajaran_id: mataPelajaran,
+    });
+
+    toast.success('Submateri berhasil ditambahkan 🎉');
+
+    if (typeof fetchData === 'function') {
+      fetchData();
+    }
+
+    if (typeof onClose === 'function') {
+      onClose();
+    }
+
+    setSubmateri('');
+    setJenjang('');
+    setMataPelajaran('');
+  } catch (error) {
+    console.error('ERROR ADD SUBMATERI:', error?.response?.data || error);
+    toast.error('Gagal menambahkan submateri ❌');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg w-96">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white w-96 p-6 rounded-lg shadow">
         <h2 className="text-xl font-semibold mb-4">Tambah Submateri</h2>
-        
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Submateri</label>
+
+        <div className="mb-3">
+          <label className="block text-sm">Nama Submateri</label>
           <input
-            type="text"
             value={submateri}
-            onChange={(e) => setSubmateri(e.target.value)}
-            placeholder="Masukkan submateri"
+            onChange={e => setSubmateri(e.target.value)}
             className="w-full p-2 border rounded"
           />
         </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Jenjang</label>
+        <div className="mb-3">
+          <label className="block text-sm">Jenjang</label>
           <select
             value={jenjang}
-            onChange={(e) => setJenjang(e.target.value)}
+            onChange={e => setJenjang(e.target.value)}
             className="w-full p-2 border rounded"
           >
             <option value="">Pilih Jenjang</option>
-            {jenjangList.map((item) => (
-              <option key={item.id} value={item.id}>{item.nama_jenjang}</option>
+            {jenjangList.map(j => (
+              <option key={j.id} value={j.id}>
+                {j.nama_jenjang}
+              </option>
             ))}
           </select>
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium">Mata Pelajaran</label>
+          <label className="block text-sm">Mata Pelajaran</label>
           <select
             value={mataPelajaran}
-            onChange={(e) => setMataPelajaran(e.target.value)}
+            onChange={e => setMataPelajaran(e.target.value)}
             className="w-full p-2 border rounded"
             disabled={!jenjang}
           >
             <option value="">Pilih Mata Pelajaran</option>
-            {mataPelajaranList.map((item) => (
-              <option key={item.id} value={item.id}>{item.nama_pelajaran}</option>
+            {mataPelajaranList.map(mp => (
+              <option key={mp.id} value={mp.id}>
+                {mp.nama_pelajaran}
+              </option>
             ))}
           </select>
         </div>
@@ -96,15 +126,20 @@ const AddSubmateri = ({ onClose, fetchData }) => {
         <div className="flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-200"
+            disabled={loading}
+            className="px-4 py-2 border rounded"
           >
             Batal
           </button>
+
           <button
             onClick={handleSubmit}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            disabled={loading}
+            className={`px-4 py-2 text-white rounded ${
+              loading ? 'bg-gray-400' : 'bg-blue-600'
+            }`}
           >
-            Lanjut
+            {loading ? 'Menyimpan...' : 'Lanjut'}
           </button>
         </div>
       </div>

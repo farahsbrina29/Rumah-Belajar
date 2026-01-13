@@ -78,13 +78,26 @@ export default function Submaterial({ auth, nama_pelajaran, nama_jenjang, nama_s
             <Navbar auth={auth} />
             <div className="container mx-auto px-4 py-8">
                 <div className="bg-white p-4 shadow rounded-lg">
+                   {data.konten?.[0]?.jenis_konten === 'video' &&
+                    data.konten?.[0]?.link_konten ? (
                     <iframe
-                    className="w-full h-64 md:h-96"
-                    src={getYoutubeEmbedUrl(data.konten?.[0]?.link_konten)}
-                    title="Video Pembelajaran"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
+                        className="w-full h-64 md:h-96"
+                        src={getYoutubeEmbedUrl(data.konten[0].link_konten)}
+                        title="Video Pembelajaran"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
                     />
+                    ) : (
+                    <div className="w-full h-64 md:h-96 flex flex-col items-center justify-center bg-gray-100 rounded">
+                        <p className="text-gray-600 text-center font-medium">
+                        🎥 Video materi ini belum tersedia
+                        </p>
+                        <p className="text-sm text-gray-500 mt-2">
+                        Silakan langsung melihat rangkuman di bawah
+                        </p>
+                    </div>
+                    )}
+
 
 
                     <h2 className="text-xl font-bold mt-4">{data.konten?.[0]?.judul_konten}</h2>

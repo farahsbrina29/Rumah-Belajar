@@ -67,7 +67,7 @@ const AdminNavbar = ({ children }) => {
           
           {/* User Profile Section */}
           <Link 
-            href="/admin/ProfileAdmin"
+            href="/admin/profil"
             className="flex items-center space-x-4 hover:bg-[#2E3E5F] rounded-lg transition-colors px-3 py-2"
           >
             <div className="flex items-center space-x-3">

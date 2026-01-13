@@ -19,22 +19,28 @@ class AdminController extends Controller
         return Inertia::render('Admin/Login');
     }
 
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+   public function login(Request $request)
+{
+    $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        if (Auth::guard('admin')->attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->route('admin.dashboard');
-        }
+    if (Auth::guard('admin')->attempt($credentials)) {
+        $request->session()->regenerate();
 
-        return back()->withErrors([
-            'email' => 'Invalid credentials.',
-        ]);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Login berhasil',
+        ], 200);
     }
+
+    return response()->json([
+        'status' => 'error',
+        'message' => 'Email atau password salah',
+    ], 401);
+}
+
 
     public function dashboard()
     {
@@ -58,17 +64,7 @@ class AdminController extends Controller
         return redirect('/admin/login');
     }
 
-    public function showProfile()
-    {
-        $admin = Auth::guard('admin')->user();
-        if (!$admin) {
-            abort(403, 'Admin not logged in.');
-        }
-
-        return Inertia::render('Admin/Profile', [
-            'admin' => $admin,
-        ]);
-    }
+   
 
     public function updatePassword(Request $request)
     {
