@@ -146,7 +146,7 @@ export default function Rangkuman({ auth }) {
                     </div>
                 ) : (
                     <p className="text-center text-gray-600 mt-6">
-                        Tidak ada rangkuman yang sesuai.
+                        Rangkuman tidak tersedia
                     </p>
                 )}
             </div>

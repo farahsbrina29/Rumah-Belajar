@@ -10,6 +10,7 @@ class RekomendasiController extends Controller
     public function getRekomendasi(Request $request)
     {
         $idJenjang = $request->query('idJenjang');
+        $limit = $request->query('limit', 3); // default 4
 
         $query = DB::table('konten')
             ->join('mata_pelajaran', 'konten.id_mata_pelajaran', '=', 'mata_pelajaran.id')
@@ -18,17 +19,19 @@ class RekomendasiController extends Controller
                 'konten.judul_konten',
                 'konten.thumbnail',
                 'mata_pelajaran.nama_pelajaran',
-                'jenjang.nama_jenjang',
-                'jenjang.id as id_jenjang' // Sertakan id_jenjang untuk filtering
+                'jenjang.nama_jenjang'
             );
 
+        // 🔥 Filter HANYA jika jenjang dipilih
         if ($idJenjang) {
             $query->where('jenjang.id', $idJenjang);
         }
 
-        $rekomendasi = $query->limit(3)->get();
+        $rekomendasi = $query
+            ->inRandomOrder() // ⭐ biar variatif
+            ->limit($limit)
+            ->get();
 
-        // Pastikan thumbnail dalam format yang bisa diakses frontend
         $rekomendasi = $rekomendasi->map(function ($item) {
             if ($item->thumbnail) {
                 $item->thumbnail = asset('storage/' . str_replace('public/', '', $item->thumbnail));
@@ -38,4 +41,5 @@ class RekomendasiController extends Controller
 
         return response()->json($rekomendasi);
     }
+
 }

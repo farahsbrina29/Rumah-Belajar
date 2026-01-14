@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { router } from '@inertiajs/react';
+import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+
 
 export default function PopupSemuaKelas({ isOpen, onClose }) {
     const [subjects, setSubjects] = useState([]);
@@ -92,18 +95,41 @@ export default function PopupSemuaKelas({ isOpen, onClose }) {
         };
     }, [isOpen]);
 
-    const handleSubjectClick = (subjectName) => {
-        onClose();
-        router.visit(`/ruang-belajar/${subjectName}`);
-    };
+    const handleSubjectClick = (namaPelajaran) => {
+    const selectedJenjang = localStorage.getItem('selectedJenjang');
+
+    if (!selectedJenjang || selectedJenjang === 'Pilih Jenjang') {
+        toast.warning('Silahkan pilih jenjang terlebih dahulu');
+        return;
+    }
+
+    onClose();
+
+    router.visit(
+        `/ruang-belajar/${encodeURIComponent(namaPelajaran)}/${encodeURIComponent(selectedJenjang)}`
+    );
+};
+
+
 
     if (!isOpen) return null;
 
-    return (
+return (
+    <>
+        {/* TOAST CONTAINER */}
+        <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            theme="colored"
+            pauseOnHover
+        />
+
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white rounded-lg shadow-lg w-11/12 md:w-2/3 lg:w-1/2 p-6 max-h-[90vh] overflow-y-auto">
                 <div className="mb-4">
-                    <h2 className="text-lg font-bold text-[#154561] text-center">Semua Kelas</h2>
+                    <h2 className="text-lg font-bold text-[#154561] text-center">
+                        Semua Kelas
+                    </h2>
                 </div>
 
                 {loading ? (
@@ -114,7 +140,7 @@ export default function PopupSemuaKelas({ isOpen, onClose }) {
                 ) : error ? (
                     <div className="text-center py-8 text-red-500">
                         <p>{error}</p>
-                        <button 
+                        <button
                             onClick={() => window.location.reload()}
                             className="mt-2 text-blue-500 hover:underline"
                         >
@@ -128,8 +154,8 @@ export default function PopupSemuaKelas({ isOpen, onClose }) {
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3 mb-6">
                         {subjects.map((subject, index) => (
-                            <div 
-                                key={index} 
+                            <div
+                                key={index}
                                 className="flex flex-col items-center bg-blue-100 p-3 rounded shadow-md hover:bg-blue-200 cursor-pointer text-sm transition-colors duration-200"
                                 onClick={() => handleSubjectClick(subject.nama_pelajaran)}
                             >
@@ -144,13 +170,15 @@ export default function PopupSemuaKelas({ isOpen, onClose }) {
                     </div>
                 )}
 
-                <button 
-                    onClick={onClose} 
+                <button
+                    onClick={onClose}
                     className="bg-[#A8C9F1] text-[#154561] px-6 py-2 rounded-lg font-semibold w-full hover:bg-[#97b8e0] transition-colors duration-200"
                 >
                     Tutup
                 </button>
             </div>
         </div>
-    );
+    </>
+);
+
 }

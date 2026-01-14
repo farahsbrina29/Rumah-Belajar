@@ -94,10 +94,6 @@ Route::post('/register', [RegisteredUserController::class, 'store'])->name('regi
 Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.submit');
 
-// Semua route admin lainnya di dalam middleware
-Route::middleware(['auth.check:admin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-});
 
 Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');

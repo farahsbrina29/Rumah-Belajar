@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useForm } from '@inertiajs/react';
 import { ToastContainer, toast } from 'react-toastify';
@@ -10,6 +10,8 @@ const Login = () => {
     password: '',
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -19,20 +21,19 @@ const Login = () => {
         password: data.password,
       });
 
-      toast.success('Login berhasil ');
+      toast.success('Login berhasil');
 
       setTimeout(() => {
         window.location.href = '/admin/dashboard';
       }, 1200);
 
     } catch (error) {
-      toast.error('Email atau kata sandi salah ');
+      toast.error('Email atau kata sandi salah');
     }
   };
 
   return (
     <>
-      {/* TOAST CONTAINER */}
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -67,7 +68,7 @@ const Login = () => {
                     <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                       <svg className="h-4 w-4 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                          d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                          d="M16 12a4 4 0 10-8 0 4 4 0 008 0z" />
                       </svg>
                     </div>
                     <input
@@ -85,17 +86,41 @@ const Login = () => {
                     <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                       <svg className="h-4 w-4 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
                       </svg>
                     </div>
+
                     <input
-                      type="kata sandi"
+                      type={showPassword ? 'text' : 'password'}
                       placeholder="Kata Sandi"
                       value={data.password}
                       onChange={(e) => setData('password', e.target.value)}
-                      className="w-full pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-white/60 focus:outline-none"
+                      className="w-full pl-9 pr-10 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-white/60 focus:outline-none"
                       required
                     />
+
+                    {/* TOGGLE ICON (MUNCUL JIKA ADA PASSWORD) */}
+                    {data.password && (
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-3 flex items-center text-white/70 hover:text-white"
+                      >
+                        {showPassword ? (
+                          // Eye Off
+                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                              d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10 0-1.1.18-2.157.512-3.144M3 3l18 18" />
+                          </svg>
+                        ) : (
+                          // Eye
+                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                        )}
+                      </button>
+                    )}
                   </div>
 
                   <button

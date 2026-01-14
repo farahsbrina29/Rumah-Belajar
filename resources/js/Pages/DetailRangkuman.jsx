@@ -5,6 +5,8 @@ import Footer from "@/components/Footer";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FiDownload } from "react-icons/fi";
+
 
 export default function RangkumanDetail({ auth, nama_submateri }) {
   const [rangkuman, setRangkuman] = useState(null);
@@ -41,141 +43,92 @@ export default function RangkumanDetail({ auth, nama_submateri }) {
     fetchRangkuman();
   }, [nama_submateri]);
 
-  // ====== LOGIKA DOWNLOAD ======
-  const handleDownload = async () => {
-    if (!rangkuman?.file_rangkuman) {
-      toast.error("File rangkuman tidak tersedia");
-      return;
-    }
+  const pdfUrl = rangkuman?.file_rangkuman
+    ? `/storage/${rangkuman.file_rangkuman}`
+    : null;
 
-    const fileName = rangkuman.file_rangkuman.split("/").pop();
-    const fileUrl = `/storage/${rangkuman.file_rangkuman}`;
+  
+  const SkeletonCard = () => (
+  <div className="bg-white shadow-md rounded-lg p-6 animate-pulse">
+    <div className="h-6 bg-gray-300 rounded w-1/3 mb-4"></div>
 
-    try {
-      await downloadViaEndpoint(rangkuman.id, fileName);
-    } catch {
-      try {
-        await downloadViaFetch(fileUrl, fileName);
-      } catch {
-        downloadViaNewTab(fileUrl);
-      }
-    }
-  };
+    <div className="h-10 bg-gray-300 rounded w-40 mb-6"></div>
 
-  const downloadViaEndpoint = async (rangkumanId, fileName) => {
-    const response = await fetch(`/api/rangkuman/${rangkumanId}/download`, {
-      method: "GET",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-        "X-CSRF-TOKEN":
-          document
-            .querySelector('meta[name="csrf-token"]')
-            ?.getAttribute("content") || "",
-      },
-      credentials: "same-origin",
-    });
+    <div className="h-[600px] bg-gray-200 rounded"></div>
+  </div>
+);
 
-    if (!response.ok) throw new Error("Endpoint download tidak tersedia");
-
-    const blob = await response.blob();
-    downloadBlob(blob, fileName);
-    toast.success("File berhasil didownload");
-  };
-
-  const downloadViaFetch = async (fileUrl, fileName) => {
-    const response = await fetch(fileUrl, { credentials: "same-origin" });
-    if (!response.ok) throw new Error("File tidak dapat diakses");
-
-    const blob = await response.blob();
-    downloadBlob(blob, fileName);
-    toast.success("File berhasil didownload");
-  };
-
-  const downloadViaNewTab = (fileUrl) => {
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.target = "_blank";
-    link.download = "";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.info("📄 File dibuka/didownload di tab baru");
-  };
-
-  const downloadBlob = (blob, fileName) => {
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = fileName || "rangkuman";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  };
-  // ====== END LOGIKA DOWNLOAD ======
 
   return (
-    <>
-      <Head title="Detail Rangkuman" />
-      {/* NAVBAR FIXED */}
-      <div className="fixed top-0 left-0 w-full z-50">
-        <Navbar auth={auth} />
-      </div>
+  <>
+    <Head title="Detail Rangkuman" />
 
-      {/* WRAPPER FLEX */}
-      <div className="flex flex-col min-h-screen">
-        {/* Tambah padding-top agar konten tidak ketutup navbar */}
-        <main className="flex-grow container mx-auto px-4 py-24">
-          {loading ? (
-            <p className="text-center text-gray-500">Memuat data...</p>
-          ) : error ? (
-            <p className="text-center text-red-500">{error}</p>
-          ) : rangkuman ? (
-            <div className="bg-white shadow-md rounded-lg p-6">
-              <h2 className="text-xl font-bold mb-4">
-                {rangkuman.nama_submateri}
-              </h2>
-              {rangkuman.file_rangkuman ? (
-                <p className="text-gray-700 mb-4">
-                  File Rangkuman: {rangkuman.file_rangkuman.split("/").pop()}
-                </p>
-              ) : (
-                <p className="text-red-500 mb-4">
-                  ⚠️ File rangkuman belum tersedia
-                </p>
-              )}
+    
+    <div className="fixed top-0 left-0 w-full z-50">
+      <Navbar auth={auth} />
+    </div>
 
-              <button
-                onClick={handleDownload}
-                disabled={!rangkuman.file_rangkuman}
-                className={`px-4 py-2 rounded text-white ${
-                  rangkuman.file_rangkuman
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-gray-400 cursor-not-allowed"
-                }`}
+   
+    <div className="flex flex-col min-h-screen">
+      
+      <main className="flex-grow container mx-auto px-4 pt-28 pb-10">
+        {loading ? (
+          <SkeletonCard />
+        ) : error ? (
+          <p className="text-center text-red-500">{error}</p>
+        ) : rangkuman ? (
+          <div className="bg-white shadow-md rounded-lg p-6">
+      
+            <nav className="text-sm text-gray-700 mb-4">
+              <a
+                href="/rangkuman"
+                className="hover:text-gray-500 hover:underline"
               >
-                Unduh Rangkuman
-              </button>
-            </div>
-          ) : (
-            <p className="text-center text-gray-500">
-              Tidak ada rangkuman tersedia.
-            </p>
-          )}
-        </main>
+                Rangkuman
+              </a>
+              <span className="mx-2">/</span>
+              <span className="text-gray-700 font-medium">
+                {rangkuman.nama_submateri}
+              </span>
+            </nav>
 
-        {/* FOOTER FIXED */}
-        <div className="fixed bottom-0 left-0 w-full">
-          <Footer />
-        </div>
-      </div>
+            <h2 className="text-xl font-bold mb-4">
+              {rangkuman.nama_submateri}
+            </h2>
 
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        newestOnTop
-        theme="light"
-      />
-    </>
-  );
+
+           
+            {pdfUrl ? (
+              <div className="border rounded-lg overflow-hidden">
+                <iframe
+                  src={pdfUrl}
+                  className="w-full h-[600px]"
+                  title="Preview PDF Rangkuman"
+                />
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">
+                PDF rangkuman tidak tersedia
+              </p>
+            )}
+          </div>
+        ) : (
+          <p className="text-center text-gray-500">
+            Tidak ada rangkuman tersedia.
+          </p>
+        )}
+      </main>
+
+     
+      <Footer />
+    </div>
+
+    <ToastContainer
+      position="top-right"
+      autoClose={3000}
+      newestOnTop
+      theme="light"
+    />
+  </>
+);
 }

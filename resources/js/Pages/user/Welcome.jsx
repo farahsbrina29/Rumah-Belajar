@@ -1,6 +1,8 @@
 import { Head, router } from '@inertiajs/react';
 import Navbar from '@/Components/NavbarUser';
 import Footer from '@/Components/Footer';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import PopupSemuaKelas from '@/Components/PopupSemuaKelas';
 import PopupPilihJenjang from '@/Components/PopupPilihJenjang';
 import ChartJumlahKonten from '@/Components/ChartJumlahKonten';
@@ -19,6 +21,7 @@ export default function Welcome({ auth }) {
     const [loadingRekomendasi, setLoadingRekomendasi] = useState(true);
     const [errorRekomendasi, setErrorRekomendasi] = useState(null);
     const [selectMataPelajaran, setSelectedMataPelajaran] = useState(null);
+    const [keyword, setKeyword] = useState('');
     const [submateri, setSubmateri] = useState([]);
 
 
@@ -80,9 +83,10 @@ export default function Welcome({ auth }) {
     setSelectedMataPelajaran(namaPelajaran);
 
     if (!selectedJenjang || selectedJenjang === "Pilih Jenjang") {
-        console.error("Jenjang belum dipilih");
+        toast.warning('Silahkan pilih jenjang terlebih dahulu');
         return;
     }
+
 
     try {
         const response = await axios.get("http://127.0.0.1:8000/api/submateri", {
@@ -134,30 +138,31 @@ export default function Welcome({ auth }) {
     useEffect(() => {
         setLoadingRekomendasi(true);
         setErrorRekomendasi(null);
-        
-        let url = "http://127.0.0.1:8000/api/rekomendasi";
-        if (idJenjang) {
-            url += `?idJenjang=${idJenjang}`;
-        }
-        
-        axios.get(url)
-            .then(response => {
-                if (response.data && Array.isArray(response.data)) {
-                    setRekomendasi(response.data);
-                } else {
-                    setErrorRekomendasi("Format data tidak valid");
-                    setRekomendasi([]);
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching rekomendasi:", error);
-                setErrorRekomendasi("Gagal memuat rekomendasi");
+
+        axios.get("http://127.0.0.1:8000/api/rekomendasi", {
+            params: {
+                idJenjang: idJenjang || null, 
+                keyword: keyword,
+                limit: 3, 
+            }
+        })
+        .then(response => {
+            if (Array.isArray(response.data)) {
+                setRekomendasi(response.data);
+            } else {
                 setRekomendasi([]);
-            })
-            .finally(() => {
-                setLoadingRekomendasi(false);
-            });
-    }, [idJenjang]);
+            }
+        })
+        .catch(() => {
+            setErrorRekomendasi("Gagal memuat rekomendasi");
+            setRekomendasi([]);
+        })
+        .finally(() => {
+            setLoadingRekomendasi(false);
+        });
+
+    }, [idJenjang, keyword]);
+
 
     const subjectIcons = [
         { name: 'Biologi', icon: '🧬' },
@@ -195,6 +200,14 @@ export default function Welcome({ auth }) {
     return (
         <>
             <Head title="Welcome" />
+
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                theme="colored"
+                pauseOnHover
+            />
+
             <div className="bg-gray-50 text-black min-h-screen">
                 <Navbar auth={auth} />
 
@@ -221,9 +234,12 @@ export default function Welcome({ auth }) {
                             <div className="flex-1">
                                 <input
                                     type="text"
-                                    placeholder="Masukkan keywords pencarian"
+                                    placeholder="Cari rekomendasi belajar..."
+                                    value={keyword}
+                                    onChange={(e) => setKeyword(e.target.value)}
                                     className="w-full px-4 py-2 rounded-md border border-gray-300"
                                 />
+
                             </div>
                             <div className="sm:w-1/3">
                                 <button
@@ -308,21 +324,44 @@ export default function Welcome({ auth }) {
                     </div>
                 </header>
 
-                {/* Rekomendasi Section */}
+               {/* Rekomendasi Section */}
                 <section className="bg-blue-100 py-8">
                     <div className="container mx-auto px-4">
                         <div className="bg-[#154561] rounded-lg p-6 shadow-md max-w-5xl mx-auto">
                             <h2 className="text-xl font-bold text-white mb-6">
                                 Rekomendasi Belajar Untuk Kamu!
                             </h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"> {/* Ubah dari 4 kolom menjadi 3 kolom */}
-                                {loadingRekomendasi ? (
-                                    <div className="text-center text-white">Memuat rekomendasi...</div>
-                                ) : errorRekomendasi ? (
-                                    <div className="text-center text-red-400">{errorRekomendasi}</div>
-                                ) : rekomendasi.length > 0 ? (
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {/* LOADING */}
+                                {loadingRekomendasi && (
+                                    <>
+                                        {Array.from({ length: 3 }).map((_, index) => (
+                                            <div
+                                                key={index}
+                                                className="bg-white rounded-lg p-3 flex items-center gap-3 w-full animate-pulse"
+                                            >
+                                                <div className="w-16 h-16 bg-gray-300 rounded-lg flex-shrink-0" />
+                                                <div className="flex flex-col gap-2 flex-1">
+                                                    <div className="h-3 bg-gray-300 rounded w-3/4" />
+                                                    <div className="h-3 bg-gray-200 rounded w-1/2" />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </>
+                                )}
+
+                                {/* ERROR */}
+                                {!loadingRekomendasi && errorRekomendasi && (
+                                    <div className="col-span-full text-center text-white">
+                                        Terjadi kesalahan saat memuat rekomendasi.
+                                    </div>
+                                )}
+
+                                {/* DATA */}
+                                {!loadingRekomendasi && !errorRekomendasi && rekomendasi.length > 0 && (
                                     rekomendasi.map((item, index) => (
-                                       <div
+                                        <div
                                             key={index}
                                             onClick={() =>
                                                 router.visit(
@@ -331,21 +370,26 @@ export default function Welcome({ auth }) {
                                             }
                                             className="bg-white rounded-lg p-3 flex items-center gap-3 w-full cursor-pointer hover:bg-gray-100 transition"
                                         >
-                                            <img 
-                                                src={item.thumbnail} 
-                                                alt={item.judul_konten} 
+                                            <img
+                                                src={item.thumbnail}
+                                                alt={item.judul_konten}
                                                 className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
                                             />
                                             <div className="flex flex-col justify-center flex-1">
-                                                <h3 className="font-medium text-xs mb-0.5 line-clamp-3">{item.judul_konten}</h3>
+                                                <h3 className="font-medium text-xs mb-0.5 line-clamp-3">
+                                                    {item.judul_konten}
+                                                </h3>
                                                 <p className="text-xs text-gray-600 truncate">
                                                     {item.nama_pelajaran} - {item.nama_jenjang}
                                                 </p>
                                             </div>
                                         </div>
                                     ))
-                                ) : (
-                                    <div className="text-center text-white">
+                                )}
+
+                                {/* EMPTY STATE */}
+                                {!loadingRekomendasi && !errorRekomendasi && rekomendasi.length === 0 && (
+                                    <div className="col-span-full text-center text-white">
                                         Belum ada rekomendasi untuk jenjang terpilih.
                                     </div>
                                 )}
@@ -353,6 +397,7 @@ export default function Welcome({ auth }) {
                         </div>
                     </div>
                 </section>
+
 
                 {/* Additional Sections */}
                 <section className="bg-blue-100 py-8">

@@ -1,7 +1,6 @@
 import { Head } from '@inertiajs/react'; 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Download } from "lucide-react";
 import Navbar from '@/Components/NavbarUser';
 import Footer from '@/Components/Footer';
 
@@ -48,7 +47,49 @@ export default function Submaterial({ auth, nama_pelajaran, nama_jenjang, nama_s
         fetchSubMateri();
     }, [nama_pelajaran, nama_jenjang, nama_submateri]);
 
-    if (loading) return <div className="text-center mt-20">Loading...</div>;
+        const pdfUrl =
+        data?.rangkuman && data.rangkuman.length > 0
+            ? `/storage/${data.rangkuman[0].file_rangkuman}`
+            : null;
+
+
+    if (loading) {
+        return (
+            <>
+                <Navbar auth={auth} />
+                <div className="container mx-auto px-4 py-8 animate-pulse">
+                    
+                    {/* Video Skeleton */}
+                    <div className="bg-white p-4 shadow rounded-lg">
+                        <div className="w-full h-64 md:h-96 bg-gray-300 rounded" />
+                        <div className="mt-4 h-6 bg-gray-300 rounded w-2/3" />
+                    </div>
+
+                    {/* Tabs Skeleton */}
+                    <div className="mt-6">
+                        <div className="flex space-x-4 border-b">
+                            {Array.from({ length: 3 }).map((_, i) => (
+                                <div
+                                    key={i}
+                                    className="h-8 w-24 bg-gray-300 rounded"
+                                />
+                            ))}
+                        </div>
+
+                        {/* Content Skeleton */}
+                        <div className="p-4 bg-gray-50 mt-4 rounded-lg space-y-3">
+                            <div className="h-5 bg-gray-300 rounded w-1/3" />
+                            <div className="h-4 bg-gray-200 rounded w-full" />
+                            <div className="h-4 bg-gray-200 rounded w-5/6" />
+                            <div className="h-4 bg-gray-200 rounded w-4/6" />
+                        </div>
+                    </div>
+                </div>
+                <Footer />
+            </>
+        );
+    }
+
     if (error) return <div className="text-center text-red-500 mt-20">{error}</div>;
     if (!data) return <div className="text-center mt-20">Data tidak ditemukan</div>;
 
@@ -75,9 +116,25 @@ export default function Submaterial({ auth, nama_pelajaran, nama_jenjang, nama_s
     return (
         <>
             <Head title={data.nama_submateri || 'Materi Pembelajaran'} />
+
             <Navbar auth={auth} />
-            <div className="container mx-auto px-4 py-8">
-                <div className="bg-white p-4 shadow rounded-lg">
+            <div className="container mx-auto px-4 pt-28 pb-8">
+                
+                <nav className="text-sm text-gray-800 mb-4">
+                <ol className="flex items-center space-x-2">
+                <li>
+                    <a href="/konten" className="hover:text-gray-600 hover:underline">
+                    Konten
+                    </a>
+                </li>
+                <li>/</li>
+                <li className="font-medium text-gray-800">
+                    {data.nama_submateri}
+                </li>
+                </ol>
+            </nav>
+
+            <div className="bg-white p-4 shadow rounded-lg">
                    {data.konten?.[0]?.jenis_konten === 'video' &&
                     data.konten?.[0]?.link_konten ? (
                     <iframe
@@ -93,7 +150,7 @@ export default function Submaterial({ auth, nama_pelajaran, nama_jenjang, nama_s
                         🎥 Video materi ini belum tersedia
                         </p>
                         <p className="text-sm text-gray-500 mt-2">
-                        Silakan langsung melihat rangkuman di bawah
+                        Silakan langsung melihat materi di bawah
                         </p>
                     </div>
                     )}
@@ -118,38 +175,59 @@ export default function Submaterial({ auth, nama_pelajaran, nama_jenjang, nama_s
 
                     <div className="p-4 bg-gray-50 mt-2 rounded-lg">
                         {activeTab === "detail" && (
-                            <div>
-                                <h3 className="text-lg font-semibold">Detail Materi</h3>
-                                <p>{data.konten?.[0]?.deskripsi || 'Tidak ada deskripsi.'}</p>
-                            </div>
+                          <div>
+                            <h3 className="text-lg font-semibold">Detail Materi</h3>
+                            <p className={`${
+                                data.konten?.[0]?.deskripsi ? 'text-gray-800' : 'text-gray-500 italic'
+                            }`}>
+                                {data.konten?.[0]?.deskripsi || 'Tidak ada deskripsi.'}
+                            </p>
+                        </div>
+
                         )}
 
                         {activeTab === "latihan" && (
                             <div>
-                                <h3 className="text-lg font-semibold mb-4">Latihan Soal</h3>
-                                {data.latihan_soal?.map((soal, index) => (
-                                    <LatihanCard key={index} soal={soal} index={index} />
-                                ))}
+                                <h3 className="text-lg font-semibold mb-4 ">Latihan Soal</h3>
+
+                                {data.latihan_soal && data.latihan_soal.length > 0 ? (
+                                    data.latihan_soal.map((soal, index) => (
+                                        <LatihanCard key={index} soal={soal} index={index} />
+                                    ))
+                                ) : (
+                                    <p className="text-gray-500 italic">
+                                        Latihan Tidak Tersedia
+                                    </p>
+                                )}
                             </div>
+
                         )}
 
                         {activeTab === "rangkuman" && (
-                            <div>
-                                <h3 className="text-lg font-semibold ">Rangkuman</h3>
-                                {data.rangkuman && data.rangkuman.length > 0 ? (
-                                <a
-                                    href={`/storage/${data.rangkuman[0].file_rangkuman}`}
-                                    download
-                                    className="flex items-center justify-center gap-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition w-fit"
-                                >
-                                    <Download size={18} />
-                                    <span>Download Rangkuman</span>
-                                </a>
-                                ) : (
-                                <p>Rangkuman tidak tersedia.</p>
-                                )}
-                            </div>
+                        <div>
+                            <h3 className="text-lg font-semibold mb-4">Rangkuman</h3>
+
+                            {pdfUrl ? (
+                            <>
+        
+
+                                {/* PDF PREVIEW */}
+                                <div className="border rounded-lg overflow-hidden bg-white">
+                                <iframe
+                                    src={pdfUrl}
+                                    className="w-full h-[600px]"
+                                    title="Preview PDF Rangkuman"
+                                />
+                                </div>
+                            </>
+                            ) : (
+                            <p className="text-gray-500 italic">
+                                Rangkuman tidak tersedia
+                            </p>
+                            )}
+                        </div>
                         )}
+
                     </div>
                 </div>
             </div>
