@@ -40,9 +40,6 @@ export default function Register() {
                 <div className="flex flex-col items-center space-y-1 mb-6">
                     <h1 className="text-lg font-bold text-[#154561]">Rumah Belajar</h1>
                     <img src="/assets/logo final.png" alt="Logo" className="h-12 w-20 object-contain" />
-                    <p className="text-xs text-gray-500 text-center mt-1">
-                        Create your account to join our learning community
-                    </p>
                 </div>
 
                 <form onSubmit={submit} className="space-y-4">
@@ -58,7 +55,7 @@ export default function Register() {
                             name="name"
                             value={data.name}
                             className="w-full pl-10 pr-4 py-2 border border-blue-100 rounded-xl bg-blue-50/30 text-sm"
-                            placeholder="Full Name"
+                            placeholder="Nama Lengkap"
                             autoComplete="name"
                             isFocused={true}
                             onChange={handleOnChange}
@@ -101,7 +98,7 @@ export default function Register() {
                             name="password"
                             value={data.password}
                             className="w-full pl-10 pr-4 py-2 border border-blue-100 rounded-xl bg-blue-50/30 text-sm"
-                            placeholder="Password"
+                            placeholder="Kata Sandi"
                             autoComplete="new-password"
                             onChange={handleOnChange}
                             required
@@ -122,7 +119,7 @@ export default function Register() {
                             name="password_confirmation"
                             value={data.password_confirmation}
                             className="w-full pl-10 pr-4 py-2 border border-blue-100 rounded-xl bg-blue-50/30 text-sm"
-                            placeholder="Confirm Password"
+                            placeholder="Konfirmasi Kata Sandi"
                             autoComplete="new-password"
                             onChange={handleOnChange}
                             required
@@ -145,7 +142,7 @@ export default function Register() {
                             required
                             className="w-full pl-10 pr-4 py-2 border border-blue-100 rounded-xl bg-blue-50/30 text-sm appearance-none"
                         >
-                            <option value="">Select Role</option>
+                            <option value="">Pilih Role</option>
                             <option value="Siswa">Siswa</option>
                             <option value="Orangtua">Orangtua</option>
                             <option value="Guru">Guru</option>
@@ -160,7 +157,7 @@ export default function Register() {
                             className="w-full py-2 bg-blue-200 hover:bg-blue-300 text-white rounded-xl text-center justify-center text-sm"
                             disabled={processing}
                         >
-                            Create Account
+                            Buat Akun
                         </PrimaryButton>
                     </div>
 
@@ -170,7 +167,7 @@ export default function Register() {
                             href={route('login')}
                             className="text-xs text-gray-600 hover:text-blue-500 transition-colors duration-200"
                         >
-                            Already have an account? Login
+                            Sudah punya akun ? Login.
                         </Link>
                     </div>
                 </form>

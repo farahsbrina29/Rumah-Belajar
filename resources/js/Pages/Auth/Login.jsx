@@ -65,7 +65,7 @@ export default function Login({ status, canResetPassword }) {
                     </div>
 
                     <div>
-                        <InputLabel htmlFor="password" value="Password" className="text-gray-600 text-sm font-medium" />
+                        <InputLabel htmlFor="password" value="Kata Sandi" className="text-gray-600 text-sm font-medium" />
                         <TextInput
                             id="password"
                             type="password"
@@ -86,7 +86,7 @@ export default function Login({ status, canResetPassword }) {
                                 onChange={handleOnChange}
                                 className="text-blue-200"
                             />
-                            <span className="ml-2 text-xs text-gray-600">Remember me</span>
+                            <span className="ml-2 text-xs text-gray-600">Ingat Kata Sandi</span>
                         </label>
 
                         {canResetPassword && (
@@ -94,7 +94,7 @@ export default function Login({ status, canResetPassword }) {
                                 href={route('password.request')}
                                 className="text-xs text-gray-600"
                             >
-                                Forgot password?
+                                Lupa Kata Sandi?
                             </Link>
                         )}
                     </div>
@@ -104,7 +104,7 @@ export default function Login({ status, canResetPassword }) {
                             className="w-full py-2 bg-blue-200 hover:bg-blue-300 text-white rounded-xl text-center justify-center text-sm"
                             disabled={processing}
                         >
-                            Log in
+                            Masuk
                         </PrimaryButton>
 
                         <div className="text-center">
@@ -112,7 +112,7 @@ export default function Login({ status, canResetPassword }) {
                                 href={route('register')}
                                 className="text-xs text-gray-600 hover:text-blue-500 transition-colors duration-200"
                             >
-                                Don't have an account? Register
+                                Belum punya akun? Daftar sekarang
                             </Link>
                         </div>
                     </div>

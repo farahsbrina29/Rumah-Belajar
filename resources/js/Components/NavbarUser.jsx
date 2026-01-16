@@ -95,14 +95,14 @@ export default function Navbar({ auth }) {
 
                             <Dropdown.Content>
                                 <Dropdown.Link href={route('profile.edit')}>
-                                    Profile
+                                    Profil
                                 </Dropdown.Link>
                                 <Dropdown.Link
                                     href={route('logout')}
                                     method="post"
                                     as="button"
                                 >
-                                    Log Out
+                                    Keluar
                                 </Dropdown.Link>
                             </Dropdown.Content>
                         </Dropdown>
@@ -177,7 +177,7 @@ export default function Navbar({ auth }) {
                                 className="text-154561 font-semibold text-sm mb-2 hover:text-gray-200"
                                 style={{ color: '#154561' }}
                             >
-                                Profile
+                                Profil
                             </Link>
                             <Link
                                 href={route('logout')}

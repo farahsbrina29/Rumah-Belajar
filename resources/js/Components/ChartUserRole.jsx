@@ -31,7 +31,7 @@ const ChartUserRole = () => {
   return (
     <div className="bg-white rounded-lg p-6 shadow-md">
       <h2 className="text-xl font-bold mb-4">
-        Distribusi User Berdasarkan Role
+        Distribusi Pengguna Berdasarkan Role
       </h2>
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">

@@ -41,7 +41,7 @@ export default function Konten({ auth }) {
 
     if (!auth || !auth.user) {
         return (
-            <div className="flex flex-col min-h-screen">
+            <div className="min-h-screen flex flex-col bg-white-100">
                 <Navbar auth={auth} />
                 <div className="flex-1 flex items-center justify-center">
                     <h1 className="text-xl font-bold text-[#154561]">
@@ -80,9 +80,9 @@ export default function Konten({ auth }) {
     );
 
     return (
-        <div className="flex flex-col min-h-screen bg-blue-100">
+        <div className="min-h-screen flex flex-col bg-blue-100">
             <Navbar auth={auth} />
-            <div className="flex-1 p-4 pt-32">
+            <div className="flex-1 p-4 pt-32 min-h-[calc(100vh-160px)]">
                 <h1 className="text-2xl font-bold text-center mb-4 text-[#154561]">
                     Telusuri Berbagai Konten Menarik 🚀
                 </h1>
@@ -156,7 +156,8 @@ export default function Konten({ auth }) {
                     </div>
                 )}
             </div>
-
+            
+             <div className="flex-grow" />
             <Footer />
 
             <PopupPilihJenjang 
