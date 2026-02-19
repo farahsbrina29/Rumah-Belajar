@@ -1,101 +1,88 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useForm } from '@inertiajs/react'
+import { useEffect, useState } from 'react'
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
-const AddSubmateri = ({ onClose, fetchData }) => {
-  const [submateri, setSubmateri] = useState('');
-  const [jenjang, setJenjang] = useState('');
-  const [mataPelajaran, setMataPelajaran] = useState('');
-  const [jenjangList, setJenjangList] = useState([]);
-  const [mataPelajaranList, setMataPelajaranList] = useState([]);
-  const [loading, setLoading] = useState(false);
+export default function AddSubmateri({ onClose }) {
+  const { data, setData, post, processing, errors, reset } = useForm({
+    nama_submateri: '',
+    id_jenjang: '',
+    id_mata_pelajaran: '',
+  })
 
- 
+  const [jenjangList, setJenjangList] = useState([])
+  const [mataPelajaranList, setMataPelajaranList] = useState([])
+
+  // 🔹 Ambil jenjang
   useEffect(() => {
-    axios.get('/api/jenjang')
-      .then(res => {
-        setJenjangList(Array.isArray(res.data) ? res.data : []);
-      })
-      .catch(err => {
-        console.error('Gagal mengambil jenjang:', err);
-      });
-  }, []);
+    fetch('/jenjang')
+      .then(res => res.json())
+      .then(setJenjangList)
+      .catch(() => toast.error('Gagal memuat jenjang'))
+  }, [])
 
-  
+  // 🔹 Ambil mata pelajaran berdasarkan jenjang
   useEffect(() => {
-    if (!jenjang) {
-      setMataPelajaranList([]);
-      setMataPelajaran('');
-      return;
+    if (!data.id_jenjang) {
+      setMataPelajaranList([])
+      return
     }
 
-    axios.get(`/api/mata_pelajaran_jenjang/${jenjang}`)
-      .then(res => {
-        setMataPelajaranList(Array.isArray(res.data) ? res.data : []);
-      })
-      .catch(err => {
-        console.error('Gagal mengambil mata pelajaran:', err);
-      });
-  }, [jenjang]);
+    fetch(`/mata_pelajaran_jenjang/${data.id_jenjang}`)
+      .then(res => res.json())
+      .then(setMataPelajaranList)
+      .catch(() => toast.error('Gagal memuat mata pelajaran'))
+  }, [data.id_jenjang])
 
-  const handleSubmit = async () => {
-  if (!submateri || !jenjang || !mataPelajaran) {
-    toast.warning('Semua field wajib diisi');
-    return;
+  const submit = (e) => {
+    e.preventDefault()
+
+    post('/add-submateri', {
+      preserveScroll: true,
+
+      onSuccess: () => {
+        toast.success('Submateri berhasil ditambahkan 🎉')
+        reset()
+        onClose?.()
+      },
+
+      onError: () => {
+        toast.error('Gagal menambahkan submateri ❌')
+      },
+    })
   }
-
-  setLoading(true);
-
-  try {
-    await axios.post('/api/add-submateri', {
-      nama_submateri: submateri,
-      jenjang_id: jenjang,
-      mata_pelajaran_id: mataPelajaran,
-    });
-
-    toast.success('Submateri berhasil ditambahkan 🎉');
-
-    if (typeof fetchData === 'function') {
-      fetchData();
-    }
-
-    if (typeof onClose === 'function') {
-      onClose();
-    }
-
-    setSubmateri('');
-    setJenjang('');
-    setMataPelajaran('');
-  } catch (error) {
-    console.error('ERROR ADD SUBMATERI:', error?.response?.data || error);
-    toast.error('Gagal menambahkan submateri ❌');
-  } finally {
-    setLoading(false);
-  }
-};
-
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white w-96 p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-4">Tambah Submateri</h2>
+    <>
+      {/* 🔔 Toast Container */}
+      <ToastContainer position="top-right" autoClose={3000} />
 
-        <div className="mb-3">
-          <label className="block text-sm">Nama Submateri</label>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <form
+          onSubmit={submit}
+          className="bg-white w-96 p-6 rounded-lg shadow"
+        >
+          <h2 className="text-xl font-semibold mb-4">
+            Tambah Submateri
+          </h2>
+
           <input
-            value={submateri}
-            onChange={e => setSubmateri(e.target.value)}
-            className="w-full p-2 border rounded"
+            type="text"
+            value={data.nama_submateri}
+            onChange={e => setData('nama_submateri', e.target.value)}
+            placeholder="Nama Submateri"
+            className="w-full mb-2 p-2 border rounded"
           />
-        </div>
+          {errors.nama_submateri && (
+            <p className="text-red-500 text-sm">
+              {errors.nama_submateri}
+            </p>
+          )}
 
-        <div className="mb-3">
-          <label className="block text-sm">Jenjang</label>
           <select
-            value={jenjang}
-            onChange={e => setJenjang(e.target.value)}
-            className="w-full p-2 border rounded"
+            value={data.id_jenjang}
+            onChange={e => setData('id_jenjang', e.target.value)}
+            className="w-full mb-2 p-2 border rounded"
           >
             <option value="">Pilih Jenjang</option>
             {jenjangList.map(j => (
@@ -104,15 +91,17 @@ const AddSubmateri = ({ onClose, fetchData }) => {
               </option>
             ))}
           </select>
-        </div>
+          {errors.id_jenjang && (
+            <p className="text-red-500 text-sm">
+              {errors.id_jenjang}
+            </p>
+          )}
 
-        <div className="mb-4">
-          <label className="block text-sm">Mata Pelajaran</label>
           <select
-            value={mataPelajaran}
-            onChange={e => setMataPelajaran(e.target.value)}
-            className="w-full p-2 border rounded"
-            disabled={!jenjang}
+            value={data.id_mata_pelajaran}
+            onChange={e => setData('id_mata_pelajaran', e.target.value)}
+            disabled={!data.id_jenjang}
+            className="w-full mb-4 p-2 border rounded"
           >
             <option value="">Pilih Mata Pelajaran</option>
             {mataPelajaranList.map(mp => (
@@ -121,30 +110,31 @@ const AddSubmateri = ({ onClose, fetchData }) => {
               </option>
             ))}
           </select>
-        </div>
+          {errors.id_mata_pelajaran && (
+            <p className="text-red-500 text-sm">
+              {errors.id_mata_pelajaran}
+            </p>
+          )}
 
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            disabled={loading}
-            className="px-4 py-2 border rounded"
-          >
-            Batal
-          </button>
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 border rounded"
+            >
+              Batal
+            </button>
 
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className={`px-4 py-2 text-white rounded ${
-              loading ? 'bg-gray-400' : 'bg-blue-600'
-            }`}
-          >
-            {loading ? 'Menyimpan...' : 'Lanjut'}
-          </button>
-        </div>
+            <button
+              type="submit"
+              disabled={processing}
+              className="px-4 py-2 bg-blue-600 text-white rounded"
+            >
+              {processing ? 'Menyimpan...' : 'Simpan'}
+            </button>
+          </div>
+        </form>
       </div>
-    </div>
-  );
-};
-
-export default AddSubmateri;
+    </>
+  )
+}

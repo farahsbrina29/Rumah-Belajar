@@ -11,163 +11,66 @@ export default function RangkumanPage() {
 
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleFileChange = (e) => setFile(e.target.files[0]);
 
+  // ================= UPLOAD =================
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!file) {
       toast.error('Pilih file terlebih dahulu');
       return;
     }
+
     setUploading(true);
 
-    const formData = new FormData();
-    formData.append('file_rangkuman', file);
-
-    fetch(`/api/submateri/${encodeURIComponent(nama_submateri)}/rangkuman`, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-TOKEN':
-          document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-      },
-    })
-      .then(async (response) => {
-        if (response.ok) {
+    router.post(
+      route('admin.rangkuman.store', nama_submateri),
+      { file_rangkuman: file },
+      {
+        forceFormData: true,
+        onSuccess: () => {
           toast.success('Rangkuman berhasil diupload');
           setFile(null);
-          router.reload({ only: ['rangkuman'] });
-        } else {
-          const errorData = await response.json().catch(() => ({}));
-          toast.error(errorData.message || 'Gagal upload rangkuman');
-        }
-      })
-      .catch((error) => {
-        console.error('Upload error:', error);
-        toast.error('Terjadi kesalahan saat upload');
-      })
-      .finally(() => setUploading(false));
+        },
+        onError: () => {
+          toast.error('Gagal upload rangkuman');
+        },
+        onFinish: () => setUploading(false),
+      }
+    );
   };
 
-  const handleDownload = async () => {
-    if (!rangkuman?.[0]?.file_rangkuman) {
+  // ================= DOWNLOAD =================
+  const handleDownload = () => {
+    if (!rangkuman?.[0]) {
       toast.error('File rangkuman tidak tersedia');
       return;
     }
-    const fileName = rangkuman[0].file_rangkuman.split('/').pop();
-    const fileUrl = `/storage/${rangkuman[0].file_rangkuman}`;
-    try {
-      await downloadViaEndpoint(rangkuman[0].id, fileName);
-    } catch {
-      try {
-        await downloadViaFetch(fileUrl, fileName);
-      } catch {
-        downloadViaNewTab(fileUrl);
-      }
-    }
+
+    window.location.href = route(
+      'admin.rangkuman.download',
+      rangkuman[0].id
+    );
   };
 
-  const downloadViaEndpoint = async (rangkumanId, fileName) => {
-    const response = await fetch(`/api/rangkuman/${rangkumanId}/download`, {
-      method: 'GET',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-TOKEN':
-          document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-      },
-    });
-    if (!response.ok) throw new Error('Endpoint download tidak tersedia');
-
-    const blob = await response.blob();
-    downloadBlob(blob, fileName);
-    toast.success('File berhasil didownload');
-  };
-
-  const downloadViaFetch = async (fileUrl, fileName) => {
-    const response = await fetch(fileUrl);
-    if (!response.ok) throw new Error('File tidak dapat diakses');
-    const blob = await response.blob();
-    downloadBlob(blob, fileName);
-    toast.success('File berhasil didownload');
-  };
-
-  const downloadViaNewTab = (fileUrl) => {
-    const link = document.createElement('a');
-    link.href = fileUrl;
-    link.target = '_blank';
-    link.download = '';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.info('📄 File dibuka/didownload di tab baru');
-  };
-
-  const downloadBlob = (blob, fileName) => {
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  };
-
-  const showDeleteConfirmation = () => {
+  // ================= DELETE =================
+  const handleDelete = () => {
     if (!rangkuman?.[0]) return;
 
-    const confirmDelete = () => {
-      toast.dismiss();
-      fetch(`/api/rangkuman/${rangkuman[0].id}`, {
-        method: 'DELETE',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-TOKEN':
-            document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-          'Content-Type': 'application/json',
+    router.delete(
+      route('admin.rangkuman.destroy', rangkuman[0].id),
+      {
+        onSuccess: () => {
+          toast.success('Rangkuman berhasil dihapus');
+          setIsDeleteModalOpen(false);
         },
-      })
-        .then(async (response) => {
-          if (response.ok) {
-            toast.success('Rangkuman berhasil dihapus');
-            router.reload({ only: ['rangkuman'] });
-          } else {
-            const errorData = await response.json().catch(() => ({}));
-            toast.error(errorData.message || 'Gagal menghapus rangkuman');
-          }
-        })
-        .catch((error) => {
-          console.error('Delete error:', error);
-          toast.error('Terjadi kesalahan saat menghapus');
-        });
-    };
-
-    const cancelDelete = () => toast.dismiss();
-
-    toast.warning(
-      <div className="space-y-3">
-        <p className="font-medium text-gray-800">Konfirmasi Hapus</p>
-        <p className="text-sm text-gray-600">
-          Apakah Anda yakin ingin menghapus rangkuman ini? Tindakan ini tidak dapat dibatalkan.
-        </p>
-        <div className="flex gap-2 pt-2">
-          <button
-            onClick={confirmDelete}
-            className="px-4 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition-colors font-medium"
-          >
-            Ya, Hapus
-          </button>
-          <button
-            onClick={cancelDelete}
-            className="px-4 py-2 bg-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-400 transition-colors font-medium"
-          >
-            Batal
-          </button>
-        </div>
-      </div>,
-      { autoClose: false, closeOnClick: false, draggable: false, position: 'top-center' }
+        onError: () => {
+          toast.error('Gagal menghapus rangkuman');
+        },
+      }
     );
   };
 
@@ -175,31 +78,36 @@ export default function RangkumanPage() {
     <AdminNavbar>
       <Head title={`Rangkuman - ${submateri?.nama_submateri || nama_submateri}`} />
 
-   
-    {/* 🔹 Breadcrumbs */}
-    <div className="text-sm text-blue-900 mb-6 flex items-center space-x-2">
-      <Link href="/admin/konten" className="hover:underline">
-        Submateri
-      </Link>
-      <span>›</span>
-      <span className="text-gray-600">Tambah Rangkuman</span>
-    </div>
+      {/* 🔹 Breadcrumbs */}
+      <div className="text-sm text-blue-900 mb-6 flex items-center space-x-2">
+        <Link href="/admin/konten" className="hover:underline">
+          Submateri
+        </Link>
+        <span>›</span>
+        <span className="text-gray-600">Tambah Rangkuman</span>
+      </div>
 
       {/* 🔹 Card Section */}
       <div className="min-h-screen bg-white rounded-lg p-8">
         <div className="space-y-6">
           <div>
-            <h2 className="text-lg font-medium text-gray-800 mb-4">Unggah Rangkuman :</h2>
+            <h2 className="text-lg font-medium text-gray-800 mb-4">
+              Unggah Rangkuman :
+            </h2>
 
             {rangkuman && rangkuman.length > 0 ? (
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                 <div className="flex items-center justify-center gap-3 mb-4">
                   <FileText className="text-blue-500" size={32} />
-                  <span className="font-medium text-gray-800">Rangkuman tersedia</span>
+                  <span className="font-medium text-gray-800">
+                    Rangkuman tersedia
+                  </span>
                 </div>
+
                 <p className="text-gray-600 text-sm mb-4">
                   File: {rangkuman[0].file_rangkuman?.split('/').pop()}
                 </p>
+
                 <div className="flex gap-3 justify-center">
                   <button
                     onClick={handleDownload}
@@ -208,8 +116,9 @@ export default function RangkumanPage() {
                     <Download size={16} />
                     Download
                   </button>
+
                   <button
-                    onClick={showDeleteConfirmation}
+                    onClick={() => setIsDeleteModalOpen(true)}
                     className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                   >
                     <Trash2 size={16} />
@@ -266,19 +175,38 @@ export default function RangkumanPage() {
         </div>
       </div>
 
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-        toastClassName="shadow-lg"
-      />
+      {/* ================= MODAL DELETE ================= */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white w-[400px] rounded-lg p-6 shadow-xl">
+            <h2 className="text-lg font-semibold mb-3 text-gray-800">
+              Yakin ingin menghapus rangkuman ini?
+            </h2>
+
+            <p className="text-sm text-gray-600 mb-6">
+              Rangkuman yang dihapus tidak dapat dikembalikan.
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
+              >
+                Batal
+              </button>
+
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+              >
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ToastContainer position="top-right" autoClose={3000} theme="light" />
     </AdminNavbar>
   );
 }

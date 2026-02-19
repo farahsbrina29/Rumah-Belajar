@@ -5,7 +5,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PopupSemuaKelas from '@/Components/PopupSemuaKelas';
 import PopupPilihJenjang from '@/Components/PopupPilihJenjang';
-import ChartJumlahKonten from '@/Components/ChartJumlahKonten';
+import ChartJumlahKontenUser from '@/Components/ChartJumlahKontenUser';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -31,7 +31,7 @@ export default function Welcome({ auth }) {
         if (!loading && subjects.length > 0) {
             setIsPopupKelasOpen(true);
         }
-    };
+    }
     const closePopupKelas = () => setIsPopupKelasOpen(false);
     const openPopupJenjang = () => setIsPopupJenjangOpen(true);
     const closePopupJenjang = () => setIsPopupJenjangOpen(false);
@@ -89,7 +89,7 @@ export default function Welcome({ auth }) {
 
 
     try {
-        const response = await axios.get("http://127.0.0.1:8000/api/submateri", {
+        const response = await axios.get("/api/submateri", {
             params: {
                 nama_pelajaran: namaPelajaran,
                 nama_jenjang: selectedJenjang,
@@ -139,7 +139,7 @@ export default function Welcome({ auth }) {
         setLoadingRekomendasi(true);
         setErrorRekomendasi(null);
 
-        axios.get("http://127.0.0.1:8000/api/rekomendasi", {
+        axios.get("/api/rekomendasi", {
             params: {
                 idJenjang: idJenjang || null, 
                 keyword: keyword,
@@ -362,14 +362,21 @@ export default function Welcome({ auth }) {
                                 {!loadingRekomendasi && !errorRekomendasi && rekomendasi.length > 0 && (
                                     rekomendasi.map((item, index) => (
                                         <div
-                                            key={index}
-                                            onClick={() =>
-                                                router.visit(
-                                                    `/konten/${encodeURIComponent(item.nama_pelajaran)}/${encodeURIComponent(item.nama_jenjang)}/${encodeURIComponent(item.judul_konten)}`
-                                                )
-                                            }
-                                            className="bg-white rounded-lg p-3 flex items-center gap-3 w-full cursor-pointer hover:bg-gray-100 transition"
-                                        >
+                                        key={index}
+                                        onClick={() =>
+                                            router.visit(
+                                                `/konten/${encodeURIComponent(
+                                                    item.nama_pelajaran
+                                                )}/${encodeURIComponent(
+                                                    item.nama_jenjang
+                                                )}/${encodeURIComponent(
+                                                    item.nama_submateri
+                                                )}`
+                                            )
+                                        }
+                                        className="bg-white rounded-lg p-3 flex items-center gap-3 w-full cursor-pointer hover:bg-gray-100 transition"
+                                    >
+
                                             <img
                                                 src={item.thumbnail}
                                                 alt={item.judul_konten}
@@ -436,7 +443,7 @@ export default function Welcome({ auth }) {
                 <section className="bg-blue-100 py-8">
                     <div className="container mx-auto px-4">
                         <div className="max-w-2xl mx-auto">
-                            <ChartJumlahKonten />
+                            <ChartJumlahKontenUser />
                         </div>
                     </div>
                 </section>

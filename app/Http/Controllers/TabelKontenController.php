@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Submateri;
 use App\Models\Konten;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use DB;
 
 class TabelKontenController extends Controller
@@ -54,56 +55,57 @@ class TabelKontenController extends Controller
         ], 200);
     }
 
+
     public function update(Request $request, $id_submateri)
     {
+        DB::beginTransaction();
+
         try {
-            DB::beginTransaction();
-
             $submateri = Submateri::findOrFail($id_submateri);
-            $konten = Konten::where('id_submateri', $id_submateri)->first();
+            $konten = Konten::where('id_submateri', $id_submateri)->firstOrFail();
 
-            if (!$konten) {
-                return response()->json(['message' => 'Konten tidak ditemukan untuk submateri ini'], 404);
-            }
-
-            $request->validate([
-                'judul_konten'  => 'required|string|max:255',
-                'deskripsi'     => 'required|string',
-                'jenis_konten'  => 'required|string',
-                'link_konten'   => 'required|string',
-                'thumbnail'     => 'nullable|image|max:5120',
+           
+            $validated = $request->validate([
+                'judul_konten' => 'required|string|max:255',
+                'deskripsi'    => 'required|string',
+                'jenis_konten' => ['required', Rule::in(['video', 'lainnya'])],
+                'link_konten'  => 'nullable|required_if:jenis_konten,video|string',
+                'thumbnail'    => 'nullable|image|max:5120',
             ]);
 
+            // HANDLE THUMBNAIL
             if ($request->hasFile('thumbnail')) {
                 if ($konten->thumbnail && Storage::disk('public')->exists($konten->thumbnail)) {
                     Storage::disk('public')->delete($konten->thumbnail);
                 }
-                $thumbnailPath = $request->file('thumbnail')->store('thumbnails', 'public');
-                $konten->thumbnail = $thumbnailPath;
+
+                $validated['thumbnail'] = $request
+                    ->file('thumbnail')
+                    ->store('thumbnails', 'public');
             }
 
-            $konten->update([
-                'judul_konten'  => $request->judul_konten,
-                'deskripsi'     => $request->deskripsi,
-                'jenis_konten'  => $request->jenis_konten,
-                'link_konten'   => $request->link_konten,
-            ]);
+            
+            if ($validated['jenis_konten'] === 'lainnya') {
+                $validated['link_konten'] = '-';
+            }
+
+            $konten->update($validated);
 
             DB::commit();
-            return response()->json([
-                'success'   => true,
-                'message'   => 'Konten berhasil diperbarui',
-                'data'      => $konten
-            ], 200);
 
-        } catch (\Exception $e) {
-            DB::rollback();
-            return response()->json([
-                'success'   => false,
-                'message'   => 'Gagal memperbarui konten: ' . $e->getMessage()
-            ], 500);
+           
+            return back()->with('success', 'Konten berhasil diperbarui');
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+           
+            return back()->withErrors([
+                'message' => 'Gagal memperbarui konten: ' . $e->getMessage()
+            ]);
         }
     }
+
 
     public function destroy($id_submateri)
     {

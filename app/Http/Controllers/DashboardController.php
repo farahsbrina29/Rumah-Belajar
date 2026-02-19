@@ -1,31 +1,43 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Inertia\Inertia;
 use App\Models\User;
-use App\Models\Rangkuman; 
-use App\Models\Konten; // Pastikan model ini sesuai dengan nama model tabel konten
+use App\Models\Konten;
+use App\Models\Rangkuman;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // Hitung jumlah total pengguna
-        $userCount = User::count();
+        // Statistik kartu
+        $stats = [
+            'userCount'      => User::count(),
+            'kontenCount'    => Konten::count(),
+            'rangkumanCount' => Rangkuman::count(),
+        ];
 
-        // Hitung jumlah total konten
-        $kontenCount = Konten::count();
+        // Chart role user
+        $roleDistribution = [
+            ['name' => 'Orangtua', 'value' => User::where('role', 'orangtua')->count()],
+            ['name' => 'Umum',     'value' => User::where('role', 'umum')->count()],
+            ['name' => 'Siswa',    'value' => User::where('role', 'siswa')->count()],
+            ['name' => 'Guru',     'value' => User::where('role', 'guru')->count()],
+        ];
 
-     // Hitung jumlah total konten
-     $rangkumanCount = Rangkuman::count();
+        // Chart jumlah konten per jenjang
+        $jumlahKonten = DB::table('konten')
+            ->join('jenjang', 'konten.id_jenjang', '=', 'jenjang.id')
+            ->select('jenjang.nama_jenjang', DB::raw('COUNT(konten.id) as jumlah'))
+            ->groupBy('jenjang.nama_jenjang')
+            ->get();
 
-        return response()->json([
-            'userCount'      => $userCount,
-            'kontenCount'    => $kontenCount,
-            'rangkumanCount' => $rangkumanCount,
+        return Inertia::render('Admin/DashboardAdmin', [
+            'stats'            => $stats,
+            'roleDistribution' => $roleDistribution,
+            'jumlahKonten'     => $jumlahKonten,
         ]);
     }
 }
-

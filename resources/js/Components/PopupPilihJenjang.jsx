@@ -11,7 +11,7 @@ export default function PopupPilihJenjang({ isOpen, onClose, onSelectJenjang }) 
             setLoading(true);
             setError(null);
 
-            axios.get("http://localhost:8000/api/jenjang") // Sesuaikan dengan API
+            axios.get("/api/jenjangg") // Sesuaikan dengan API
                 .then((response) => {
                     setJenjangList(response.data);
                 })

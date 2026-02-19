@@ -13,24 +13,35 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      await axios.post('/admin/login', {
-        email: data.email,
-        password: data.password,
-      });
+  try {
+    // Kirim login
+    await axios.post('/admin/login', {
+      email: data.email,
+      password: data.password,
+    });
 
-      toast.success('Login berhasil');
+    const check = await axios.get('/admin/panel', {
+          validateStatus: () => true, 
+        });
 
-      setTimeout(() => {
-        window.location.href = '/admin/dashboard';
-      }, 1200);
+        if (check.status === 200) {
+          toast.success('Login berhasil');
 
-    } catch (error) {
-      toast.error('Email atau kata sandi salah');
-    }
-  };
+          setTimeout(() => {
+            window.location.href = '/admin/panel';
+          }, 1200);
+
+        } else {
+          toast.error('Email atau kata sandi salah');
+        }
+
+      } catch (error) {
+        toast.error('Email atau kata sandi salah');
+      }
+    };
+
 
   return (
     <>

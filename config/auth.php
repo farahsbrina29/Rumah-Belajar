@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 return [
 
@@ -7,40 +7,37 @@ return [
         'passwords' => 'users',
     ],
 
-    // config/auth.php
+    'guards' => [
 
-        'guards' => [
+        // USER WEB (Inertia / Blade)
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        'admin' => [  // Tambahkan ini
+
+        // ADMIN WEB
+        'admin' => [
             'driver' => 'session',
             'provider' => 'admins',
+        ],
+
+        // USER API (Sanctum)
+        'sanctum' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
         ],
     ],
 
     'providers' => [
+
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-        'admins' => [  // Tambahkan ini
-            'driver' => 'eloquent', 
+
+        'admins' => [
+            'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
         ],
     ],
-
-
-    'passwords' => [
-        'users' => [
-            'provider' => 'users',
-            'table' => 'password_resets',
-            'expire' => 60,
-            'throttle' => 60,
-        ],
-    ],
-
-    'password_timeout' => 10800,
-
 ];

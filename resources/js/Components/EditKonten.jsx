@@ -1,160 +1,98 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { useForm } from '@inertiajs/react';
 import { toast } from 'react-toastify';
 
 const EditKonten = ({ onClose, fetchData, konten }) => {
-  // 🔹 helper untuk membersihkan nilai "-" dari backend
   const cleanValue = (val) => (val === '-' || val == null ? '' : val);
 
-  const [judul, setJudul] = useState(cleanValue(konten?.judul_konten));
-  const [deskripsi, setDeskripsi] = useState(cleanValue(konten?.deskripsi));
-  const [jenisKonten, setJenisKonten] = useState('');
-  const [thumbnail, setThumbnail] = useState(null);
-  const [linkKonten, setLinkKonten] = useState(cleanValue(konten?.link_konten));
-  const [isLoading, setIsLoading] = useState(false);
+  const { data, setData, post, processing, errors } = useForm({
+    judul_konten: cleanValue(konten?.judul_konten),
+    deskripsi: cleanValue(konten?.deskripsi),
+    jenis_konten: konten?.jenis_konten || '',
+    link_konten: cleanValue(konten?.link_konten),
+    thumbnail: null,
+    _method: 'PUT', // 👈 method spoofing
+  });
 
-  const handleThumbnailUpload = (e) => {
-    setThumbnail(e.target.files[0]);
-  };
+  const handleSubmit = (e) => {
+  e.preventDefault();
 
-  const handleJenisChange = (e) => {
-    const value = e.target.value;
-    setJenisKonten(value);
+  if (
+    !data.judul_konten ||
+    !data.deskripsi ||
+    (data.jenis_konten !== 'lainnya' && !data.link_konten)
+  ) {
+    toast.warning('Semua field wajib diisi');
+    return;
+  }
 
-    if (value === 'lainnya') {
-      setLinkKonten('');
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!judul || !deskripsi || (jenisKonten !== 'lainnya' && !linkKonten)) {
-      toast.warning('Semua field wajib diisi');
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const token = localStorage.getItem('token');
-      const formData = new FormData();
-
-      formData.append('_method', 'PUT');
-      formData.append('judul_konten', judul);
-      formData.append('deskripsi', deskripsi);
-      formData.append('jenis_konten', jenisKonten);
-      formData.append(
-        'link_konten',
-        jenisKonten === 'lainnya' ? '-' : linkKonten
-      );
-
-      if (thumbnail) {
-        formData.append('thumbnail', thumbnail);
-      }
-
-      const response = await axios.post(
-        `/api/tabel-konten/${konten.id}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-
-      if (response.status !== 200) {
-        throw new Error('Gagal memperbarui konten');
-      }
-
+  post(`/admin/tabel-konten/${konten.id}`, {
+    forceFormData: true,
+    onSuccess: () => {
       toast.success('Konten berhasil diperbarui');
-
       fetchData();
       onClose();
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message || 'Terjadi kesalahan saat menyimpan'
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    onError: () => {
+      toast.error('Gagal menyimpan perubahan');
+    },
+  });
+};
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-white p-6 rounded-lg w-96">
         <h2 className="text-xl font-semibold mb-4">Edit Konten</h2>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Judul Konten</label>
+        <input
+          value={data.judul_konten}
+          onChange={(e) => setData('judul_konten', e.target.value)}
+          className="w-full p-2 border rounded mb-3"
+          placeholder="Judul Konten"
+        />
+
+        <textarea
+          value={data.deskripsi}
+          onChange={(e) => setData('deskripsi', e.target.value)}
+          className="w-full p-2 border rounded mb-3"
+          placeholder="Deskripsi"
+        />
+
+        <select
+          value={data.jenis_konten}
+          onChange={(e) => setData('jenis_konten', e.target.value)}
+          className="w-full p-2 border rounded mb-3"
+        >
+          <option value="">Pilih jenis konten</option>
+          <option value="video">Video</option>
+          <option value="lainnya">Lainnya</option>
+        </select>
+
+        {data.jenis_konten !== 'lainnya' && (
           <input
-            type="text"
-            value={judul}
-            onChange={(e) => setJudul(e.target.value)}
-            className="w-full p-2 border rounded"
+            value={data.link_konten}
+            onChange={(e) => setData('link_konten', e.target.value)}
+            className="w-full p-2 border rounded mb-3"
+            placeholder="Link Konten"
           />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Deskripsi</label>
-          <textarea
-            value={deskripsi}
-            onChange={(e) => setDeskripsi(e.target.value)}
-            className="w-full p-2 border rounded"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Jenis Konten</label>
-          <select
-            value={jenisKonten}
-            onChange={handleJenisChange}
-            className="w-full p-2 border rounded"
-          >
-            <option value="" disabled>
-              Pilih jenis konten
-            </option>
-            <option value="video">Video</option>
-            <option value="lainnya">Lainnya</option>
-          </select>
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium">Upload Thumbnail</label>
-          <input
-            type="file"
-            onChange={handleThumbnailUpload}
-            className="w-full p-2 border rounded"
-          />
-        </div>
-
-        {jenisKonten !== 'lainnya' && (
-          <div className="mb-4">
-            <label className="block text-sm font-medium">Link Konten</label>
-            <input
-              type="text"
-              value={linkKonten}
-              onChange={(e) => setLinkKonten(e.target.value)}
-              className="w-full p-2 border rounded"
-            />
-          </div>
         )}
 
+        <input
+          type="file"
+          onChange={(e) => setData('thumbnail', e.target.files[0])}
+          className="w-full p-2 border rounded mb-4"
+        />
+
         <div className="flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 border rounded"
-          >
+          <button onClick={onClose} className="px-4 py-2 border rounded">
             Batal
           </button>
-
           <button
             onClick={handleSubmit}
-            disabled={isLoading}
-            className={`px-4 py-2 text-white rounded ${
-              isLoading ? 'bg-gray-500' : 'bg-blue-600'
-            }`}
+            disabled={processing}
+            className="px-4 py-2 bg-blue-600 text-white rounded"
           >
-            {isLoading ? 'Menyimpan...' : 'Simpan'}
+            {processing ? 'Menyimpan...' : 'Simpan'}
           </button>
         </div>
       </div>

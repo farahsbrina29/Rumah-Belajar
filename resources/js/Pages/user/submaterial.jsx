@@ -5,6 +5,21 @@ import Navbar from '@/Components/NavbarUser';
 import Footer from '@/Components/Footer';
 
 export default function Submaterial({ auth, nama_pelajaran, nama_jenjang, nama_submateri }) {
+
+     if (!auth || !auth.user) {
+        return (
+            <div className="min-h-screen flex flex-col bg-white">
+                <Navbar auth={auth} />
+                <div className="flex-1 flex items-center justify-center">
+                    <h1 className="text-xl font-bold text-[#154561] text-center">
+                        Anda harus login untuk mengakses halaman ini.
+                    </h1>
+                </div>
+                <Footer />
+            </div>
+        );
+    }
+    
     const [data, setData] = useState(null);
     const [activeTab, setActiveTab] = useState("detail");
     const [loading, setLoading] = useState(true);

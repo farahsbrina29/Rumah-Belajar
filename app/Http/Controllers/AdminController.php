@@ -11,6 +11,7 @@ class AdminController extends Controller
 {
     public function __construct()
     {
+        // Semua route admin WAJIB login, kecuali login page & proses login
         $this->middleware('auth:admin')->except(['showLogin', 'login']);
     }
 
@@ -19,108 +20,65 @@ class AdminController extends Controller
         return Inertia::render('Admin/Login');
     }
 
-   public function login(Request $request)
-{
-    $credentials = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-    ]);
-
-    if (Auth::guard('admin')->attempt($credentials)) {
-        $request->session()->regenerate();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Login berhasil',
-        ], 200);
-    }
-
-    return response()->json([
-        'status' => 'error',
-        'message' => 'Email atau password salah',
-    ], 401);
-}
-
-
-    public function dashboard()
+    public function login(Request $request)
     {
-        $admin = Auth::guard('admin')->user();
+        $credentials = $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required',
+        ]);
 
-        if (!$admin) {
-            return redirect()->route('admin.login');
+        if (Auth::guard('admin')->attempt($credentials)) {
+            $request->session()->regenerate();
+
+            // Redirect ke dashboard admin
+            return redirect()->route('admin.dashboard');
         }
 
-        return Inertia::render('Admin/DashboardAdmin', [
-            'admin' => $admin,
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
         ]);
     }
 
     public function logout(Request $request)
     {
         Auth::guard('admin')->logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/admin/login');
+        return redirect()->route('admin.login');
     }
 
-   
+    public function profileAdmin()
+    {
+        return Inertia::render('Admin/ProfileAdmin');
+    }
+
+
+    public function pageContent()
+    {
+        return Inertia::render('Admin/PageContent');
+    }
 
     public function updatePassword(Request $request)
     {
         $request->validate([
             'current_password' => 'required',
-            'password' => 'required|min:8|confirmed',
+            'password'         => 'required|min:8|confirmed',
         ]);
 
         $admin = Auth::guard('admin')->user();
 
         if (!Hash::check($request->current_password, $admin->password)) {
-            return back()->withErrors(['current_password' => 'Current password is incorrect.']);
+            return back()->withErrors([
+                'current_password' => 'Password lama tidak sesuai.',
+            ]);
         }
 
-        $admin->password = Hash::make($request->password);
-        $admin->save();
-
-        return back()->with('status', 'Password updated successfully.');
-    }
-
-    public function getAdminData()
-    {
-        $admin = Auth::guard('admin')->user();
-        if (!$admin) {
-            abort(403, 'Admin not logged in.');
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $admin,
+        $admin->update([
+            'password' => Hash::make($request->password),
         ]);
-    }
 
-    // Menambahkan 3 method baru
-    public function profileAdmin()
-    {
-        return Inertia::render('Admin/ProfileAdmin', [
-            'auth' => [
-                'user' => Auth::guard('admin')->user()
-            ]
-        ]);
+        return back()->with('status', 'Password berhasil diperbarui.');
     }
-
-    public function pageUser()
-    {
-        if (!Auth::guard('admin')->check()) {
-            return redirect()->route('admin.login');
-        }
-        return Inertia::render('Admin/PageUser');
-    }
-
-    public function pageContent()
-    {
-        if (!Auth::guard('admin')->check()) {
-            return redirect()->route('admin.login');
-        }
-        return Inertia::render('Admin/PageContent');
-    }
-    }
+}

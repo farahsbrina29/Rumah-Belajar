@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -16,7 +18,11 @@ ChartJS.register(
   Legend
 );
 
-export default function ChartJumlahKonten({ data = [] }) {
+export default function Konten() {
+
+  const [dataChart, setDataChart] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const defaultLabels = [
     'Kelas 10 SMA',
     'Kelas 11 SMA',
@@ -29,9 +35,21 @@ export default function ChartJumlahKonten({ data = [] }) {
     'SMALB',
   ];
 
+  useEffect(() => {
+    axios.get('/api/jumlah-konten')
+      .then(response => {
+        setDataChart(response.data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error(error);
+        setLoading(false);
+      });
+  }, []);
+
   const counts = defaultLabels.map(label => {
-    const found = data.find(item => item.nama_jenjang === label);
-    return found ? found.jumlah : 0;
+    const found = dataChart.find(item => item.nama_jenjang === label);
+    return found ? Number(found.jumlah) : 0;
   });
 
   const chartData = {
@@ -48,6 +66,7 @@ export default function ChartJumlahKonten({ data = [] }) {
           '#9966FF', '#FF9F40', '#FFCD94', '#33FF99', '#FF6666',
         ],
         borderWidth: 1,
+        borderRadius: 6,
       },
     ],
   };
@@ -88,14 +107,28 @@ export default function ChartJumlahKonten({ data = [] }) {
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 shadow-lg border border-white/10 backdrop-blur-sm">
-      <h2 className="text-xl font-bold mb-4 text-center">
-        Jumlah Konten Berdasarkan Jenjang
-      </h2>
+    <div className="min-h-screen bg-blue-100 p-6">
 
-      <div className="h-80">
-        <Bar data={chartData} options={options} />
+      <div className="max-w-5xl mx-auto">
+
+        <div className="bg-white rounded-lg p-6 shadow-lg border border-white/10 backdrop-blur-sm">
+
+          <h2 className="text-xl font-bold mb-4 text-center">
+            Jumlah Konten Berdasarkan Jenjang
+          </h2>
+
+          {loading ? (
+            <p className="text-center py-10">Loading...</p>
+          ) : (
+            <div className="h-80">
+              <Bar data={chartData} options={options} />
+            </div>
+          )}
+
+        </div>
+
       </div>
+
     </div>
   );
 }

@@ -13,10 +13,25 @@ const Content = () => {
   const [isAddSubmateriOpen, setIsAddSubmateriOpen] = useState(false);
   const [isEditKontenOpen, setIsEditKontenOpen] = useState(false);
   const [selectedKonten, setSelectedKonten] = useState(null);
-
-  // 🔴 state popup delete
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+
+  // ✅ TOAST LOADER DARI LOCALSTORAGE
+  useEffect(() => {
+    const toastMessage = localStorage.getItem('toastMessage');
+    const toastType = localStorage.getItem('toastType');
+
+    if (toastMessage) {
+      if (toastType === 'success') {
+        toast.success(toastMessage);
+      } else {
+        toast.error(toastMessage);
+      }
+
+      localStorage.removeItem('toastMessage');
+      localStorage.removeItem('toastType');
+    }
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -24,19 +39,22 @@ const Content = () => {
 
   const fetchData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/tabel-konten', {
+      const res = await fetch('/admin/tabel-konten', {
+        credentials: 'include',
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
         },
       });
 
-      const json = await res.json();
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        console.error('STATUS:', res.status);
+        throw new Error('Unauthorized');
+      }
 
+      const json = await res.json();
       setData(json.data ?? json);
-    } catch {
+    } catch (err) {
       toast.error('Gagal mengambil data');
     }
   };
@@ -49,12 +67,14 @@ const Content = () => {
 
   const handleDelete = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`/api/tabel-konten/${deleteId}`, {
+      const res = await fetch(`/admin/tabel-konten/${deleteId}`, {
         method: 'DELETE',
+        credentials: 'include',
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
+          'X-CSRF-TOKEN': document
+            .querySelector('meta[name="csrf-token"]')
+            .getAttribute('content'),
         },
       });
 
@@ -97,19 +117,21 @@ const Content = () => {
                 <Trash size={20} />
               </button>
 
+              {/* ✅ RANGKUMAN */}
               <button
-                onClick={() =>
-                  (window.location.href = `/admin/konten/${nama_submateri}/rangkuman`)
-                }
+                onClick={() => {
+                  window.location.href = `/admin/konten/${nama_submateri}/rangkuman`;
+                }}
                 className="text-green-600"
               >
                 <FilePlus size={20} />
               </button>
 
+              {/* ✅ LATIHAN */}
               <button
-                onClick={() =>
-                  (window.location.href = `/admin/konten/${nama_submateri}/latihan`)
-                }
+                onClick={() => {
+                  window.location.href = `/admin/konten/${nama_submateri}/latihan`;
+                }}
                 className="text-purple-600"
               >
                 <MessageSquarePlus size={20} />
@@ -129,7 +151,6 @@ const Content = () => {
 
   return (
     <AdminNavbar>
-      {/* ✅ TOAST GLOBAL */}
       <ToastContainer position="top-right" autoClose={3000} />
 
       <div className="bg-white p-8 rounded shadow">
@@ -160,15 +181,14 @@ const Content = () => {
         <MaterialReactTable columns={columns} data={data} />
       </div>
 
-      {/* 🔴 POPUP DELETE */}
       {isDeleteOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-6 rounded w-96">
+          <div className="bg-white p-6 rounded-lg w-96">
             <h2 className="text-lg font-semibold mb-3">
               Yakin ingin menghapus konten?
             </h2>
             <p className="text-sm text-gray-600 mb-4">
-              Data yang dihapus tidak bisa dikembalikan.
+              Data yang dihapus tidak dapat dikembalikan.
             </p>
 
             <div className="flex justify-end gap-2">
