@@ -16,16 +16,20 @@
     "APP_DEBUG": "false",
     "APP_KEY": "base64:AFXfHAYWcxVoDgpLjgZ3rs2iKO9uStevf57KYjZqLxI=",
     "APP_URL": "https://nama-project.vercel.app",
-
     "APP_CONFIG_CACHE": "/tmp/config.php",
     "APP_EVENTS_CACHE": "/tmp/events.php",
     "APP_PACKAGES_CACHE": "/tmp/packages.php",
     "APP_ROUTES_CACHE": "/tmp/routes.php",
     "APP_SERVICES_CACHE": "/tmp/services.php",
     "VIEW_COMPILED_PATH": "/tmp",
-
     "CACHE_DRIVER": "array",
     "SESSION_DRIVER": "cookie",
-    "LOG_CHANNEL": "stderr"
+    "LOG_CHANNEL": "stderr",
+    "DB_CONNECTION": "mysql",
+    "DB_HOST": "127.0.0.1",
+    "DB_PORT": "3306",
+    "DB_DATABASE": "rumah-belajar",
+    "DB_USERNAME": "root",
+    "DB_PASSWORD": "Farpel29."
   }
 }
