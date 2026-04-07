@@ -1,7 +1,7 @@
 import React from "react";
 import { Head } from "@inertiajs/react";
-import Navbar from "@/components/NavbarUser";
-import Footer from "@/components/Footer";
+import Navbar from "@/Components/NavbarUser";
+import Footer from "@/Components/Footer";
 
 export default function DetailRangkuman({ auth, submateri, rangkuman }) {
 

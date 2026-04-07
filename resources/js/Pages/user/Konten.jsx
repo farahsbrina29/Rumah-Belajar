@@ -2,14 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Head, router } from "@inertiajs/react";
 import axios from "axios";
 
-import Navbar from "@/components/NavbarUser";
-import Footer from "@/components/Footer";
+import Navbar from "@/Components/NavbarUser";
+import Footer from "@/Components/Footer";
 import PopupPilihJenjang from "@/components/PopupPilihJenjang";
 
 export default function Konten({ auth }) {
-    /* ===============================
-        STATE
-    =============================== */
+    /*   STATE*/
     const [searchTerm, setSearchTerm] = useState("");
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -21,9 +19,7 @@ export default function Konten({ auth }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    /* ===============================
-        FETCH DATA
-    =============================== */
+    /*  FETCH DATA*/
     useEffect(() => {
         setLoading(true);
         setError(null);
@@ -46,16 +42,12 @@ export default function Konten({ auth }) {
             });
     }, []);
 
-    /* ===============================
-        AUTH GUARD (FRONTEND)
-    =============================== */
+    /*   AUTH GUARD (FRONTEND)*/
     if ( !auth?.user) {
         router.visit('/login');
     }
 
-    /* ===============================
-        FILTER JENJANG
-    =============================== */
+    /*  FILTER JENJANG*/
     const handleSelectJenjang = (nama) => {
         const normalized = (nama || "").trim().toLowerCase();
 
@@ -79,18 +71,14 @@ export default function Konten({ auth }) {
         );
     };
 
-    /* ===============================
-        FILTER SEARCH
-    =============================== */
+    /* FILTER SEARCH */
     const filteredBySearch = filteredSubmaterial.filter((sub) =>
         sub.konten?.[0]?.judul_konten
             ?.toLowerCase()
             .includes(searchTerm.toLowerCase())
     );
 
-    /* ===============================
-        RENDER
-    =============================== */
+  
     return (
         <div className="min-h-screen flex flex-col bg-blue-100">
             <Head title="Konten Pembelajaran" />
