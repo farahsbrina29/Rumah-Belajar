@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Head, router } from "@inertiajs/react";
 import Navbar from "@/Components/NavbarUser";
 import Footer from "@/Components/Footer";
-import PopupPilihJenjang from "@/components/PopupPilihJenjang";
+import PopupPilihJenjang from "@/Components/PopupPilihJenjang";
 
 
 export default function Rangkuman({ auth, submateriList = [] }) {
