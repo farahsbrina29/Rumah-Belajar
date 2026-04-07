@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react'
 import { useState } from 'react'
-import Dropdown from '@/Components/Dropdown'
+import Dropdown from '@/components/Dropdown'
 
 export default function Navbar({ auth }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
