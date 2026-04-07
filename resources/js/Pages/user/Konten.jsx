@@ -4,7 +4,7 @@ import axios from "axios";
 
 import Navbar from "@/Components/NavbarUser";
 import Footer from "@/Components/Footer";
-import PopupPilihJenjang from "@/components/PopupPilihJenjang";
+import PopupPilihJenjang from "@/Components/PopupPilihJenjang";
 
 export default function Konten({ auth }) {
     /*   STATE*/
