@@ -10,9 +10,13 @@ class TrustProxies extends Middleware
     /**
      * The trusted proxies for this application.
      *
+     * Railway berada di balik reverse proxy / load balancer,
+     * jadi semua proxy perlu dipercaya agar Laravel bisa membaca
+     * protocol HTTPS asli.
+     *
      * @var array<int, string>|string|null
      */
-    protected $proxies;
+    protected $proxies = '*';
 
     /**
      * The headers that should be used to detect proxies.
