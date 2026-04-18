@@ -36,7 +36,7 @@ export default function Submaterial({ auth, nama_pelajaran, nama_jenjang, nama_s
             try {
                 console.log(`Mengambil submateri: ${nama_pelajaran} - ${nama_jenjang} - ${nama_submateri}`);
 
-                const response = await axios.get(`http://127.0.0.1:8000/api/submaterial`, {
+                const response = await axios.get(`/api/submaterial`, {
                     params: {
                         nama_pelajaran,
                         nama_jenjang,
