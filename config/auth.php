@@ -9,7 +9,7 @@ return [
 
     'guards' => [
 
-        // USER WEB (Inertia / Blade)
+        
         'web' => [
             'driver' => 'session',
             'provider' => 'users',

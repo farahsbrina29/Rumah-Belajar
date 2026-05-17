@@ -24,13 +24,13 @@ class AddSubmateriController extends Controller
         ]);
     }
 
-    // 🔁 Dipakai oleh dropdown (tetap JSON, ini OK)
+  
     public function getListMataPelajaran($jenjang_id)
     {
         return MataPelajaran::where('id_jenjang', $jenjang_id)->get();
     }
 
-    // ✅ INERTIA STORE
+    
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -56,7 +56,7 @@ class AddSubmateriController extends Controller
 
             DB::commit();
 
-            // ⬅️ WAJIB INI UNTUK INERTIA
+            
             return back()->with('success', 'Submateri berhasil ditambahkan');
 
         } catch (\Throwable $e) {

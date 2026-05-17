@@ -4,11 +4,11 @@ const Footer = () => {
   return (
     <footer className="bg-[#2C3141] text-white py-8 sm:py-6">
       <div className="container mx-auto grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 px-4 sm:px-8 lg:px-16">
-        {/* Section 1: Address */}
+        {/* Address */}
         <div className="flex flex-col items-center md:items-start">
           {/* Logo */}
           <img
-            src="/assets/logo final.png" // Ganti dengan path/logo Anda
+            src="/assets/logo final.png" 
             alt="Logo Rumah Belajar BTIDP NTB"
             className="w-22 h-10 mb-4"
           />
@@ -21,7 +21,7 @@ const Footer = () => {
           </p>
         </div>
 
-        {/* Section 2: Menu */}
+        {/*  Menu */}
         <div className="flex flex-col items-center md:items-start">
           <h3 className="text-lg sm:text-xl font-semibold mb-4 text-center md:text-left">
             Menu
@@ -39,7 +39,7 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Section 3: Social Media */}
+        {/* Social Media */}
         <div className="flex flex-col items-center md:items-start">
           <h3 className="text-lg sm:text-xl font-semibold mb-4 text-center md:text-left">
             Media Sosial Kami

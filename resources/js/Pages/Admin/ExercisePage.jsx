@@ -7,11 +7,8 @@ import { Link } from "@inertiajs/react";
 
 export default function TambahLatihanSoal({
   nama_submateri,
-  latihanList: initialLatihanList,
+  latihanList
 }) {
-  const [latihanList, setLatihanList] = useState(initialLatihanList);
-
-  // popup state
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [editSoal, setEditSoal] = useState(null);

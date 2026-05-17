@@ -5,39 +5,41 @@ import { toast } from 'react-toastify';
 const EditKonten = ({ onClose, fetchData, konten }) => {
   const cleanValue = (val) => (val === '-' || val == null ? '' : val);
 
-  const { data, setData, post, processing, errors } = useForm({
+  const [fileName, setFileName] = useState('');
+
+  const { data, setData, post, processing } = useForm({
     judul_konten: cleanValue(konten?.judul_konten),
     deskripsi: cleanValue(konten?.deskripsi),
     jenis_konten: konten?.jenis_konten || '',
     link_konten: cleanValue(konten?.link_konten),
     thumbnail: null,
-    _method: 'PUT', // 👈 method spoofing
+    _method: 'PUT',
   });
 
   const handleSubmit = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (
-    !data.judul_konten ||
-    !data.deskripsi ||
-    (data.jenis_konten !== 'lainnya' && !data.link_konten)
-  ) {
-    toast.warning('Semua field wajib diisi');
-    return;
-  }
+    if (
+      !data.judul_konten ||
+      !data.deskripsi ||
+      (data.jenis_konten !== 'lainnya' && !data.link_konten)
+    ) {
+      toast.warning('Semua field wajib diisi');
+      return;
+    }
 
-  post(`/admin/tabel-konten/${konten.id}`, {
-    forceFormData: true,
-    onSuccess: () => {
-      toast.success('Konten berhasil diperbarui');
-      fetchData();
-      onClose();
-    },
-    onError: () => {
-      toast.error('Gagal menyimpan perubahan');
-    },
-  });
-};
+    post(`/admin/tabel-konten/${konten.id}`, {
+      forceFormData: true,
+      onSuccess: () => {
+        toast.success('Konten berhasil diperbarui');
+        fetchData();
+        onClose();
+      },
+      onError: () => {
+        toast.error('Gagal menyimpan perubahan');
+      },
+    });
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -77,11 +79,19 @@ const EditKonten = ({ onClose, fetchData, konten }) => {
           />
         )}
 
-        <input
-          type="file"
-          onChange={(e) => setData('thumbnail', e.target.files[0])}
-          className="w-full p-2 border rounded mb-4"
-        />
+        <div className="mb-4">
+          <input
+            type="file"
+            className="w-full p-2 border rounded"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) {
+                setData('thumbnail', file);
+                setFileName(file.name);
+              }
+            }}
+          />
+        </div>
 
         <div className="flex justify-end gap-2">
           <button onClick={onClose} className="px-4 py-2 border rounded">

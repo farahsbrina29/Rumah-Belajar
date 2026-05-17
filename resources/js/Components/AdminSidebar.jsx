@@ -31,7 +31,7 @@ const AdminSidebar = () => {
             href={route('admin.dashboard')}
             className="block px-4 py-3 rounded-lg hover:bg-white/10"
           >
-            Panel
+            Dashboard
           </Link>
 
 

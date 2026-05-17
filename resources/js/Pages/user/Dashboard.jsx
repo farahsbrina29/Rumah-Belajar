@@ -5,7 +5,7 @@ export default function Dashboard({ auth }) {
     return (
         <AuthenticatedLayout>
             <div className="min-h-screen bg-gray-50 flex flex-col"> {/* Fullscreen */}
-                <Welcome auth={auth} /> {/* Menampilkan pages Welcome */}
+                <Welcome auth={auth} /> {/*Welcome */}
             </div>
         </AuthenticatedLayout>
     );
